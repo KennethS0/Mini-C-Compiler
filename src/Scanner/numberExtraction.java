@@ -68,18 +68,18 @@ class numberExtraction {
   private static final int [] ZZ_CMAP_BLOCKS = zzUnpackcmap_blocks();
 
   private static final String ZZ_CMAP_BLOCKS_PACKED_0 =
-    "\13\0\3\1\40\0\1\2\1\0\12\3\113\0\1\1"+
-    "\u01da\0\12\3\206\0\12\3\306\0\12\3\234\0\12\3"+
-    "\166\0\12\3\140\0\12\3\166\0\12\3\106\0\12\3"+
-    "\u0116\0\12\3\106\0\12\3\u0146\0\12\3\46\0\12\3"+
-    "\u012c\0\12\3\200\0\12\3\246\0\12\3\6\0\12\3"+
-    "\266\0\12\3\126\0\12\3\206\0\12\3\6\0\12\3"+
-    "\316\0\2\1\u01a6\0\12\3\46\0\12\3\306\0\12\3"+
-    "\26\0\12\3\126\0\12\3\u0196\0\12\3\6\0\u0100\1"+
-    "\240\0\12\3\206\0\12\3\u012c\0\12\3\200\0\12\3"+
-    "\74\0\12\3\220\0\12\3\166\0\12\3\146\0\12\3"+
-    "\206\0\12\3\106\0\12\3\266\0\12\3\u0164\0\62\3"+
-    "\100\0\12\3\266\0";
+    "\12\0\1\1\3\2\40\0\1\3\1\0\12\4\7\0"+
+    "\32\5\6\0\32\5\12\0\1\2\u01da\0\12\4\206\0"+
+    "\12\4\306\0\12\4\234\0\12\4\166\0\12\4\140\0"+
+    "\12\4\166\0\12\4\106\0\12\4\u0116\0\12\4\106\0"+
+    "\12\4\u0146\0\12\4\46\0\12\4\u012c\0\12\4\200\0"+
+    "\12\4\246\0\12\4\6\0\12\4\266\0\12\4\126\0"+
+    "\12\4\206\0\12\4\6\0\12\4\316\0\2\2\u01a6\0"+
+    "\12\4\46\0\12\4\306\0\12\4\26\0\12\4\126\0"+
+    "\12\4\u0196\0\12\4\6\0\u0100\2\240\0\12\4\206\0"+
+    "\12\4\u012c\0\12\4\200\0\12\4\74\0\12\4\220\0"+
+    "\12\4\166\0\12\4\146\0\12\4\206\0\12\4\106\0"+
+    "\12\4\266\0\12\4\u0164\0\62\4\100\0\12\4\266\0";
 
   private static int [] zzUnpackcmap_blocks() {
     int [] result = new int[7424];
@@ -106,10 +106,10 @@ class numberExtraction {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\1\0\1\1\1\2\2\3";
+    "\1\0\1\1\1\2\1\3\1\4\1\5\1\4";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[5];
+    int [] result = new int[7];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -134,10 +134,10 @@ class numberExtraction {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\4\0\4\0\10\0\14";
+    "\0\0\0\6\0\6\0\6\0\14\0\6\0\22";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[5];
+    int [] result = new int[7];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -160,11 +160,11 @@ class numberExtraction {
   private static final int [] ZZ_TRANS = zzUnpackTrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\2\1\3\1\2\1\4\6\0\1\5\1\4\3\0"+
-    "\1\5";
+    "\1\2\1\3\1\4\1\2\1\5\1\6\11\0\1\7"+
+    "\1\5\5\0\1\7\1\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[16];
+    int [] result = new int[24];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -207,10 +207,10 @@ class numberExtraction {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\1\0\2\11\2\1";
+    "\1\0\3\11\1\1\1\11\1\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[5];
+    int [] result = new int[7];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -288,6 +288,7 @@ class numberExtraction {
 
   /* user code: */
     List<String> numbers = new ArrayList<String>();
+    List<Integer> line = new ArrayList<Integer>();
 
 
   /**
@@ -543,7 +544,7 @@ class numberExtraction {
     
     System.out.println("Numbers:");
     for(int i = 0; i < numbers.size(); i++) {
-        System.out.println(numbers.get(i));
+        System.out.println(numbers.get(i) + " Line: " + line.get(i).toString());
     }
     }
   }
@@ -700,20 +701,30 @@ class numberExtraction {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { /* Do Nothing */
-            }
-            // fall through
-          case 4: break;
-          case 2:
-            { System.out.print(yytext());
-            }
-            // fall through
-          case 5: break;
-          case 3:
-            { numbers.add(yytext());
+            { System.out.println("PUNTO");
             }
             // fall through
           case 6: break;
+          case 2:
+            { System.out.println("SALTO DE LINEA");
+            }
+            // fall through
+          case 7: break;
+          case 3:
+            { System.out.print(yytext());
+            }
+            // fall through
+          case 8: break;
+          case 4:
+            { numbers.add(yytext()); line.add(yyline);
+            }
+            // fall through
+          case 9: break;
+          case 5:
+            { System.out.println(yytext());
+            }
+            // fall through
+          case 10: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }
