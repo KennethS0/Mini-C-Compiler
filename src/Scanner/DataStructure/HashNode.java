@@ -1,5 +1,7 @@
 package Scanner.DataStructure;
 
+import Scanner.Constants.Types;
+
 public class HashNode {
     private String identifier;
     private Types type;
@@ -8,7 +10,10 @@ public class HashNode {
     public HashNode(String pIdentifier) {
         this.identifier = pIdentifier;
     }
-
+    public HashNode(String pIdentifier, Types pType) {
+        this.identifier = pIdentifier;
+        this.type = pType;
+    }
 
     // Methods
 

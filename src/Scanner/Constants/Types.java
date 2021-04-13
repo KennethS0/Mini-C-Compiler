@@ -1,0 +1,13 @@
+package Scanner.Constants;
+
+public enum Types {
+    IDENTIFIERS,
+    IDENTIFIER_VARIABLE,
+    IDENTIFIER_DATA_TYPE,
+    IDENTIFIER_FUNCTION,
+    OPERATORS,
+    RESERVED_WORDS,
+    LITERALS,
+    COMMENTS;
+}
+

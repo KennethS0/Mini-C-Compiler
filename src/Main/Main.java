@@ -2,7 +2,7 @@ package Main;
 
 import Scanner.DataStructure.HashNode;
 import Scanner.DataStructure.Structure;
-import Scanner.DataStructure.Types;
+import Scanner.Constants.Types;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,10 +12,12 @@ public class Main {
         HashNode b = new HashNode("if");
         HashNode c = new HashNode("if");
         HashNode d = new HashNode("13");
-        a.setType(Types.IDENTIFIERS);
-        b.setType(Types.IDENTIFIERS);
-        c.setType(Types.IDENTIFIERS);
+        a.setType(Types.RESERVED_WORDS);
+        b.setType(Types.RESERVED_WORDS);
+        c.setType(Types.RESERVED_WORDS);
         d.setType(Types.LITERALS);
+
+
 
         test.addData(a, 1);
         test.addData(b, 1);
