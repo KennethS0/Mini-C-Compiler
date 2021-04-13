@@ -18,6 +18,12 @@ public class Node {
     }
 
     @Override
+    public String toString() {
+        if (this.quantity == 1) return this.line.toString();
+        return this.line.toString() + "(" + this.quantity.toString() + ")";
+    }
+
+    @Override
     public boolean equals(Object obj) {
         // Verification
         if (this == obj)

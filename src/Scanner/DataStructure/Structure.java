@@ -14,7 +14,6 @@ public class Structure {
 
 
     // Methods
-
     public void addData(HashNode pData, Integer pLine) {
 
         if (symbolsTable.containsKey(pData)) {
@@ -24,16 +23,14 @@ public class Structure {
             Node lastAppearance = appearances.get(appearances.size() - 1);
 
             if (lastAppearance.getLine() == pLine) {
-
+                // Increments the appearances by 1
                 lastAppearance.incrementQuantity();
-
             } else {
 
                 // Adds a new node to the list
                 Node appearance = new Node(pLine);
                 appearances.add(appearance);
             }
-
 
         } else {
             // Creates a new list of appearances
@@ -42,6 +39,7 @@ public class Structure {
             Node appearance = new Node(pLine);
             appearances.add(appearance);
 
+            // Adds the new symbol with the list of appearances to the table
             symbolsTable.put(pData, appearances);
         }
     }
