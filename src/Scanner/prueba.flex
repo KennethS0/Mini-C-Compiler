@@ -1,12 +1,11 @@
 import java.util.*;
 %%
-%class numberExtraction
+%class Scanner
 %standalone
 %line
 %column
 
 Numbers = \d+\.?\d*
-
 Token = [a-zA-Z]
 
 %{
