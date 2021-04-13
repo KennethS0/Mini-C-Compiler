@@ -32,10 +32,14 @@ public class HashNode {
         return this.identifier.equals(other.getIdentifier());
     }
 
+    @Override
+    public String toString() {
+        return identifier + " | " + type.toString() + " | ";
+    }
 
     /*
-     SETTERS & GETTERS
-     */
+         SETTERS & GETTERS
+         */
     public String getIdentifier() {
         return identifier;
     }

@@ -2,6 +2,8 @@ package Scanner.DataStructure;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Structure {
 
@@ -42,6 +44,25 @@ public class Structure {
             // Adds the new symbol with the list of appearances to the table
             symbolsTable.put(pData, appearances);
         }
+    }
+
+    @Override
+    public String toString() {
+        String result = "";
+
+        Iterator it = symbolsTable.entrySet().iterator();
+
+        // Goes through every element of the map
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+
+            // Appends line to the result
+            result += pair.getKey().toString() + pair.getValue().toString() + "\n";
+
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
+        return result;
     }
 
 
