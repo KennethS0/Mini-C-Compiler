@@ -1,4 +1,5 @@
 import java.util.*;
+import DataStructure.Structure;
 %%
 %class Scanner
 %standalone
@@ -9,8 +10,7 @@ Numbers = \d+\.?\d*
 Token = [a-zA-Z]
 
 %{
-    List<String> numbers = new ArrayList<String>();
-    List<Integer> line = new ArrayList<Integer>();
+    Structure data = new Structure();
 %}
 
 %eof{
@@ -22,7 +22,7 @@ Token = [a-zA-Z]
 
 %%
 
-{Numbers} {numbers.add(yytext()); line.add(yyline);}
-{Token} {System.out.println(yytext());}
+{Numbers} {}
+{Token} {}
 \n { System.out.println("SALTO DE LINEA"); }
 . { System.out.println("PUNTO"); }

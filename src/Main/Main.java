@@ -19,7 +19,7 @@ public class Main {
 
         test.addData(a, 1);
         test.addData(b, 1);
-        test.addData(c, 3);
+        test.addData(c, 1);
         test.addData(d, 2);
 
         System.out.println(test.toString());
