@@ -15,14 +15,12 @@ public class Main {
         a.setType(Types.RESERVED_WORDS);
         b.setType(Types.RESERVED_WORDS);
         c.setType(Types.RESERVED_WORDS);
-        d.setType(Types.LITERALS);
 
 
 
         test.addData(a, 1);
         test.addData(b, 1);
         test.addData(c, 1);
-        test.addData(d, 2);
 
         System.out.println(test.toString());
 

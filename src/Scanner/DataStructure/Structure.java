@@ -1,5 +1,7 @@
 package Scanner.DataStructure;
 
+import Scanner.Constants.Types;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,6 +47,13 @@ public class Structure {
             symbolsTable.put(pData, appearances);
         }
     }
+
+
+    public void addData(String pText, Types pType, Integer pLine) {
+        HashNode token = new HashNode(pText, pType);
+        this.addData(token, pLine + 1);
+    }
+
 
     @Override
     public String toString() {

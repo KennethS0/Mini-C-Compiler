@@ -5,6 +5,13 @@ if
 casecase case
 \bcase\b
 
++ ++ + ++
+
+b = a++ + b;
+
++++
+
++= -= /= ==
 
 /*
 aaaaa
