@@ -1,11 +1,11 @@
+fiuuu
+aifb
+if ifif
 if
+casecase case
+\bcase\b
 
-else
 
-case casecase
-
-switch
-
-elseif
-
-if
+/*
+aaaaa
+*/

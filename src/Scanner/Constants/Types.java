@@ -8,6 +8,7 @@ public enum Types {
     OPERATORS,
     RESERVED_WORDS,
     LITERALS,
-    COMMENTS;
+    SINGLE_LINE_COMMENT,
+    MULTI_LINE_COMMENT;
 }
 

@@ -1,3 +1,5 @@
+package Scanner;
+
 import java.util.*;
 import Scanner.DataStructure.*;
 import Scanner.Constants.*;
@@ -9,62 +11,55 @@ import Scanner.Constants.*;
 %line
 %column
 
-Numbers = \d+\.?\d*
-Token = [a-zA-Z]
+
+/*
+ Code Blocks
+*/
+
+// Initializes the code on the NORMAL State
+%init{
+    yybegin(NORMAL);
+%init}
 
 %{
     Structure data = new Structure();
 %}
 
+// End of file
 %eof{
     System.out.println(data.toString());
 %eof}
 
+/*
+  STATES AND MACROS
+*/
+
+%state NORMAL COMMENT STRING
+
+Digit = \d
+Letter = [a-zA-Z]
+
 %%
 
-{Numbers} {}
-{Token} {}
+<NORMAL> {
+
+// Comment found
 
 
-if|
-do|
-for|
-int|
-auto|
-else|
-long|
-enum|
-case|
-char|
-void|
-goto|
-break|
-union|
-float|
-short|
-const|
-while|
-switch|
-extern|
-return|
-signed|
-sizeof|
-static|
-struct|
-double|
-typedef|
-default|
-_Packed|
-register|
-unsigned|
-continue|
-volatile|
-char {
-    HashNode symbol = new HashNode(yytext(), Types.RESERVED_WORDS);
-    data.addData(symbol, yyline);
+// String found
+
+
+// Reserved words
+
+
+// Identifiers
+
 }
 
+<COMMENT> {
 
+}
 
-\n { System.out.println("SALTO DE LINEA"); }
-. { System.out.println("PUNTO"); }
+<STRING> {
+
+}
