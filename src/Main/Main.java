@@ -16,6 +16,10 @@ public class Main {
         b.setType(Types.RESERVED_WORDS);
         c.setType(Types.RESERVED_WORDS);
 
+    //Hola/* comidain
+        // /* *\
+    int comida;
+
 
 
         test.addData(a, 1);

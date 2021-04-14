@@ -23,44 +23,38 @@ import Scanner.Constants.*;
 
 %{
     Structure data = new Structure();
+    Structure errors = new Structure();
 %}
 
 // End of file
 %eof{
     System.out.println(data.toString());
+    System.out.println(errors.toString());
 %eof}
 
 /*
   STATES AND MACROS
 */
 
-%state NORMAL COMMENT STRING IDENTIFIER_TYPE
+%state NORMAL COMMENT STRING IDENTIFIER_TYPE OBTENER_PARAMETROS
 
 number = [1-9][0-9]*
 Digit = \d
 Octal = 0{number}
 Letter = [a-zA-Z]
 Space = \s|\t
+
 Identifier = {Letter}({Letter}|{Digit})*
 
+Single_Line_Comment = \/\/.*\n
+Multi_Line_Comment = \/\*([^])*\*\/
+Comments = {Single_Line_Comment}|{Multi_Line_Comment}
 %%
 
 <NORMAL> {
 
-// Identifiers
-{Identifier} {data.addData(yytext(), Types.IDENTIFIERS, yyline);}
-
 // Comment found
-    "/*" {
-        System.out.println("Inicio de comentario multilinea");
-        yybegin(COMMENT);
-    }
-
-// String found
-    \" {
-        System.out.println("Inicio de comentario multilinea");
-        yybegin(COMMENT);
-    }
+    {Comments} {/* DO NOTHING */}
 
 // Reserved words
     "if"|
@@ -85,6 +79,7 @@ Identifier = {Letter}({Letter}|{Digit})*
     "default"|
     "volatile"|
     "continue"|
+    "static"|
     "register" { data.addData(yytext(), Types.RESERVED_WORDS, yyline); }
 
     "int"|
@@ -92,12 +87,11 @@ Identifier = {Letter}({Letter}|{Digit})*
     "long"|
     "char"|
     "float"|
-    "double" {data.addData(yytext(), Types.RESERVED_DATA_TYPE, yyline); }
+    "short"|
+    "double" { data.addData(yytext(), Types.RESERVED_DATA_TYPE, yyline); }
 
     "signed"|
-    "short"|
-    "unsigned"|
-    "static" {data.addData(yytext(), Types.RESERVED_MODIFIER, yyline); }
+    "unsigned" { data.addData(yytext(), Types.RESERVED_MODIFIER, yyline); }
 
 // OPERATORS
 
@@ -130,19 +124,26 @@ Identifier = {Letter}({Letter}|{Digit})*
     "+="|
     "-="|
     "*="|
-    "/=" { data.addData(yytext(), Types.OPERATOR_ASSIGN, yyline); }
+    "/=" { data.addData("=", Types.OPERATOR_ASSIGN, yyline); }
 
     // Blocks
-}
 
-/*<IDENTIFIER_TYPE> {
-    ""
-}*/
+
+    // Identifiers
+    {Identifier} {data.addData(yytext(), Types.IDENTIFIER, yyline);}
+
+    // String found
+
+    \" {
+        yybegin(STRING);
+    }
+
+}
 
 
 <COMMENT> {
     "*/" {
-        System.out.println("Fin del comentario");
+        data.addData(yytext(), Types.IDENTIFIER, yyline);
         yybegin(NORMAL);
     }
 
@@ -152,14 +153,16 @@ Identifier = {Letter}({Letter}|{Digit})*
 }
 
 <STRING> {
+     \" {
+            //System.out.println("Fin del string");
+            yybegin(NORMAL);
+        }
+
     . {
-          System.out.println("dentro del string");
-    }
-    \" {
-        System.out.println("Fin del string");
-        yybegin(NORMAL);
+        //System.out.println(yytext());
     }
 }
+
 
 {Space} {/* DO NOTHING */}
 . {/* DO NOTHING */}

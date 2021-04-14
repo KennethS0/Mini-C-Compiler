@@ -2,6 +2,7 @@ fiuuu
 aifb
 if ifif
 if
+int a=
 casecase case
 \bcase\b
 
@@ -9,10 +10,11 @@ casecase case
 
 b = a++ + b;
 
-+++
 
 += -= /= ==
+int funcionJeje();
 
+int soyVariable = 50;
 /*
 aaaaa
 */

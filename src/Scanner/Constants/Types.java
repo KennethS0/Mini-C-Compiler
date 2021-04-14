@@ -1,10 +1,7 @@
 package Scanner.Constants;
 
 public enum Types {
-    IDENTIFIERS,
-    IDENTIFIER_VARIABLE,
-    IDENTIFIER_STRUCT,
-    IDENTIFIER_FUNCTION,
+    IDENTIFIER,
 
     // RESERVED WORDS
     RESERVED_DATA_TYPE,
@@ -18,6 +15,8 @@ public enum Types {
     LITERAL_DECIMAL,
     LITERAL_OCTAL,
     LITERAL_HEXA,
+    LITERAL_CHARACTER,
+    LITERAL_STRING,
 
     // COMMENTS
     SINGLE_LINE_COMMENT,
