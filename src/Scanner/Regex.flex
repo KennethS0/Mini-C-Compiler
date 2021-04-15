@@ -22,8 +22,17 @@ import Scanner.Constants.*;
 %init}
 
 %{
-    Structure data = new Structure();
-    Structure errors = new Structure();
+private Structure data = new Structure();
+private Structure errors = new Structure();
+
+Structure getData() {
+    return this.data;
+}
+
+Structure getErrors() {
+    return this.errors;
+}
+
 %}
 
 // End of file
@@ -36,38 +45,41 @@ import Scanner.Constants.*;
   STATES AND MACROS
 */
 
-%state NORMAL COMMENT STRING IDENTIFIER_TYPE OBTENER_PARAMETROS
+%state NORMAL COMMENT STRING
 
-number = [1-9][0-9]*
 Digit = \d
 Octal = 0{number}
 Letter = [a-zA-Z]
 Space = \s|\t
 
-Identifier = {Letter}({Letter}|{Digit})*
 
+
+Identifier = {Letter}({Letter}|{Digit})*
+Character = \'\w\'
+
+
+// Errors
+Identifier_Error = {Digit}+{Identifier}
+
+// Comments
 Single_Line_Comment = \/\/.*\n
 Multi_Line_Comment = \/\*([^])*\*\/
+
 Comments = {Single_Line_Comment}|{Multi_Line_Comment}
+Errors = {Identifier_Error}
 %%
 
 <NORMAL> {
+
+// Error
+    {Errors} { data.addData(yytext(), Types.ERROR, yyline); }
 
 // Comment found
     {Comments} {/* DO NOTHING */}
 
 // Reserved words
-    "if"|
-    "do"|
-    "for"|
-    "auto"|
-    "else"|
-    "enum"|
-    "case"|
-    "goto"|
+
     "union"|
-    "while"|
-    "break"|
     "const"|
     "switch"|
     "extern"|
@@ -77,11 +89,25 @@ Comments = {Single_Line_Comment}|{Multi_Line_Comment}
     "typedef"|
     "_Packed"|
     "default"|
-    "volatile"|
-    "continue"|
-    "static"|
     "register" { data.addData(yytext(), Types.RESERVED_WORDS, yyline); }
 
+    "enum" { data.addData(yytext(), Types.RESERVED_ENUM, yyline); }
+
+    // Conditional and jumps
+    "if"|
+    "auto"|
+    "else"|
+    "case"|
+    "goto" { data.addData(yytext(), Types.RESERVED_CONDITION, yyline); }
+
+    // Loops
+    "do"|
+    "while"|
+    "for"|
+    "continue"|
+    "break" { data.addData(yytext(), Types.RESERVED_LOOP, yyline); }
+
+    // Data types
     "int"|
     "void"|
     "long"|
@@ -90,6 +116,9 @@ Comments = {Single_Line_Comment}|{Multi_Line_Comment}
     "short"|
     "double" { data.addData(yytext(), Types.RESERVED_DATA_TYPE, yyline); }
 
+    // Data type modifiers
+    "static"|
+    "volatile"|
     "signed"|
     "unsigned" { data.addData(yytext(), Types.RESERVED_MODIFIER, yyline); }
 
@@ -117,22 +146,47 @@ Comments = {Single_Line_Comment}|{Multi_Line_Comment}
     "!="|
     "||"|
     "&&"|
-    "!" { data.addData(yytext(), Types.OPERATOR_BOOLEAN, yyline); }
+    "!"|
+    "?"|
+    ":" { data.addData(yytext(), Types.OPERATOR_BOOLEAN, yyline); }
 
     // Assignment
     "="|
     "+="|
     "-="|
     "*="|
-    "/=" { data.addData("=", Types.OPERATOR_ASSIGN, yyline); }
+    "/="|
+    "<<="|
+    ">>="|
+    "&="|
+    "^="|
+    "|=" { data.addData(yytext(), Types.OPERATOR_ASSIGNMENT, yyline); }
 
-    // Blocks
+    // Code Blocks
+    "("|
+    ")" { data.addData(yytext(), Types.OPERATOR_PARENTHESIS, yyline); }
 
+    "["|
+    "]" {data.addData(yytext(), Types.OPERATOR_SQ_BRACKET, yyline); }
 
-    // Identifiers
+    "{"|
+    "}" {data.addData(yytext(), Types.OPERATOR_BRACKET, yyline); }
+
+    // Binary Operators
+    "&"|
+    "|"|
+    "^"|
+    "~"|
+    "<<"|
+    ">>" {data.addData(yytext(), Types.OPERATOR_BINARY, yyline); }
+
+    // Memory Operators
+    "->" {data.addData(yytext(), Types.OPERATOR_MEMORY, yyline); }
+
+// Identifiers
     {Identifier} {data.addData(yytext(), Types.IDENTIFIER, yyline);}
 
-    // String found
+// String found
 
     \" {
         yybegin(STRING);
