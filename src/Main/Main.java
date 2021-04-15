@@ -1,6 +1,6 @@
 package Main;
 
-import Scanner.DataStructure.HashNode;
+import Scanner.DataStructure.Nodes.HashNode;
 import Scanner.DataStructure.Structure;
 import Scanner.Constants.Types;
 

@@ -1,4 +1,4 @@
-package Scanner.DataStructure;
+package Scanner.DataStructure.Nodes;
 
 import Scanner.Constants.Types;
 

@@ -1,6 +1,8 @@
 package Scanner.DataStructure;
 
 import Scanner.Constants.Types;
+import Scanner.DataStructure.Nodes.HashNode;
+import Scanner.DataStructure.Nodes.Node;
 
 import java.util.ArrayList;
 import java.util.HashMap;
