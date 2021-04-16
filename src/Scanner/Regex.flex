@@ -42,7 +42,14 @@ Structure getErrors() {
 
 
 Digit = \d
-Octal = 0{number}
+
+Decimal = [1-9][0-9]* | 0
+Octal = 0[1-7][0-7]*
+Hexa = 0x[1-9A-F][0-9A-F]*
+Flotante = {Decimal}\.[0-9]+
+
+FlotanteConExponente = ({Flotante}|{Decimal})[eE]\-?{Decimal}
+
 Letter = [a-zA-Z]
 Space = \s|\t
 New_Line = \n
@@ -122,7 +129,7 @@ Errors = {Identifier_Error}
 
     // Math
     "+" { data.addData(yytext(), Types.OPERATOR_ADD, yyline); }
-    "-" { data.addData(yytext(), Types.OPERATOR_SUBTRACT, yyline); }
+    "-" { data.addData(yytext(), Types.OPERATOR_NEGATIVE, yyline); }
     "*" { data.addData(yytext(), Types.OPERATOR_MULTIPLY, yyline); }
     "/" { data.addData(yytext(), Types.OPERATOR_DIVIDE, yyline); }
     "%" { data.addData(yytext(), Types.OPERATOR_REMAINDER, yyline); }
@@ -181,6 +188,13 @@ Errors = {Identifier_Error}
 // Literals
     {String} {data.addData(yytext(), Types.LITERAL_STRING, yyline);}
     {Character} {data.addData(yytext(), Types.LITERAL_CHARACTER, yyline);}
+
+    {Decimal} {data.addData(yytext(), Types.LITERAL_DECIMAL, yyline);}
+    {Octal} {data.addData(yytext(), Types.LITERAL_OCTAL, yyline);}
+    {Hexa} {data.addData(yytext(), Types.LITERAL_HEXA, yyline);}
+    {Flotante} {data.addData(yytext(), Types.LITERAL_FLOAT, yyline);}
+
+    {FlotanteConExponente} {data.addData(yytext(), Types.LITERAL_EXPONENTIAL_FLOAT, yyline);}
 
 // Elements to ignore
     {Ignored_Elements} {/* DO NOTHING */}
