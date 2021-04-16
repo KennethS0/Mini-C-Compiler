@@ -52,10 +52,11 @@ Octal = 0{number}
 Letter = [a-zA-Z]
 Space = \s|\t
 
-
-
 Identifier = {Letter}({Letter}|{Digit})*
+
+// Literals
 Character = \'\w\'
+String = \".*\"
 
 
 // Errors
@@ -186,12 +187,10 @@ Errors = {Identifier_Error}
 // Identifiers
     {Identifier} {data.addData(yytext(), Types.IDENTIFIER, yyline);}
 
-// String found
+// Literals
 
-    \" {
-        yybegin(STRING);
-    }
-
+    {String} {data.addData(yytext(), Types.LITERAL_STRING, yyline);}
+    {Character} {data.addData(yytext(), Types.LITERAL_CHARACTER, yyline);}
 }
 
 
@@ -205,18 +204,6 @@ Errors = {Identifier_Error}
         System.out.println("dentro del comentario");
     }
 }
-
-<STRING> {
-     \" {
-            //System.out.println("Fin del string");
-            yybegin(NORMAL);
-        }
-
-    . {
-        //System.out.println(yytext());
-    }
-}
-
 
 {Space} {/* DO NOTHING */}
 . {/* DO NOTHING */}
