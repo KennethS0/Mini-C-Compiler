@@ -16,11 +16,6 @@ import Scanner.Constants.*;
  Code Blocks
 */
 
-// Initializes the code on the NORMAL State
-%init{
-    yybegin(NORMAL);
-%init}
-
 %{
 private Structure data = new Structure();
 private Structure errors = new Structure();
@@ -42,20 +37,20 @@ Structure getErrors() {
 %eof}
 
 /*
-  STATES AND MACROS
+    MACROS
 */
 
-%state NORMAL COMMENT STRING
 
 Digit = \d
 Octal = 0{number}
 Letter = [a-zA-Z]
 Space = \s|\t
+New_Line = \n
 
 Identifier = {Letter}({Letter}|{Digit})*
 
 // Literals
-Character = \'\w\'
+Character = \'.\'
 String = \".*\"
 
 
@@ -65,18 +60,14 @@ Identifier_Error = {Digit}+{Identifier}
 // Comments
 Single_Line_Comment = \/\/.*\n
 Multi_Line_Comment = \/\*([^])*\*\/
-
 Comments = {Single_Line_Comment}|{Multi_Line_Comment}
+
+// Elements to ignore
+Ignored_Elements = {Comments} | {Space} | {New_Line}
+
+// Errors
 Errors = {Identifier_Error}
 %%
-
-<NORMAL> {
-
-// Error
-    {Errors} { data.addData(yytext(), Types.ERROR, yyline); }
-
-// Comment found
-    {Comments} {/* DO NOTHING */}
 
 // Reserved words
 
@@ -188,22 +179,11 @@ Errors = {Identifier_Error}
     {Identifier} {data.addData(yytext(), Types.IDENTIFIER, yyline);}
 
 // Literals
-
     {String} {data.addData(yytext(), Types.LITERAL_STRING, yyline);}
     {Character} {data.addData(yytext(), Types.LITERAL_CHARACTER, yyline);}
-}
 
+// Elements to ignore
+    {Ignored_Elements} {/* DO NOTHING */}
 
-<COMMENT> {
-    "*/" {
-        data.addData(yytext(), Types.IDENTIFIER, yyline);
-        yybegin(NORMAL);
-    }
-
-    . {
-        System.out.println("dentro del comentario");
-    }
-}
-
-{Space} {/* DO NOTHING */}
-. {/* DO NOTHING */}
+// Error
+    {Errors} |. { data.addData(yytext(), Types.ERROR, yyline); }
