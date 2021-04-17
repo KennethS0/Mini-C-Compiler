@@ -486,11 +486,11 @@ public class Scanner {
 private Structure data = new Structure();
 private Structure errors = new Structure();
 
-Structure getData() {
+public Structure getData() {
     return this.data;
 }
 
-Structure getErrors() {
+public Structure getErrors() {
     return this.errors;
 }
 
@@ -949,7 +949,7 @@ Structure getErrors() {
             // fall through
           case 42: break;
           case 10:
-            { data.addData(yytext(), Types.OPERATOR_SUBTRACT, yyline);
+            { data.addData(yytext(), Types.OPERATOR_NEGATIVE, yyline);
             }
             // fall through
           case 43: break;

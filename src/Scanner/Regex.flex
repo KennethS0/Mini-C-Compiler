@@ -20,11 +20,11 @@ import Scanner.Constants.*;
 private Structure data = new Structure();
 private Structure errors = new Structure();
 
-Structure getData() {
+public Structure getData() {
     return this.data;
 }
 
-Structure getErrors() {
+public Structure getErrors() {
     return this.errors;
 }
 
@@ -200,4 +200,4 @@ Errors = {Identifier_Error}
     {Ignored_Elements} {/* DO NOTHING */}
 
 // Error
-    {Errors} |. { data.addData(yytext(), Types.ERROR, yyline); }
+    {Errors} |. { errors.addData(yytext(), Types.ERROR, yyline); }

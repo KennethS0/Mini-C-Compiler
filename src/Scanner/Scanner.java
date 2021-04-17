@@ -486,11 +486,11 @@ public class Scanner {
 private Structure data = new Structure();
 private Structure errors = new Structure();
 
-Structure getData() {
+public Structure getData() {
     return this.data;
 }
 
-Structure getErrors() {
+public Structure getErrors() {
     return this.errors;
 }
 
@@ -904,7 +904,7 @@ Structure getErrors() {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { data.addData(yytext(), Types.ERROR, yyline);
+            { errors.addData(yytext(), Types.ERROR, yyline);
             }
             // fall through
           case 34: break;
