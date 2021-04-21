@@ -40,47 +40,49 @@ public Structure getErrors() {
     MACROS
 */
 
-
+// Numbers
 Digit = \d
 
 Decimal = [1-9][0-9]* | 0
 Octal = 0[1-7][0-7]*
 Hexa = 0x[1-9A-F][0-9A-F]*
 Flotante = {Decimal}\.[0-9]+
-
 FlotanteConExponente = ({Flotante}|{Decimal})[eE]\-?{Decimal}
 
+// English Letters
 Letter = [a-zA-Z]
+
+// Ignored Characters
 Space = \s|\t
 New_Line = \n
 
 Identifier = {Letter}({Letter}|{Digit})*
 
 // Literals
-Escape_Characters = \\(a|b|f|n|r|t|v|\\|\'|\"|\?|nnn|xhh|0)
-
-Character = \'.\' | \'\' | \'{Escape_Characters}\'
+Escape_Characters = (a|b|f|n|r|t|v|\\|\'|\"|\?|nnn|xhh|0)
+Character = \'[^\'\"]\' | \'\' | \'\\{Escape_Characters}\'
 String = \".*\"
 
-
-// Errors
+// Specific Errors
 Identifier_Error = {Digit}+{Identifier}
+Comments_Error = \/\*([^(\*\/)])*
+String_Error = \"[^\"]*
+Character_Error = \'.*\' | \'.*
 
 // Comments
-Single_Line_Comment = \/\/.*\n
-Multi_Line_Comment = \/\*([^])*\*\/
+Single_Line_Comment = \/\/.*
+Multi_Line_Comment =  \/\*[^*]*\*+([^*/][^*]*\*+)*\/ // \/\*(.*?|\n*)\*\/
 Comments = {Single_Line_Comment}|{Multi_Line_Comment}
 
 // Elements to ignore
 Ignored_Elements = {Comments} | {Space} | {New_Line}
 
-// Errors
-Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | \".* | \'.*\' | \'.*
+// Generic Errors
+Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | {Comments_Error} | {String_Error} | {Character_Error}
 
 %%
 // Elements to ignore
     {Ignored_Elements} {/* DO NOTHING */}
-
 
 // Reserved words
 
@@ -132,6 +134,7 @@ Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | \".* | \'.*\' | \'.*
     // Separators
     "," { data.addData(yytext(), Types.OPERATOR_SEPARATE, yyline); }
     ";" { data.addData(yytext(), Types.OPERATOR_END_LINE, yyline); }
+    \\ { data.addData(yytext(), Types.OPERATOR_CONTINUE_LINE, yyline); }
 
     // Math
     "+" { data.addData(yytext(), Types.OPERATOR_ADD, yyline); }
@@ -204,4 +207,4 @@ Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | \".* | \'.*\' | \'.*
 
 
 // Error
-    {Errors} | . {data.addData(yytext(), Types.ERROR, yyline); }
+    {Errors} | . {errors.addData(yytext(), Types.ERROR, yyline); }
