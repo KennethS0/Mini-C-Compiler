@@ -73,7 +73,8 @@ Comments = {Single_Line_Comment}|{Multi_Line_Comment}
 Ignored_Elements = {Comments} | {Space} | {New_Line}
 
 // Errors
-Errors = {Identifier_Error}
+Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | \".*?!\"?(\n) | \'.?(\n)
+(\([\w\s]+)
 %%
 
 // Reserved words
