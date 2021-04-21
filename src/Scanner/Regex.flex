@@ -57,7 +57,9 @@ New_Line = \n
 Identifier = {Letter}({Letter}|{Digit})*
 
 // Literals
-Character = \'.\'
+Escape_Characters = \\(a|b|f|n|r|t|v|\\|\'|\"|\?|nnn|xhh|0)
+
+Character = \'.\' | \'\' | \'{Escape_Characters}\'
 String = \".*\"
 
 
@@ -73,9 +75,12 @@ Comments = {Single_Line_Comment}|{Multi_Line_Comment}
 Ignored_Elements = {Comments} | {Space} | {New_Line}
 
 // Errors
-Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | \".*?!\"?(\n) | \'.?(\n)
-(\([\w\s]+)
+Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | \".* | \'.*\' | \'.*
+
 %%
+// Elements to ignore
+    {Ignored_Elements} {/* DO NOTHING */}
+
 
 // Reserved words
 
@@ -197,8 +202,6 @@ Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | \".*?!\"?(\n) | \'.?(\n)
 
     {FlotanteConExponente} {data.addData(yytext(), Types.LITERAL_EXPONENTIAL_FLOAT, yyline);}
 
-// Elements to ignore
-    {Ignored_Elements} {/* DO NOTHING */}
 
 // Error
-    {Errors} |. { errors.addData(yytext(), Types.ERROR, yyline); }
+    {Errors} | . {data.addData(yytext(), Types.ERROR, yyline); }
