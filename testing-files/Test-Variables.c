@@ -10,8 +10,6 @@ int main() {
     float flotanteConExponente3 = 234.5E-5;
 
     int numeroOctal = 010
-
     int numeroHexadecimal = 0xAB
-
     char caracterIncorrecto = 'hola'
 }
