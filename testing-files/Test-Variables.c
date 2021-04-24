@@ -12,4 +12,5 @@ int main() {
     int numeroOctal = 010
     int numeroHexadecimal = 0xAB
     char caracterIncorrecto = 'hola'
+    ñándúa23ñ2ñ2ñ2ñ2ñ222199
 }

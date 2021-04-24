@@ -37,7 +37,6 @@ public Structure getErrors() {
    */
   public void readFile(String argv) {
 
-        int firstFilePos = 0;
         String encodingName = "UTF-8";
 
         try {
@@ -87,8 +86,9 @@ Hexa = 0x[1-9A-F][0-9A-F]*
 Flotante = {Decimal}\.[0-9]+
 FlotanteConExponente = ({Flotante}|{Decimal})[eE]\-?{Decimal}
 
-// English Letters
+// Letters
 Letter = [a-zA-Z]
+Not_English = [\u00C0-\u00FF]
 
 // Ignored Characters
 Space = \s|\t
@@ -102,7 +102,7 @@ Character = \'[^\'\"]\' | \'\' | \'\\{Escape_Characters}\'
 String = \".*\"
 
 // Specific Errors
-Identifier_Error = {Digit}+{Identifier}
+Identifier_Error = {Digit}+{Identifier} | (({Digit}|{Identifier})*{Not_English}+({Digit}|{Identifier})*)*
 Comments_Error = \/\*([^(\*\/)])*
 String_Error = \"[^\"]*
 Character_Error = \'.*\' | \'.*
