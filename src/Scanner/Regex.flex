@@ -97,7 +97,7 @@ Comments = {Single_Line_Comment}|{Multi_Line_Comment}
 // Specific Errors
 String_Error = \"[^\"(\n)]*
 Character_Error = \'[^\'(\n)][^\'(\n)]+\' | \'([^(\')(\n)])*
-Comments_Error = \/\*([^(\*\/)(\n)])*
+Comments_Error = \/\*([^(\*\/)])*
 Float_Many_Dots = {Flotante}(\.{Digit}*)+
 Identifier_Error = {Digit}+{Identifier} | (({Digit}|{Identifier})*{Not_English}+({Digit}|{Identifier})*)*
 
