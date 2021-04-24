@@ -508,6 +508,7 @@ public class Scanner {
   private boolean zzAtBOL = true;
 
   /** Whether the user-EOF-code has already been executed. */
+  @SuppressWarnings("unused")
   private boolean zzEOFDone;
 
   /* user code: */
@@ -801,22 +802,6 @@ public Structure getErrors() {
   }
 
 
-  /**
-   * Contains user EOF-code, which will be executed exactly once,
-   * when the end of file is reached
-   */
-  private void zzDoEOF() {
-    if (!zzEOFDone) {
-      zzEOFDone = true;
-    
-    System.out.println("===== Tokens: ====== \n");
-    System.out.println(data.toString());
-    System.out.println("======== Errors:  ====== \n");
-    System.out.println(errors.toString());
-    }
-  }
-
-
 
 
   /**
@@ -962,7 +947,6 @@ public Structure getErrors() {
 
       if (zzInput == YYEOF && zzStartRead == zzCurrentPos) {
         zzAtEOF = true;
-            zzDoEOF();
         return YYEOF;
       }
       else {

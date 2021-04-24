@@ -64,15 +64,6 @@ public Structure getErrors() {
   }
 %}
 
-// End of file
-%eof{
-    System.out.println("===== Tokens: ====== \n");
-    System.out.println(data.toString());
-    System.out.println("======== Errors:  ====== \n");
-    System.out.println(errors.toString());
-%eof}
-
-
 //   ========= MACROS ==========
 
 
