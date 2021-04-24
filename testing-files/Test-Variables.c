@@ -15,7 +15,9 @@ int main() {
 
     int ñándúa23ñ2ñ2;
     int númeroQuímico;
-    int numeroOctal = 010
+    int numeroOctal = 'k' 'k''k' 010
     int numeroHexadecimal = 0xAB
     char caracterIncorrecto = 'hola'
+
+
 }
