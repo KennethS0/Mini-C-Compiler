@@ -73,13 +73,11 @@ public Structure getErrors() {
 %eof}
 
 
-/*
-    MACROS
-*/
+//   ========= MACROS ==========
+
 
 // Numbers
 Digit = \d
-
 Decimal = [1-9][0-9]* | 0
 Octal = 0[1-7][0-7]*
 Hexa = 0x[1-9A-F][0-9A-F]*
@@ -93,30 +91,27 @@ Not_English = [\u00C0-\u00FF]
 // Ignored Characters
 Space = \s|\t
 New_Line = \n
-
 Identifier = {Letter}({Letter}|{Digit})*
 
 // Literals
+String = \".*\"
 Escape_Characters = (a|b|f|n|r|t|v|\\|\'|\"|\?|nnn|xhh|0)
 Character = \'[^\'\"]\' | \'\' | \'\\{Escape_Characters}\'
-String = \".*\"
-
-// Specific Errors
-Identifier_Error = {Digit}+{Identifier} | (({Digit}|{Identifier})*{Not_English}+({Digit}|{Identifier})*)*
-Comments_Error = \/\*([^(\*\/)])*
-String_Error = \"[^\"]*
-Character_Error = \'.*\' | \'.*
 
 // Comments
 Single_Line_Comment = \/\/.*
-Multi_Line_Comment =  \/\*[^*]*\*+([^*/][^*]*\*+)*\/ // \/\*(.*?|\n*)\*\/
+Multi_Line_Comment =  \/\*[^*]*\*+([^*/][^*]*\*+)*\/
 Comments = {Single_Line_Comment}|{Multi_Line_Comment}
+
+// Specific Errors
+String_Error = \"[^\"]*
+Character_Error = \'.*\' | \'.*
+Comments_Error = \/\*([^(\*\/)])*
+Float_Many_Dots = {Flotante}(\.{Digit}*)+
+Identifier_Error = {Digit}+{Identifier} | (({Digit}|{Identifier})*{Not_English}+({Digit}|{Identifier})*)*
 
 // Elements to ignore
 Ignored_Elements = {Comments} | {Space} | {New_Line}
-
-// Generic Errors
-Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | {Comments_Error} | {String_Error} | {Character_Error}
 
 %%
 // Elements to ignore
@@ -167,7 +162,7 @@ Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | {Comments_Error} | {Strin
     "signed"|
     "unsigned" { data.addData(yytext(), Types.RESERVED_MODIFIER, yyline); }
 
-// OPERATORS
+// ======= OPERATORS =======
 
     // Separators
     "," { data.addData(yytext(), Types.OPERATOR_SEPARATE, yyline); }
@@ -229,8 +224,10 @@ Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | {Comments_Error} | {Strin
     // Memory Operators
     "->" {data.addData(yytext(), Types.OPERATOR_MEMORY, yyline); }
 
+
 // Identifiers
     {Identifier} {data.addData(yytext(), Types.IDENTIFIER, yyline);}
+
 
 // Literals
     {String} {data.addData(yytext(), Types.LITERAL_STRING, yyline);}
@@ -244,5 +241,11 @@ Errors = {Identifier_Error} | {Flotante}(\.{Digit})+ | {Comments_Error} | {Strin
     {FlotanteConExponente} {data.addData(yytext(), Types.LITERAL_EXPONENTIAL_FLOAT, yyline);}
 
 
-// Error
-    {Errors} | . {errors.addData(yytext(), Types.ERROR, yyline); }
+// Errors
+
+    {String_Error} {errors.addData(yytext(), Types.STRING_ERROR, yyline);}
+    {Comments_Error} {errors.addData(yytext(), Types.COMMENTS_ERROR, yyline);}
+    {Character_Error} {errors.addData(yytext(), Types.CHARACTER_ERROR, yyline);}
+    {Identifier_Error} {errors.addData(yytext(), Types.IDENTIFIER_ERROR, yyline);}
+    {Float_Many_Dots}   {errors.addData(yytext(), Types.FLOAT_MANY_DOTS_ERROR, yyline);}
+    .                   {errors.addData(yytext(), Types.UNKNOWN_ERROR, yyline);}

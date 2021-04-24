@@ -4,10 +4,7 @@ import Scanner.Constants.Types;
 import Scanner.DataStructure.Nodes.HashNode;
 import Scanner.DataStructure.Nodes.Node;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class Structure {
 
@@ -61,6 +58,7 @@ public class Structure {
     public String toString() {
         String result = "";
 
+        ArrayList<String> tokens = new ArrayList<>();
         Iterator it = symbolsTable.entrySet().iterator();
 
         // Goes through every element of the map
@@ -68,9 +66,15 @@ public class Structure {
             Map.Entry pair = (Map.Entry)it.next();
 
             // Appends line to the result
-            result += pair.getKey().toString() + pair.getValue().toString() + "\n";
+            tokens.add(pair.getKey().toString() + pair.getValue().toString() + "\n");
 
             it.remove(); // avoids a ConcurrentModificationException
+        }
+
+        tokens.sort((s1, s2) -> s1.length() - s2.length());
+
+        for(String elem :tokens){
+            result += elem;
         }
 
         return result;

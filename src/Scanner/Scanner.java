@@ -121,20 +121,20 @@ public class Scanner {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\2\1\1\2\1\3\1\1\1\4\1\5\1\1\1\6"+
-    "\1\7\1\10\1\11\1\12\1\13\2\14\1\3\1\15"+
-    "\1\3\1\16\1\3\1\17\1\20\1\21\1\5\1\1"+
-    "\17\17\1\22\2\5\2\1\1\23\1\1\1\24\1\16"+
-    "\1\1\1\0\1\1\1\25\1\1\1\26\1\27\1\30"+
-    "\1\1\1\2\2\0\1\31\2\1\1\0\6\17\1\32"+
-    "\4\17\1\33\13\17\1\0\2\25\2\1\2\0\1\34"+
-    "\1\0\2\35\1\36\1\0\12\17\1\32\1\37\17\17"+
-    "\2\1\2\0\2\35\1\0\5\17\1\40\14\17\1\1"+
-    "\1\0\1\41\12\17\1\0\2\17\1\42\1\17\1\41"+
-    "\2\17";
+    "\1\1\1\2\1\3\1\4\1\5\1\6\1\7\1\10"+
+    "\1\11\1\12\1\13\1\14\1\15\1\16\2\17\1\4"+
+    "\1\20\1\4\1\21\1\4\1\22\1\23\1\24\1\7"+
+    "\1\2\17\22\1\25\2\7\1\1\1\2\1\26\1\5"+
+    "\1\27\1\21\1\10\1\0\1\10\1\30\1\10\1\31"+
+    "\1\32\1\33\1\34\1\3\2\0\1\35\2\1\1\0"+
+    "\6\22\1\36\4\22\1\37\13\22\1\0\2\30\2\10"+
+    "\2\0\1\40\1\0\2\41\1\42\1\0\12\22\1\36"+
+    "\1\43\17\22\2\10\1\44\1\0\2\41\1\0\5\22"+
+    "\1\45\14\22\1\0\1\46\12\22\1\0\2\22\1\47"+
+    "\1\22\1\46\2\22";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[175];
+    int [] result = new int[174];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -178,12 +178,12 @@ public class Scanner {
     "\0\u18b4\0\u18f2\0\u1930\0\u196e\0\u19ac\0\76\0\u19ea\0\u1a28"+
     "\0\u1a66\0\u1aa4\0\u1ae2\0\u1b20\0\u1b5e\0\u0364\0\u1b9c\0\u1bda"+
     "\0\u1c18\0\u1c56\0\u1c94\0\u1cd2\0\u1d10\0\u1d4e\0\u1d8c\0\u1dca"+
-    "\0\u1e08\0\u1e46\0\u1e84\0\u1ec2\0\u0364\0\u1f00\0\u1f3e\0\u1f7c"+
+    "\0\u1e08\0\u1e46\0\u1e84\0\u0364\0\u1ec2\0\u1f00\0\u1f3e\0\u1f7c"+
     "\0\u1fba\0\u1ff8\0\u2036\0\u2074\0\u20b2\0\u20f0\0\u212e\0\u216c"+
-    "\0\u21aa\0\u21e8\0\u0364\0\u2226\0\76\0\u2264\0\u22a2";
+    "\0\u21aa\0\u0364\0\u21e8\0\76\0\u2226\0\u2264";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[175];
+    int [] result = new int[174];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -334,56 +334,56 @@ public class Scanner {
     "\27\26\3\0\1\55\1\26\20\0\3\26\6\0\4\26"+
     "\4\0\12\26\1\232\15\26\3\0\1\55\1\26\1\0"+
     "\2\65\1\0\51\65\1\63\20\65\1\0\2\65\1\0"+
-    "\44\65\1\63\25\65\20\0\3\233\52\0\1\233\15\0"+
-    "\1\142\2\0\1\206\2\207\73\0\3\207\125\0\1\234"+
-    "\43\0\3\26\6\0\4\26\4\0\11\26\1\161\16\26"+
+    "\44\65\1\63\25\65\16\0\1\204\1\0\3\204\52\0"+
+    "\1\204\15\0\1\142\2\0\1\206\2\207\73\0\3\207"+
+    "\125\0\1\233\43\0\3\26\6\0\4\26\4\0\11\26"+
+    "\1\161\16\26\3\0\1\55\1\26\20\0\3\26\6\0"+
+    "\4\26\4\0\21\26\1\234\6\26\3\0\1\55\1\26"+
+    "\20\0\3\26\6\0\4\26\4\0\10\26\1\235\17\26"+
     "\3\0\1\55\1\26\20\0\3\26\6\0\4\26\4\0"+
-    "\21\26\1\235\6\26\3\0\1\55\1\26\20\0\3\26"+
-    "\6\0\4\26\4\0\10\26\1\236\17\26\3\0\1\55"+
-    "\1\26\20\0\3\26\6\0\4\26\4\0\22\26\1\237"+
-    "\5\26\3\0\1\55\1\26\20\0\3\26\6\0\4\26"+
-    "\4\0\12\26\1\240\15\26\3\0\1\55\1\26\20\0"+
-    "\3\26\6\0\4\26\4\0\17\26\1\227\10\26\3\0"+
-    "\1\55\1\26\20\0\3\26\6\0\4\26\4\0\20\26"+
-    "\1\241\7\26\3\0\1\55\1\26\20\0\3\26\6\0"+
-    "\4\26\4\0\4\26\1\242\23\26\3\0\1\55\1\26"+
-    "\20\0\3\26\6\0\4\26\4\0\15\26\1\243\12\26"+
+    "\22\26\1\236\5\26\3\0\1\55\1\26\20\0\3\26"+
+    "\6\0\4\26\4\0\12\26\1\237\15\26\3\0\1\55"+
+    "\1\26\20\0\3\26\6\0\4\26\4\0\17\26\1\227"+
+    "\10\26\3\0\1\55\1\26\20\0\3\26\6\0\4\26"+
+    "\4\0\20\26\1\240\7\26\3\0\1\55\1\26\20\0"+
+    "\3\26\6\0\4\26\4\0\4\26\1\241\23\26\3\0"+
+    "\1\55\1\26\20\0\3\26\6\0\4\26\4\0\15\26"+
+    "\1\242\12\26\3\0\1\55\1\26\20\0\3\26\6\0"+
+    "\4\26\4\0\10\26\1\243\17\26\3\0\1\55\1\26"+
+    "\20\0\3\26\6\0\4\26\4\0\2\26\1\212\25\26"+
     "\3\0\1\55\1\26\20\0\3\26\6\0\4\26\4\0"+
-    "\10\26\1\244\17\26\3\0\1\55\1\26\20\0\3\26"+
-    "\6\0\4\26\4\0\2\26\1\212\25\26\3\0\1\55"+
-    "\1\26\20\0\3\26\6\0\4\26\4\0\2\26\1\245"+
-    "\25\26\3\0\1\55\1\26\20\0\3\26\6\0\4\26"+
-    "\4\0\3\26\1\246\24\26\3\0\1\55\1\26\20\0"+
-    "\3\26\6\0\4\26\4\0\14\26\1\235\13\26\3\0"+
-    "\1\55\1\26\20\0\3\26\6\0\4\26\4\0\6\26"+
-    "\1\167\21\26\3\0\1\55\1\26\20\0\3\26\6\0"+
-    "\4\26\4\0\21\26\1\247\6\26\3\0\1\55\1\26"+
-    "\20\0\3\26\6\0\4\26\4\0\4\26\1\161\23\26"+
-    "\3\0\1\55\1\26\16\0\1\204\124\0\1\250\50\0"+
-    "\3\26\6\0\4\26\4\0\14\26\1\251\13\26\3\0"+
+    "\2\26\1\244\25\26\3\0\1\55\1\26\20\0\3\26"+
+    "\6\0\4\26\4\0\3\26\1\245\24\26\3\0\1\55"+
+    "\1\26\20\0\3\26\6\0\4\26\4\0\14\26\1\234"+
+    "\13\26\3\0\1\55\1\26\20\0\3\26\6\0\4\26"+
+    "\4\0\6\26\1\167\21\26\3\0\1\55\1\26\20\0"+
+    "\3\26\6\0\4\26\4\0\21\26\1\246\6\26\3\0"+
+    "\1\55\1\26\20\0\3\26\6\0\4\26\4\0\4\26"+
+    "\1\161\23\26\3\0\1\55\1\26\45\0\1\247\50\0"+
+    "\3\26\6\0\4\26\4\0\14\26\1\250\13\26\3\0"+
     "\1\55\1\26\20\0\3\26\6\0\4\26\4\0\12\26"+
     "\1\212\15\26\3\0\1\55\1\26\20\0\3\26\6\0"+
     "\4\26\4\0\4\26\1\162\23\26\3\0\1\55\1\26"+
-    "\20\0\3\26\6\0\4\26\4\0\21\26\1\252\6\26"+
+    "\20\0\3\26\6\0\4\26\4\0\21\26\1\251\6\26"+
     "\3\0\1\55\1\26\20\0\3\26\6\0\4\26\4\0"+
-    "\3\26\1\253\24\26\3\0\1\55\1\26\20\0\3\26"+
-    "\6\0\4\26\4\0\5\26\1\235\22\26\3\0\1\55"+
-    "\1\26\20\0\3\26\6\0\4\26\4\0\2\26\1\253"+
+    "\3\26\1\252\24\26\3\0\1\55\1\26\20\0\3\26"+
+    "\6\0\4\26\4\0\5\26\1\234\22\26\3\0\1\55"+
+    "\1\26\20\0\3\26\6\0\4\26\4\0\2\26\1\252"+
     "\25\26\3\0\1\55\1\26\20\0\3\26\6\0\4\26"+
-    "\4\0\7\26\1\235\20\26\3\0\1\55\1\26\20\0"+
-    "\3\26\6\0\4\26\4\0\4\26\1\243\23\26\3\0"+
+    "\4\0\7\26\1\234\20\26\3\0\1\55\1\26\20\0"+
+    "\3\26\6\0\4\26\4\0\4\26\1\242\23\26\3\0"+
     "\1\55\1\26\20\0\3\26\6\0\4\26\4\0\10\26"+
-    "\1\254\17\26\3\0\1\55\1\26\44\0\1\255\51\0"+
+    "\1\253\17\26\3\0\1\55\1\26\44\0\1\254\51\0"+
     "\3\26\6\0\4\26\4\0\22\26\1\232\5\26\3\0"+
     "\1\55\1\26\20\0\3\26\6\0\4\26\4\0\4\26"+
-    "\1\256\23\26\3\0\1\55\1\26\20\0\3\26\6\0"+
-    "\4\26\4\0\12\26\1\257\15\26\3\0\1\55\1\26"+
-    "\20\0\3\26\6\0\4\26\4\0\17\26\1\235\10\26"+
+    "\1\255\23\26\3\0\1\55\1\26\20\0\3\26\6\0"+
+    "\4\26\4\0\12\26\1\256\15\26\3\0\1\55\1\26"+
+    "\20\0\3\26\6\0\4\26\4\0\17\26\1\234\10\26"+
     "\3\0\1\55\1\26\20\0\3\26\6\0\4\26\4\0"+
-    "\4\26\1\253\23\26\3\0\1\55\1\26\1\0";
+    "\4\26\1\252\23\26\3\0\1\55\1\26\1\0";
 
   private static int [] zzUnpackTrans() {
-    int [] result = new int[8928];
+    int [] result = new int[8866];
     int offset = 0;
     offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -430,12 +430,12 @@ public class Scanner {
     "\4\1\2\11\4\1\2\11\21\1\1\11\1\1\1\11"+
     "\2\1\1\11\2\1\1\11\1\1\1\0\3\1\3\11"+
     "\2\1\2\0\3\1\1\0\27\1\1\0\1\11\3\1"+
-    "\2\0\1\1\1\0\3\1\1\0\35\1\2\0\1\11"+
-    "\1\1\1\0\23\1\1\0\13\1\1\0\4\1\1\11"+
+    "\2\0\1\1\1\0\3\1\1\0\36\1\1\0\1\11"+
+    "\1\1\1\0\22\1\1\0\13\1\1\0\4\1\1\11"+
     "\2\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[175];
+    int [] result = new int[174];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -969,175 +969,200 @@ public Structure getErrors() {
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1:
-            { errors.addData(yytext(), Types.ERROR, yyline);
-            }
-            // fall through
-          case 35: break;
-          case 2:
-            { /* DO NOTHING */
-            }
-            // fall through
-          case 36: break;
-          case 3:
-            { data.addData(yytext(), Types.OPERATOR_BOOLEAN, yyline);
-            }
-            // fall through
-          case 37: break;
-          case 4:
-            { data.addData(yytext(), Types.OPERATOR_REMAINDER, yyline);
-            }
-            // fall through
-          case 38: break;
-          case 5:
-            { data.addData(yytext(), Types.OPERATOR_BINARY, yyline);
-            }
-            // fall through
-          case 39: break;
-          case 6:
-            { data.addData(yytext(), Types.OPERATOR_PARENTHESIS, yyline);
+            { errors.addData(yytext(), Types.IDENTIFIER_ERROR, yyline);
             }
             // fall through
           case 40: break;
-          case 7:
-            { data.addData(yytext(), Types.OPERATOR_MULTIPLY, yyline);
+          case 2:
+            { errors.addData(yytext(), Types.UNKNOWN_ERROR, yyline);
             }
             // fall through
           case 41: break;
-          case 8:
-            { data.addData(yytext(), Types.OPERATOR_ADD, yyline);
+          case 3:
+            { /* DO NOTHING */
             }
             // fall through
           case 42: break;
-          case 9:
-            { data.addData(yytext(), Types.OPERATOR_SEPARATE, yyline);
+          case 4:
+            { data.addData(yytext(), Types.OPERATOR_BOOLEAN, yyline);
             }
             // fall through
           case 43: break;
-          case 10:
-            { data.addData(yytext(), Types.OPERATOR_NEGATIVE, yyline);
+          case 5:
+            { errors.addData(yytext(), Types.STRING_ERROR, yyline);
             }
             // fall through
           case 44: break;
-          case 11:
-            { data.addData(yytext(), Types.OPERATOR_DIVIDE, yyline);
+          case 6:
+            { data.addData(yytext(), Types.OPERATOR_REMAINDER, yyline);
             }
             // fall through
           case 45: break;
-          case 12:
-            { data.addData(yytext(), Types.LITERAL_DECIMAL, yyline);
+          case 7:
+            { data.addData(yytext(), Types.OPERATOR_BINARY, yyline);
             }
             // fall through
           case 46: break;
-          case 13:
-            { data.addData(yytext(), Types.OPERATOR_END_LINE, yyline);
+          case 8:
+            { errors.addData(yytext(), Types.CHARACTER_ERROR, yyline);
             }
             // fall through
           case 47: break;
-          case 14:
-            { data.addData(yytext(), Types.OPERATOR_ASSIGNMENT, yyline);
+          case 9:
+            { data.addData(yytext(), Types.OPERATOR_PARENTHESIS, yyline);
             }
             // fall through
           case 48: break;
-          case 15:
-            { data.addData(yytext(), Types.IDENTIFIER, yyline);
+          case 10:
+            { data.addData(yytext(), Types.OPERATOR_MULTIPLY, yyline);
             }
             // fall through
           case 49: break;
-          case 16:
-            { data.addData(yytext(), Types.OPERATOR_SQ_BRACKET, yyline);
+          case 11:
+            { data.addData(yytext(), Types.OPERATOR_ADD, yyline);
             }
             // fall through
           case 50: break;
-          case 17:
-            { data.addData(yytext(), Types.OPERATOR_CONTINUE_LINE, yyline);
+          case 12:
+            { data.addData(yytext(), Types.OPERATOR_SEPARATE, yyline);
             }
             // fall through
           case 51: break;
-          case 18:
-            { data.addData(yytext(), Types.OPERATOR_BRACKET, yyline);
+          case 13:
+            { data.addData(yytext(), Types.OPERATOR_NEGATIVE, yyline);
             }
             // fall through
           case 52: break;
-          case 19:
-            { System.out.print(yytext());
+          case 14:
+            { data.addData(yytext(), Types.OPERATOR_DIVIDE, yyline);
             }
             // fall through
           case 53: break;
-          case 20:
-            { data.addData(yytext(), Types.LITERAL_STRING, yyline);
+          case 15:
+            { data.addData(yytext(), Types.LITERAL_DECIMAL, yyline);
             }
             // fall through
           case 54: break;
-          case 21:
-            { data.addData(yytext(), Types.LITERAL_CHARACTER, yyline);
+          case 16:
+            { data.addData(yytext(), Types.OPERATOR_END_LINE, yyline);
             }
             // fall through
           case 55: break;
-          case 22:
-            { data.addData(yytext(), Types.OPERATOR_INC, yyline);
+          case 17:
+            { data.addData(yytext(), Types.OPERATOR_ASSIGNMENT, yyline);
             }
             // fall through
           case 56: break;
-          case 23:
-            { data.addData(yytext(), Types.OPERATOR_DEC, yyline);
+          case 18:
+            { data.addData(yytext(), Types.IDENTIFIER, yyline);
             }
             // fall through
           case 57: break;
-          case 24:
-            { data.addData(yytext(), Types.OPERATOR_MEMORY, yyline);
+          case 19:
+            { data.addData(yytext(), Types.OPERATOR_SQ_BRACKET, yyline);
             }
             // fall through
           case 58: break;
-          case 25:
-            { data.addData(yytext(), Types.LITERAL_OCTAL, yyline);
+          case 20:
+            { data.addData(yytext(), Types.OPERATOR_CONTINUE_LINE, yyline);
             }
             // fall through
           case 59: break;
-          case 26:
-            { data.addData(yytext(), Types.RESERVED_LOOP, yyline);
+          case 21:
+            { data.addData(yytext(), Types.OPERATOR_BRACKET, yyline);
             }
             // fall through
           case 60: break;
-          case 27:
-            { data.addData(yytext(), Types.RESERVED_CONDITION, yyline);
+          case 22:
+            { System.out.print(yytext());
             }
             // fall through
           case 61: break;
-          case 28:
-            { data.addData(yytext(), Types.LITERAL_FLOAT, yyline);
+          case 23:
+            { data.addData(yytext(), Types.LITERAL_STRING, yyline);
             }
             // fall through
           case 62: break;
-          case 29:
-            { data.addData(yytext(), Types.LITERAL_EXPONENTIAL_FLOAT, yyline);
+          case 24:
+            { data.addData(yytext(), Types.LITERAL_CHARACTER, yyline);
             }
             // fall through
           case 63: break;
-          case 30:
-            { data.addData(yytext(), Types.LITERAL_HEXA, yyline);
+          case 25:
+            { data.addData(yytext(), Types.OPERATOR_INC, yyline);
             }
             // fall through
           case 64: break;
-          case 31:
-            { data.addData(yytext(), Types.RESERVED_DATA_TYPE, yyline);
+          case 26:
+            { data.addData(yytext(), Types.OPERATOR_DEC, yyline);
             }
             // fall through
           case 65: break;
-          case 32:
-            { data.addData(yytext(), Types.RESERVED_ENUM, yyline);
+          case 27:
+            { data.addData(yytext(), Types.OPERATOR_MEMORY, yyline);
             }
             // fall through
           case 66: break;
-          case 33:
-            { data.addData(yytext(), Types.RESERVED_WORDS, yyline);
+          case 28:
+            { errors.addData(yytext(), Types.COMMENTS_ERROR, yyline);
             }
             // fall through
           case 67: break;
-          case 34:
-            { data.addData(yytext(), Types.RESERVED_MODIFIER, yyline);
+          case 29:
+            { data.addData(yytext(), Types.LITERAL_OCTAL, yyline);
             }
             // fall through
           case 68: break;
+          case 30:
+            { data.addData(yytext(), Types.RESERVED_LOOP, yyline);
+            }
+            // fall through
+          case 69: break;
+          case 31:
+            { data.addData(yytext(), Types.RESERVED_CONDITION, yyline);
+            }
+            // fall through
+          case 70: break;
+          case 32:
+            { data.addData(yytext(), Types.LITERAL_FLOAT, yyline);
+            }
+            // fall through
+          case 71: break;
+          case 33:
+            { data.addData(yytext(), Types.LITERAL_EXPONENTIAL_FLOAT, yyline);
+            }
+            // fall through
+          case 72: break;
+          case 34:
+            { data.addData(yytext(), Types.LITERAL_HEXA, yyline);
+            }
+            // fall through
+          case 73: break;
+          case 35:
+            { data.addData(yytext(), Types.RESERVED_DATA_TYPE, yyline);
+            }
+            // fall through
+          case 74: break;
+          case 36:
+            { errors.addData(yytext(), Types.FLOAT_MANY_DOTS_ERROR, yyline);
+            }
+            // fall through
+          case 75: break;
+          case 37:
+            { data.addData(yytext(), Types.RESERVED_ENUM, yyline);
+            }
+            // fall through
+          case 76: break;
+          case 38:
+            { data.addData(yytext(), Types.RESERVED_WORDS, yyline);
+            }
+            // fall through
+          case 77: break;
+          case 39:
+            { data.addData(yytext(), Types.RESERVED_MODIFIER, yyline);
+            }
+            // fall through
+          case 78: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }
