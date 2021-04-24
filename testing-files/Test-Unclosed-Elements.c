@@ -1,6 +1,4 @@
-
 int main() {
-
     // Comentario guchi
 
     char charSinCerrar = 'a
@@ -20,5 +18,5 @@ int main() {
     cerrado*/
 }
    /* comentario sin cerrar
-
+     char prueba = 'a';
 
