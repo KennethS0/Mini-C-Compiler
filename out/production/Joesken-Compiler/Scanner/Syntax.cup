@@ -1,0 +1,72 @@
+package Scanner;
+
+import java_cup.runtime.Symbol;
+
+parser code
+{:
+    private Symbol s;
+
+    public void syntax_error(Symbol s){
+        this.s = s;
+    }
+
+    public Symbol getS(){
+        return this.s;
+}
+:};
+
+
+terminal IDENTIFIER,
+         // ERRORS
+         STRING_ERROR,
+         UNKNOWN_ERROR,
+         COMMENTS_ERROR,
+         CHARACTER_ERROR,
+         IDENTIFIER_ERROR,
+         FLOAT_MANY_DOTS_ERROR,
+         // RESERVED WORDS
+         RESERVED_LOOP,
+         RESERVED_ENUM,
+         RESERVED_WORDS,
+         RESERVED_MODIFIER,
+         RESERVED_CONDITION,
+         RESERVED_DATA_TYPE,
+         // LITERALS
+         LITERAL_HEXA,
+         LITERAL_FLOAT,
+         LITERAL_OCTAL,
+         LITERAL_STRING,
+         LITERAL_DECIMAL,
+         LITERAL_CHARACTER,
+         LITERAL_EXPONENTIAL_FLOAT,
+         // OPERATORS
+         OPERATOR_INC,
+         OPERATOR_DEC,
+         OPERATOR_ADD,
+         OPERATOR_DOT,
+         OPERATOR_MEMORY,
+         OPERATOR_DIVIDE,
+         OPERATOR_BINARY,
+         OPERATOR_BOOLEAN,
+         OPERATOR_BRACKET,
+         OPERATOR_END_LINE,
+         OPERATOR_NEGATIVE,
+         OPERATOR_SEPARATE,
+         OPERATOR_MULTIPLY,
+         OPERATOR_REMAINDER,
+         OPERATOR_ASSIGNMENT,
+         OPERATOR_SQ_BRACKET,
+         OPERATOR_PARENTHESIS,
+         OPERATOR_CONTINUE_LINE;
+
+non terminal INICIO, DECLARACION;
+
+start with INICIO;
+
+INICIO ::=
+    RESERVED_DATA_TYPE IDENTIFIER OPERATOR_PARENTHESIS OPERATOR_PARENTHESIS OPERATOR_BRACKET OPERATOR_BRACKET
+;
+
+DECLARACION ::=
+    RESERVED_DATA_TYPE IDENTIFIER OPERATOR_ASSIGNMENT LITERAL_DECIMAL OPERATOR_END_LINE
+;

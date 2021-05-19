@@ -55,13 +55,6 @@ public Structure getErrors() {
             e.printStackTrace();
         }
       }
-
-  /**
-   * Creates a new scanner
-   *
-   */
-  public Scanner() {
-  }
 %}
 
 //   ========= MACROS ==========
@@ -214,7 +207,7 @@ Ignored_Elements = {Comments} | {Space} | {New_Line}
 
     // Memory Operators
     "->" {data.addData(yytext(), Types.OPERATOR_MEMORY, yyline); }
-
+    "." {data.addData(yytext(), Types.OPERATOR_DOT, yyline); }
 
 // Identifiers
     {Identifier} {data.addData(yytext(), Types.IDENTIFIER, yyline);}
