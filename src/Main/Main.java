@@ -18,13 +18,7 @@ public class Main {
         String ST = new String(Files.readAllBytes(archivo2.toPath()));
         Sintax s = new Sintax(new Scanner.ScannerCup(new StringReader(ST)));
 
-        try {
-            Object result = s.parse().value;
-            System.out.println("Analisis realizado correctamente");
-        } catch (Exception ex) {
-            Symbol sym = s.getS();
-            System.out.println("Error de sintaxis. Linea: " + (sym.right + 1) + " Columna: " + (sym.left + 1) + ", Texto: \"" + sym.value + "\"");
-        }
+       s.parse();
 
         /*
         for(String argument: args){
