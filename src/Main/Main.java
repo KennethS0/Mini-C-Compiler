@@ -1,13 +1,11 @@
 package Main;
 
-import Scanner.Sintax;
-
-
-import java.awt.*;
 import java.io.File;
 import java.io.StringReader;
 import java.nio.file.Files;
-import java_cup.runtime.Symbol;
+
+import Parser.Parser;
+import Scanner.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -16,7 +14,7 @@ public class Main {
         archivo2 = new File("testing-files/ScannerTest.c");
 
         String ST = new String(Files.readAllBytes(archivo2.toPath()));
-        Sintax s = new Sintax(new Scanner.ScannerCup(new StringReader(ST)));
+        Parser s = new Parser(new Scanner(new StringReader(ST)));
 
        s.parse();
 

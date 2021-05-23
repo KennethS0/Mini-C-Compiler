@@ -7,12 +7,9 @@ import java.nio.file.Paths;
 public class GenerateFiles {
     public static void main(String[] args) throws Exception {
 
-        String rutaFlexOriginal = "src/Scanner/Regex.flex";
-        String rutaFlexCup = "src/Scanner/RegexCup.flex";
-        String[] rutaCup = {"-parser", "Sintax", "src/Scanner/Syntax.cup"};
+        String rutaFlexCup = "src/Scanner/Regex.flex";
+        String[] rutaCup = {"-parser", "Parser", "src/Parser/Syntax.cup"};
         File archivo;
-        archivo = new File(rutaFlexOriginal);
-        JFlex.Main.generate(archivo);
 
         archivo = new File(rutaFlexCup);
         JFlex.Main.generate(archivo);
@@ -20,13 +17,13 @@ public class GenerateFiles {
         java_cup.Main.main(rutaCup);
 
         Files.move(
-                Paths.get("Sintax.java"),
-                Paths.get("src/Scanner/Sintax.java")
+                Paths.get("Parser.java"),
+                Paths.get("src/Parser/Parser.java")
         );
 
         Files.move(
                 Paths.get("sym.java"),
-                Paths.get("src/Scanner/sym.java")
+                Paths.get("src/Parser/sym.java")
         );
     }
 }
