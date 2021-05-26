@@ -19,18 +19,14 @@ public class Main {
         Parser s = new Parser(scanner);
         s.parse();
 
-        System.out.println(scanner.getData());
+        System.out.println(scanner.toString());
 
         /*
         for(String argument: args){
             System.out.println("Analysis File: " + argument);
             Scanner scanner = new Scanner();
             scanner.readFile(argument);
-            System.out.println("===== Tokens: ====== \n");
-            System.out.println(scanner.getData().toString());
-            System.out.println("======== Errors:  ====== \n");
-            System.out.println(scanner.getErrors().toString());
-
+            System.out.println(scanner.toString());
         }
 
          */

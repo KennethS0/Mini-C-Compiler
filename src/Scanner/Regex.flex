@@ -44,7 +44,17 @@ import Parser.*;
             return new Symbol(type, yyline, yycolumn);
         }
 
-  public void readFile(String argv) {
+    @Override
+    public String toString() {
+        String result = "";
+
+        if (!data.isEmpty()) {result += "====== Tokens Found ======\n" + data.toString();}
+        if (!errors.isEmpty()) {result += "====== Lexical Errors Found ======\n" + errors.toString();}
+
+        return result;
+    }
+
+    public void readFile(String argv) {
 
         String encodingName = "UTF-8";
 
@@ -65,12 +75,12 @@ import Parser.*;
         }
       }
 
-  /**
-   * Creates a new scanner
-   *
-   */
-  public Scanner() {
-  }
+    /**
+     * Creates a new scanner
+     *
+     */
+    public Scanner() {
+    }
 %}
 
 //   ========= MACROS ==========

@@ -83,6 +83,7 @@ terminal STRING_ERROR,
 
 
 non terminal initial;
+non terminal valid_name;
 non terminal var_declarations, var_declaration, var_expression, var_type, var_type_declaration;
 non terminal expression;
 
@@ -100,22 +101,30 @@ var_declarations ::=
 ;
 
 var_declaration ::=
-    var_expression OPERATOR_END_LINE
+    var_expression OPERATOR_END_LINE |
+    // Errors
+    var_expression {: System.out.println("Missing ;"); :}
 ;
 
 var_expression ::=
     var_type_declaration OPERATOR_ASSIGNMENT expression |
-    var_type_declaration
+    var_type_declaration |
+    // Errors
+    var_type_declaration OPERATOR_ASSIGNMENT {: System.out.println("Missing expression after assignment"); :}
 ;
 
 var_type_declaration ::=
-    var_type IDENTIFIER
+    var_type valid_name |
+    valid_name {: System.out.println("Missing data type"); :}
 ;
 
 var_type ::=
     LONG | INT | SHORT | CHAR
 ;
 
+valid_name ::=
+    IDENTIFIER | IDENTIFIER_ERROR // Recovers from lexical error
+;
 
 // EXPRESSIONS TO EVALUATE
 expression ::=

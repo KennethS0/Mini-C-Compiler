@@ -80,6 +80,9 @@ public class Structure {
         return result;
     }
 
+    public boolean isEmpty() {
+        return symbolsTable.isEmpty();
+    }
 
     /*
     SETTERS & GETTERS
