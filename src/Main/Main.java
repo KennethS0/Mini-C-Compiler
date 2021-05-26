@@ -9,14 +9,18 @@ import Scanner.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
+
         File archivo2;
 
         archivo2 = new File("testing-files/ScannerTest.c");
 
         String ST = new String(Files.readAllBytes(archivo2.toPath()));
-        Parser s = new Parser(new Scanner(new StringReader(ST)));
+        Scanner scanner = new Scanner(new StringReader(ST));
+        Parser s = new Parser(scanner);
+        s.parse();
 
-       s.parse();
+        System.out.println(scanner.getData());
+
 
         /*
         for(String argument: args){
@@ -30,7 +34,6 @@ public class Main {
 
         }
         */
-
 
     }
 }
