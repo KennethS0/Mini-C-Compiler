@@ -59,13 +59,10 @@ terminal STRING_ERROR,
          OPERATOR_BINARY,
          OPERATOR_BRACKET,
          OPERATOR_BOOLEAN,
-         OPERATOR_PLUS_EQ,
-         OPERATOR_MINUS_EQ,
          OPERATOR_END_LINE,
          OPERATOR_NEGATIVE,
          OPERATOR_SEPARATE,
          OPERATOR_MULTIPLY,
-         OPERATOR_DIVIDE_EQ,
          OPERATOR_REMAINDER,
          OPERATOR_ASSIGNMENT,
          OPERATOR_L_SHIFT_EQ,
@@ -80,40 +77,47 @@ terminal STRING_ERROR,
          OPERATOR_BITWISE_EXCLUSIVE_OR,
          OPERATOR_COMPARATIVE,
          OPERATOR_NOT,
-         ASSIGNMENT,
-         BREAK, CASE, CHAR, CONST, CONTINUE, DEFAULT, DO, ELSE, FOR, IF , RETURN, SHORT, SWITCH, VOID, WHILE, READ, WRITE, IDENTIFIER;
-
-terminal Integer INT, LONG;
+         BREAK, CASE, CHAR, CONST, CONTINUE, DEFAULT, DO, ELSE, FOR, IF , RETURN, SHORT, SWITCH, VOID, WHILE, READ, WRITE, IDENTIFIER,
+         INT, LONG;
 
 
 
-non terminal INICIO, DECLARACION, DECLARACION1, MAIN, SENTENCIA, TYPE;
+non terminal initial;
+non terminal var_declarations, var_declaration, var_expression, var_type, var_type_declaration;
+non terminal expression;
 
+start with initial;
 
-start with INICIO;
-
-INICIO ::=
-    IDENTIFIER
+initial ::=
+    var_declarations OPERATOR_NOT |
+    OPERATOR_NOT
 ;
 
-MAIN ::=
-    TYPE IDENTIFIER OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R OPERATOR_BRACKET OPERATOR_BRACKET |
-    TYPE IDENTIFIER OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R OPERATOR_BRACKET SENTENCIA OPERATOR_BRACKET
+// VARIABLES
+var_declarations ::=
+    var_declarations var_declaration |
+    var_declaration
 ;
 
-SENTENCIA ::=
-    SENTENCIA DECLARACION |
-    DECLARACION |
-    error:e {: System.out.println(e); :}
+var_declaration ::=
+    var_expression OPERATOR_END_LINE
 ;
 
-DECLARACION ::=
-    TYPE IDENTIFIER ASSIGNMENT LITERAL_DECIMAL OPERATOR_END_LINE |
-    CONST TYPE IDENTIFIER ASSIGNMENT LITERAL_DECIMAL OPERATOR_END_LINE |
-    error OPERATOR_END_LINE {: System.out.println("Wenas"); :}
+var_expression ::=
+    var_type_declaration OPERATOR_ASSIGNMENT expression |
+    var_type_declaration
 ;
 
-TYPE ::=
-    INT | SHORT | LONG | CHAR
+var_type_declaration ::=
+    var_type IDENTIFIER
+;
 
+var_type ::=
+    LONG | INT | SHORT | CHAR
+;
+
+
+// EXPRESSIONS TO EVALUATE
+expression ::=
+    OPERATOR_DOT
 ;

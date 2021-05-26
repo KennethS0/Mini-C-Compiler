@@ -8,79 +8,75 @@ package Parser;
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int SHORT = 64;
-  public static final int OPERATOR_CONTINUE_LINE = 47;
-  public static final int IDENTIFIER = 70;
-  public static final int OPERATOR_DIVIDE_EQ = 37;
-  public static final int READ = 68;
-  public static final int CONST = 56;
-  public static final int OPERATOR_BITWISE_AND = 48;
-  public static final int CHARACTER_ERROR = 5;
-  public static final int OPERATOR_MULTIPLY_EQ = 46;
-  public static final int OPERATOR_R_SHIFT_EQ = 41;
-  public static final int ASSIGNMENT = 52;
-  public static final int OPERATOR_DIVIDE = 27;
-  public static final int OPERATOR_SQ_BRACKET = 43;
-  public static final int COMMENTS_ERROR = 4;
-  public static final int OPERATOR_COMPARATIVE = 50;
-  public static final int OPERATOR_BOOLEAN = 30;
-  public static final int RESERVED_WORDS = 10;
-  public static final int OPERATOR_BRACKET = 29;
-  public static final int OPERATOR_REMAINDER = 38;
-  public static final int OPERATOR_PARENTHESIS_R = 45;
-  public static final int OPERATOR_PARENTHESIS_L = 44;
-  public static final int LITERAL_EXPONENTIAL_FLOAT = 20;
-  public static final int LITERAL_STRING = 17;
-  public static final int OPERATOR_NOT = 51;
-  public static final int OPERATOR_DEC = 22;
+  public static final int OPERATOR_COMPARATIVE = 47;
+  public static final int SHORT = 60;
+  public static final int CONST = 52;
+  public static final int CHAR = 51;
+  public static final int OPERATOR_BITWISE_OR = 39;
   public static final int RESERVED_DATA_TYPE = 13;
-  public static final int LITERAL_DECIMAL = 18;
-  public static final int LITERAL_HEXA = 14;
-  public static final int WRITE = 69;
-  public static final int LONG = 72;
-  public static final int OPERATOR_MULTIPLY = 36;
-  public static final int STRING_ERROR = 2;
-  public static final int WHILE = 67;
-  public static final int CHAR = 55;
-  public static final int IDENTIFIER_ERROR = 6;
+  public static final int OPERATOR_SEPARATE = 33;
+  public static final int CASE = 50;
+  public static final int CONTINUE = 53;
+  public static final int OPERATOR_SQ_BRACKET = 40;
+  public static final int INT = 67;
+  public static final int OPERATOR_BRACKET = 29;
+  public static final int OPERATOR_END_LINE = 31;
+  public static final int LITERAL_EXPONENTIAL_FLOAT = 20;
   public static final int OPERATOR_BINARY = 28;
-  public static final int OPERATOR_MEMORY = 26;
-  public static final int SWITCH = 65;
-  public static final int DO = 59;
-  public static final int FOR = 61;
-  public static final int UNKNOWN_ERROR = 3;
-  public static final int VOID = 66;
-  public static final int RETURN = 63;
-  public static final int ELSE = 60;
-  public static final int BREAK = 53;
-  public static final int INT = 71;
-  public static final int OPERATOR_NEGATIVE = 34;
-  public static final int OPERATOR_ADD = 23;
-  public static final int EOF = 0;
-  public static final int DEFAULT = 58;
-  public static final int OPERATOR_DOT = 24;
-  public static final int OPERATOR_BITWISE_EXCLUSIVE_OR = 49;
-  public static final int FLOAT_MANY_DOTS_ERROR = 7;
-  public static final int OPERATOR_BITWISE_OR = 42;
-  public static final int OPERATOR_ASSIGNMENT = 39;
-  public static final int RESERVED_MODIFIER = 11;
-  public static final int OPERATOR_MINUS_EQ = 32;
-  public static final int RESERVED_CONDITION = 12;
-  public static final int error = 1;
-  public static final int OPERATOR_INC = 21;
-  public static final int CONTINUE = 57;
-  public static final int IF = 62;
+  public static final int FOR = 57;
+  public static final int WRITE = 65;
+  public static final int OPERATOR_DEC = 22;
   public static final int OPERATOR_MATH = 25;
-  public static final int RESERVED_ENUM = 9;
-  public static final int OPERATOR_PLUS_EQ = 31;
-  public static final int OPERATOR_END_LINE = 33;
+  public static final int OPERATOR_BITWISE_AND = 45;
+  public static final int OPERATOR_NEGATIVE = 32;
+  public static final int COMMENTS_ERROR = 4;
+  public static final int RESERVED_WORDS = 10;
+  public static final int OPERATOR_REMAINDER = 35;
+  public static final int LITERAL_DECIMAL = 18;
+  public static final int OPERATOR_MULTIPLY_EQ = 43;
+  public static final int OPERATOR_DIVIDE = 27;
+  public static final int RESERVED_CONDITION = 12;
+  public static final int OPERATOR_PARENTHESIS_R = 42;
+  public static final int OPERATOR_MULTIPLY = 34;
+  public static final int IF = 58;
+  public static final int OPERATOR_L_SHIFT_EQ = 37;
   public static final int LITERAL_CHARACTER = 19;
-  public static final int CASE = 54;
-  public static final int OPERATOR_SEPARATE = 35;
-  public static final int LITERAL_OCTAL = 16;
+  public static final int OPERATOR_CONTINUE_LINE = 44;
+  public static final int STRING_ERROR = 2;
+  public static final int FLOAT_MANY_DOTS_ERROR = 7;
+  public static final int OPERATOR_PARENTHESIS_L = 41;
+  public static final int EOF = 0;
+  public static final int RETURN = 59;
+  public static final int error = 1;
   public static final int RESERVED_LOOP = 8;
-  public static final int OPERATOR_L_SHIFT_EQ = 40;
+  public static final int BREAK = 49;
+  public static final int CHARACTER_ERROR = 5;
+  public static final int OPERATOR_BOOLEAN = 30;
+  public static final int VOID = 62;
   public static final int LITERAL_FLOAT = 15;
+  public static final int LITERAL_HEXA = 14;
+  public static final int SWITCH = 61;
+  public static final int OPERATOR_R_SHIFT_EQ = 38;
+  public static final int OPERATOR_NOT = 48;
+  public static final int ELSE = 56;
+  public static final int READ = 64;
+  public static final int LITERAL_STRING = 17;
+  public static final int WHILE = 63;
+  public static final int IDENTIFIER_ERROR = 6;
+  public static final int DEFAULT = 54;
+  public static final int OPERATOR_INC = 21;
+  public static final int OPERATOR_BITWISE_EXCLUSIVE_OR = 46;
+  public static final int RESERVED_MODIFIER = 11;
+  public static final int LONG = 68;
+  public static final int OPERATOR_DOT = 24;
+  public static final int UNKNOWN_ERROR = 3;
+  public static final int RESERVED_ENUM = 9;
+  public static final int OPERATOR_ADD = 23;
+  public static final int DO = 55;
+  public static final int OPERATOR_ASSIGNMENT = 36;
+  public static final int OPERATOR_MEMORY = 26;
+  public static final int LITERAL_OCTAL = 16;
+  public static final int IDENTIFIER = 66;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -113,13 +109,10 @@ public class sym {
   "OPERATOR_BINARY",
   "OPERATOR_BRACKET",
   "OPERATOR_BOOLEAN",
-  "OPERATOR_PLUS_EQ",
-  "OPERATOR_MINUS_EQ",
   "OPERATOR_END_LINE",
   "OPERATOR_NEGATIVE",
   "OPERATOR_SEPARATE",
   "OPERATOR_MULTIPLY",
-  "OPERATOR_DIVIDE_EQ",
   "OPERATOR_REMAINDER",
   "OPERATOR_ASSIGNMENT",
   "OPERATOR_L_SHIFT_EQ",
@@ -134,7 +127,6 @@ public class sym {
   "OPERATOR_BITWISE_EXCLUSIVE_OR",
   "OPERATOR_COMPARATIVE",
   "OPERATOR_NOT",
-  "ASSIGNMENT",
   "BREAK",
   "CASE",
   "CHAR",

@@ -21,7 +21,6 @@ public class Main {
 
         System.out.println(scanner.getData());
 
-
         /*
         for(String argument: args){
             System.out.println("Analysis File: " + argument);
@@ -33,7 +32,7 @@ public class Main {
             System.out.println(scanner.getErrors().toString());
 
         }
-        */
 
+         */
     }
 }

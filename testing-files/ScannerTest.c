@@ -1,1 +1,7 @@
-hola12hs121azr3
+int lamao = .;
+char xd += .;
+long var -= .;
+short var13 *= .;
+short aa /= .;
+
+!
