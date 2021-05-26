@@ -1,3 +1,4 @@
+const hola2 = 10;
 int hola = 5;
 int main() {
 

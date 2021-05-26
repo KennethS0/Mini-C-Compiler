@@ -16,6 +16,9 @@ public class GenerateFiles {
 
         java_cup.Main.main(rutaCup);
 
+        Files.delete(Paths.get("src/Parser/Parser.java"));
+        Files.delete(Paths.get("src/Parser/sym.java"));
+
         Files.move(
                 Paths.get("Parser.java"),
                 Paths.get("src/Parser/Parser.java")
