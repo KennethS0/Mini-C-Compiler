@@ -90,9 +90,9 @@ non terminal initial;
 non terminal valid_name, data_type, typed_identifier;
 non terminal var_declarations, var_declaration, var_expression;
 
-non terminal func_declarations, func_declaration, parentheses, brackets, parameter, statements;
+non terminal func_declarations, func_declaration, func_decl_parentheses, statement, func_call_parentheses, brackets, parameter, statements;
 
-non terminal expression;
+non terminal expression, expressions;
 
 non terminal List<Error> errors;
 
@@ -100,8 +100,7 @@ start with initial;
 
 initial ::=
     var_declarations func_declarations |
-    func_declarations |
-    error:e {: System.out.println("se caio"); :}
+    func_declarations
 ;
 
 // VARIABLES
@@ -126,11 +125,6 @@ var_expression ::=
     typed_identifier OPERATOR_ASSIGNMENT {: System.out.println("Missing expression after assignment"); :}
 ;
 
-// EXPRESSIONS TO EVALUATE
-expression ::=
-    OPERATOR_DOT
-;
-
 // FUNCTIONS
 func_declarations ::=
     func_declarations func_declaration |
@@ -138,10 +132,10 @@ func_declarations ::=
 ;
 
 func_declaration ::=
-    typed_identifier parentheses brackets  |
-    typed_identifier parentheses OPERATOR_END_LINE |
-    VOID valid_name parentheses brackets |
-    VOID valid_name parentheses OPERATOR_END_LINE
+    typed_identifier func_decl_parentheses brackets  |
+    typed_identifier func_decl_parentheses OPERATOR_END_LINE |
+    VOID valid_name func_decl_parentheses brackets |
+    VOID valid_name func_decl_parentheses OPERATOR_END_LINE
 ;
 
 brackets ::=
@@ -151,15 +145,31 @@ brackets ::=
 ;
 
 statements ::=
-    statements OPERATOR_NOT |
-    OPERATOR_NOT
+    statements statement |
+    statement
 ;
 
-parentheses ::=
+
+statement ::=
+    valid_name func_call_parentheses OPERATOR_END_LINE
+;
+
+func_call_parentheses ::=
+    OPERATOR_PARENTHESIS_L expressions OPERATOR_PARENTHESIS_R |
+    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R
+;
+
+
+func_decl_parentheses ::=
     OPERATOR_PARENTHESIS_L parameter OPERATOR_PARENTHESIS_R |
     OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R |
     OPERATOR_PARENTHESIS_L {:  :} |
     OPERATOR_PARENTHESIS_R {:  :}
+;
+
+expressions ::=
+    expressions OPERATOR_SEPARATE expression |
+    expression
 ;
 
 parameter ::=
@@ -179,4 +189,8 @@ valid_name ::=
 typed_identifier ::=
     data_type valid_name |
     valid_name {: System.out.println("Missing data type"); :}
+;
+
+expression ::=
+    OPERATOR_DOT
 ;
