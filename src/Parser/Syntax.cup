@@ -1,5 +1,7 @@
 package Parser; 
-import java_cup.runtime.Symbol;
+import java.util.*;
+import java_cup.runtime.*;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 
 parser code
 {:
@@ -57,7 +59,8 @@ terminal STRING_ERROR,
          OPERATOR_MEMORY,
          OPERATOR_DIVIDE,
          OPERATOR_BINARY,
-         OPERATOR_BRACKET,
+         OPERATOR_BRACKET_L,
+         OPERATOR_BRACKET_R,
          OPERATOR_BOOLEAN,
          OPERATOR_END_LINE,
          OPERATOR_NEGATIVE,
@@ -68,7 +71,8 @@ terminal STRING_ERROR,
          OPERATOR_L_SHIFT_EQ,
          OPERATOR_R_SHIFT_EQ,
          OPERATOR_BITWISE_OR,
-         OPERATOR_SQ_BRACKET,
+         OPERATOR_SQ_BRACKET_L,
+         OPERATOR_SQ_BRACKET_R,
          OPERATOR_PARENTHESIS_L,
          OPERATOR_PARENTHESIS_R,
          OPERATOR_MULTIPLY_EQ,
@@ -83,15 +87,21 @@ terminal STRING_ERROR,
 
 
 non terminal initial;
-non terminal valid_name;
-non terminal var_declarations, var_declaration, var_expression, var_type, var_type_declaration;
+non terminal valid_name, data_type, typed_identifier;
+non terminal var_declarations, var_declaration, var_expression;
+
+non terminal func_declarations, func_declaration, parentheses, brackets, parameter, statements;
+
 non terminal expression;
+
+non terminal List<Error> errors;
 
 start with initial;
 
 initial ::=
-    var_declarations OPERATOR_NOT |
-    OPERATOR_NOT
+    var_declarations func_declarations |
+    func_declarations |
+    error:e {: System.out.println("se caio"); :}
 ;
 
 // VARIABLES
@@ -107,18 +117,58 @@ var_declaration ::=
 ;
 
 var_expression ::=
-    var_type_declaration OPERATOR_ASSIGNMENT expression |
-    var_type_declaration |
+    typed_identifier OPERATOR_ASSIGNMENT expression |
+    typed_identifier |
+    CONST typed_identifier |
+    CONST typed_identifier OPERATOR_ASSIGNMENT expression |
+
     // Errors
-    var_type_declaration OPERATOR_ASSIGNMENT {: System.out.println("Missing expression after assignment"); :}
+    typed_identifier OPERATOR_ASSIGNMENT {: System.out.println("Missing expression after assignment"); :}
 ;
 
-var_type_declaration ::=
-    var_type valid_name |
-    valid_name {: System.out.println("Missing data type"); :}
+// EXPRESSIONS TO EVALUATE
+expression ::=
+    OPERATOR_DOT
 ;
 
-var_type ::=
+// FUNCTIONS
+func_declarations ::=
+    func_declarations func_declaration |
+    func_declaration
+;
+
+func_declaration ::=
+    typed_identifier parentheses brackets  |
+    typed_identifier parentheses OPERATOR_END_LINE |
+    VOID valid_name parentheses brackets |
+    VOID valid_name parentheses OPERATOR_END_LINE
+;
+
+brackets ::=
+    OPERATOR_BRACKET_L var_declarations statements OPERATOR_BRACKET_R |
+    OPERATOR_BRACKET_L statements OPERATOR_BRACKET_R |
+    OPERATOR_BRACKET_L OPERATOR_BRACKET_R
+;
+
+statements ::=
+    statements OPERATOR_NOT |
+    OPERATOR_NOT
+;
+
+parentheses ::=
+    OPERATOR_PARENTHESIS_L parameter OPERATOR_PARENTHESIS_R |
+    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R |
+    OPERATOR_PARENTHESIS_L {:  :} |
+    OPERATOR_PARENTHESIS_R {:  :}
+;
+
+parameter ::=
+    parameter OPERATOR_SEPARATE typed_identifier |
+    typed_identifier
+;
+
+// COMMON PRODUCTIONS
+data_type ::=
     LONG | INT | SHORT | CHAR
 ;
 
@@ -126,7 +176,7 @@ valid_name ::=
     IDENTIFIER | IDENTIFIER_ERROR // Recovers from lexical error
 ;
 
-// EXPRESSIONS TO EVALUATE
-expression ::=
-    OPERATOR_DOT
+typed_identifier ::=
+    data_type valid_name |
+    valid_name {: System.out.println("Missing data type"); :}
 ;

@@ -120,7 +120,7 @@ Float_Many_Dots = {Flotante}(\.{Digit}*)+
 Identifier_Error = [0-9]+{Identifier} | (([0-9]|{Identifier})*{Not_English}+([0-9]|{Identifier})*)*
 
 // Elements to ignore
-Ignored_Elements = {Comments} | [ \t\f ] | {New_Line}
+Ignored_Elements = {Comments} | [ \f\t ] | {New_Line}
 
 %%
 // Elements to ignore
@@ -286,14 +286,18 @@ Ignored_Elements = {Comments} | [ \t\f ] | {New_Line}
     ")" { data.addData(yytext(), Types.OPERATOR_PARENTHESIS, yyline);
            return new Symbol(sym.OPERATOR_PARENTHESIS_R, yycolumn, yyline, yytext()); }
 
-    "["|
+    "[" {data.addData(yytext(), Types.OPERATOR_SQ_BRACKET, yyline);
+               return new Symbol(sym.OPERATOR_SQ_BRACKET_L, yycolumn, yyline, yytext());
+           }
     "]" {data.addData(yytext(), Types.OPERATOR_SQ_BRACKET, yyline);
-        return new Symbol(sym.OPERATOR_SQ_BRACKET, yycolumn, yyline, yytext());
+        return new Symbol(sym.OPERATOR_SQ_BRACKET_R, yycolumn, yyline, yytext());
     }
 
-    "{"|
+    "{" {data.addData(yytext(), Types.OPERATOR_BRACKET, yyline);
+               return new Symbol(sym.OPERATOR_BRACKET_L, yycolumn, yyline, yytext());
+           }
     "}" {data.addData(yytext(), Types.OPERATOR_BRACKET, yyline);
-        return new Symbol(sym.OPERATOR_BRACKET, yycolumn, yyline, yytext());
+        return new Symbol(sym.OPERATOR_BRACKET_R, yycolumn, yyline, yytext());
     }
 
     // Binary Operators
