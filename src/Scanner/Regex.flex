@@ -164,7 +164,8 @@ Ignored_Elements = {Comments} | [ \f\t ] | {New_Line}
           return new Symbol(sym.CASE, yycolumn, yyline, yytext());
     }
     "else" { data.addData(yytext(), Types.RESERVED_CONDITION, yyline);
-          return new Symbol(sym.ELSE, yycolumn, yyline, yytext()); }
+          return new Symbol(sym.ELSE, yycolumn, yyline, yytext());
+    }
 
     // Loops
     "while" { data.addData(yytext(), Types.RESERVED_LOOP, yyline);
@@ -262,15 +263,17 @@ Ignored_Elements = {Comments} | [ \f\t ] | {New_Line}
 
     // Not accepted by the pars
     "!="|
-    "?"|
+    "?" { data.addData(yytext(), Types.OPERATOR_BOOLEAN, yyline);
+                return new Symbol(sym.OPERATOR_BOOLEAN, yycolumn, yyline, yytext());
+         }
     ":" { data.addData(yytext(), Types.OPERATOR_BOOLEAN, yyline);
-        return new Symbol(sym.OPERATOR_BOOLEAN, yycolumn, yyline, yytext());
-     }
+                return new Symbol(sym.OPERATOR_COLON, yycolumn, yyline, yytext());
+         }
 
     //
     //--------------------------------------------------------//
     "=" { data.addData(yytext(), Types.OPERATOR_ASSIGNMENT, yyline);
-              return new Symbol(sym.OPERATOR_ASSIGNMENT, yycolumn, yyline, yytext()); }
+              return new Symbol(sym.OPERATOR_ASSIGNMENT_EQUALS, yycolumn, yyline, yytext()); }
         "+=" { data.addData(yytext(), Types.OPERATOR_ASSIGNMENT, yyline);
                return new Symbol(sym.OPERATOR_ASSIGNMENT, yycolumn, yyline, yytext()); }
         "-=" { data.addData(yytext(), Types.OPERATOR_ASSIGNMENT, yyline);

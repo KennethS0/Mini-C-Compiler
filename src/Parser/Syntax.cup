@@ -68,6 +68,7 @@ terminal STRING_ERROR,
          OPERATOR_MULTIPLY,
          OPERATOR_REMAINDER,
          OPERATOR_ASSIGNMENT,
+         OPERATOR_ASSIGNMENT_EQUALS,
          OPERATOR_L_SHIFT_EQ,
          OPERATOR_R_SHIFT_EQ,
          OPERATOR_BITWISE_OR,
@@ -81,18 +82,29 @@ terminal STRING_ERROR,
          OPERATOR_BITWISE_EXCLUSIVE_OR,
          OPERATOR_COMPARATIVE,
          OPERATOR_NOT,
+         OPERATOR_COLON,
          BREAK, CASE, CHAR, CONST, CONTINUE, DEFAULT, DO, ELSE, FOR, IF , RETURN, SHORT, SWITCH, VOID, WHILE, READ, WRITE, IDENTIFIER,
          INT, LONG;
 
 
 
 non terminal initial;
-non terminal valid_name, data_type, typed_identifier;
-non terminal var_declarations, var_declaration, var_expression;
+non terminal valid_name, data_type, typed_identifier, assignments;
+non terminal var_declarations, var_declaration, var_expression, var_list_brackets;
 
 non terminal func_declarations, func_declaration, func_decl_parentheses, statement, func_call_parentheses, brackets, parameter, statements;
 
-non terminal expression, expressions;
+non terminal expression, expressions, list_expression;
+
+non terminal switch, if, if_else, else;
+
+non terminal case_expressions, case_expression, comparison;
+
+non terminal switch_data_type, literals;
+
+non terminal while_expression, for_expression, if_expression, else_expression, expression_body;
+
+non terminal for_variable, for_condition;
 
 non terminal List<Error> errors;
 
@@ -101,6 +113,26 @@ start with initial;
 initial ::=
     var_declarations func_declarations |
     func_declarations
+;
+
+for_expression ::=
+    FOR OPERATOR_PARENTHESIS_L for_variable OPERATOR_END_LINE for_condition expression OPERATOR_PARENTHESIS_R expression_body
+;
+
+for_variable ::=
+    data_type valid_name OPERATOR_ASSIGNMENT_EQUALS expression |
+    valid_name OPERATOR_ASSIGNMENT_EQUALS expression |
+    valid_name
+;
+
+for_condition::=
+    comparison OPERATOR_END_LINE |
+    valid_name OPERATOR_ASSIGNMENT_EQUALS expression OPERATOR_END_LINE
+;
+
+comparison ::=
+    valid_name OPERATOR_COMPARATIVE valid_name |
+    valid_name OPERATOR_COMPARATIVE LITERAL_DECIMAL
 ;
 
 // VARIABLES
@@ -116,14 +148,21 @@ var_declaration ::=
 ;
 
 var_expression ::=
-    typed_identifier OPERATOR_ASSIGNMENT expression |
+    typed_identifier OPERATOR_ASSIGNMENT_EQUALS expression |
     typed_identifier |
     CONST typed_identifier |
-    CONST typed_identifier OPERATOR_ASSIGNMENT expression |
-
+    CONST typed_identifier OPERATOR_ASSIGNMENT_EQUALS expression |
+    typed_identifier var_list_brackets |
     // Errors
-    typed_identifier OPERATOR_ASSIGNMENT {: System.out.println("Missing expression after assignment"); :}
+        typed_identifier OPERATOR_ASSIGNMENT_EQUALS {: System.out.println("Missing expression after assignment"); :}
 ;
+
+var_list_brackets ::=
+    OPERATOR_SQ_BRACKET_L LITERAL_DECIMAL OPERATOR_SQ_BRACKET_R OPERATOR_ASSIGNMENT_EQUALS list_expression |
+    OPERATOR_SQ_BRACKET_L LITERAL_DECIMAL OPERATOR_SQ_BRACKET_R |
+    OPERATOR_SQ_BRACKET_L OPERATOR_SQ_BRACKET_R OPERATOR_ASSIGNMENT_EQUALS list_expression
+;
+
 
 // FUNCTIONS
 func_declarations ::=
@@ -144,6 +183,11 @@ brackets ::=
     OPERATOR_BRACKET_L OPERATOR_BRACKET_R
 ;
 
+expression_body ::=
+    brackets |
+    OPERATOR_BRACKET_L var_declarations OPERATOR_BRACKET_R
+;
+
 statements ::=
     statements statement |
     statement
@@ -151,7 +195,12 @@ statements ::=
 
 
 statement ::=
-    valid_name func_call_parentheses OPERATOR_END_LINE
+    valid_name func_call_parentheses OPERATOR_END_LINE |
+    while_expression |
+    for_expression |
+    switch |
+    if_expression |
+    else_expression
 ;
 
 func_call_parentheses ::=
@@ -174,8 +223,56 @@ expressions ::=
 
 parameter ::=
     parameter OPERATOR_SEPARATE typed_identifier |
-    typed_identifier
+    typed_identifier |
+    CONST typed_identifier
 ;
+
+list_expression ::=
+    OPERATOR_BRACKET_L expressions OPERATOR_BRACKET_R |
+    OPERATOR_BRACKET_L OPERATOR_BRACKET_R
+;
+
+assignments ::=
+    OPERATOR_ASSIGNMENT | OPERATOR_ASSIGNMENT_EQUALS
+;
+
+// El swith puede contener cero o mas cases, y cero o un default
+switch ::=
+
+    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
+    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
+    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions OPERATOR_BRACKET_R |
+    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L OPERATOR_BRACKET_R |
+    SWITCH {: System.out.println("switch incompleto"); :}
+;
+
+//Esto se utiliza para poder tener uno o mas cases dentro del swtich
+case_expressions ::=
+    case_expressions case_expression |
+    case_expression
+;
+
+// Esto seria la expresion case del switch, la cual tiene como estructura minima el case, un dato entero o caracter y dos puntos.
+// tambien puede traer una expresion y/o break
+case_expression ::=
+    CASE switch_data_type OPERATOR_COLON expression BREAK OPERATOR_END_LINE |
+    CASE switch_data_type OPERATOR_COLON BREAK OPERATOR_END_LINE |
+    CASE switch_data_type OPERATOR_COLON expression |
+    CASE switch_data_type OPERATOR_COLON
+;
+
+// Estos son los tipos de datos que maneja el switch, los cuales son numeros decimales y caracteres
+switch_data_type ::=
+    LITERAL_DECIMAL |
+    LITERAL_CHARACTER
+;
+
+
+// WHILE
+while_expression ::=
+    WHILE OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R expression_body
+;
+
 
 // COMMON PRODUCTIONS
 data_type ::=
@@ -191,6 +288,18 @@ typed_identifier ::=
     valid_name {: System.out.println("Missing data type"); :}
 ;
 
+// Construccion del if
+
+if_expression ::=
+    IF OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R expression_body |
+    ELSE IF OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R expression_body
+;
+
+else_expression ::=
+    ELSE expression_body
+;
+
 expression ::=
     OPERATOR_DOT
 ;
+
