@@ -199,8 +199,7 @@ statement ::=
     while_expression |
     for_expression |
     switch |
-    if_expression |
-    else_expression
+    if_expression
 ;
 
 func_call_parentheses ::=
@@ -291,11 +290,12 @@ typed_identifier ::=
 // Construccion del if
 
 if_expression ::=
-    IF OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R expression_body |
-    ELSE IF OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R expression_body
+    IF OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R expression_body else_expression |
+    IF OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R expression_body
 ;
 
 else_expression ::=
+    ELSE if_expression |
     ELSE expression_body
 ;
 

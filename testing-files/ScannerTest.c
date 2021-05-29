@@ -17,25 +17,29 @@ void lamaooo( const int xd, long oaksdoka12akmsd) {
 
     }
 
+    else if (.) {
+
+    }
+
     else {
+        while (.) {
+                int a = .;
+                long a = .;
+
+                for(int m=.;i<i;.){int a =.; }
+                for(m=.;i<i;.){int a =.; }
+                for(m=.;i==i;.){int a =.; }
+                for(int m=.;i<i;.){int a =.; }
+                for(int m=.;i==i;.){int a =.; }
+                for(int m=.;i >= i;.){}
+
+                asdalo(.,.,.,.,.);
+                //a+=42;
+
+            }
 
     }
 
-    while (.) {
-        int a = .;
-        long a = .;
-
-        for(int m=.;i<i;.){int a =.; }
-        for(m=.;i<i;.){int a =.; }
-        for(m=.;i==i;.){int a =.; }
-        for(int m=.;i<i;.){int a =.; }
-        for(int m=.;.;.){int a =.; }
-        for(int m=.;.;.){}
-
-        asdalo(.,.,.,.,.);
-        //a+=42;
-
-    }
 
 
 
