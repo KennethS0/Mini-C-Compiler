@@ -1,48 +1,20 @@
 int listtest[12];
 
 void lamaooo( const int xd, long oaksdoka12akmsd) {
-    const int var = .;
-    int listtest[45] = {., .};
+    for(int m=(0) + (12 + 129 / 1389 + "lamaooo" - 2) / 21;m<20;n){
+        for(int m=(8*8+(2*0));m=20;m){
+            int m;
+            char comida[12];
+            comida = "No me la conteiner";
 
-
-    switch('1') {
-        case '1':
-            .
-            break;
-        default:
-            .
+            m = {13,21,13 ,3,1,3 ,1};
+        }
     }
-
-    if (.) {
-
-    }
-
-    else if (.) {
-
-    }
-
-    else {
-        while (.) {
-                int a = .;
-                long a = .;
-
-                for(int m=.;i<i;.){int a =.; }
-                for(m=.;i<i;.){int a =.; }
-                for(m=.;i==i;.){int a =.; }
-                for(int m=.;i<i;.){int a =.; }
-                for(int m=.;i==i;.){int a =.; }
-                for(int m=.;i >= i;.){}
-
-                asdalo(.,.,.,.,.);
-                //a+=42;
-
-            }
-
-    }
-
-
-
-
-    macacooo(.,.,.,.,.);
-    macaquiño();
+    for(int m=(8*8+(2*0));m=20;m){}
+    for(int m=0;m<20;m){}
+    for(m=0;m<20;m++){}
+    for(m;m<20;m++){}
+    for(m;m=20;m){}
+//    for(;;){}
+//    for(;;);
 }

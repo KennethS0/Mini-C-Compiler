@@ -90,23 +90,26 @@ terminal STRING_ERROR,
 
 non terminal initial;
 non terminal valid_name, data_type, typed_identifier, assignments;
-non terminal var_declarations, var_declaration, var_expression, var_list_brackets;
+non terminal var_declarations, var_declaration, var_expression, var_list_brackets, literals, valid_statement, inc_dec, math;
 
 non terminal func_declarations, func_declaration, func_decl_parentheses, statement, func_call_parentheses, brackets, parameter, statements;
 
 non terminal expression, expressions, list_expression;
 
-non terminal switch, if, if_else, else;
+non terminal switch;
 
 non terminal case_expressions, case_expression, comparison;
 
-non terminal switch_data_type, literals;
+non terminal switch_data_type;
 
 non terminal while_expression, for_expression, if_expression, else_expression, expression_body;
 
-non terminal for_variable, for_condition;
+non terminal for_variable, for_condition, loop_words;
 
 non terminal List<Error> errors;
+
+precedence left OPERATOR_ADD, OPERATOR_NEGATIVE;
+precedence left OPERATOR_MULTIPLY, OPERATOR_DIVIDE, OPERATOR_REMAINDER;
 
 start with initial;
 
@@ -116,7 +119,7 @@ initial ::=
 ;
 
 for_expression ::=
-    FOR OPERATOR_PARENTHESIS_L for_variable OPERATOR_END_LINE for_condition expression OPERATOR_PARENTHESIS_R expression_body
+    FOR OPERATOR_PARENTHESIS_L for_variable  OPERATOR_END_LINE  for_condition expression OPERATOR_PARENTHESIS_R expression_body
 ;
 
 for_variable ::=
@@ -126,8 +129,8 @@ for_variable ::=
 ;
 
 for_condition::=
-    comparison OPERATOR_END_LINE |
-    valid_name OPERATOR_ASSIGNMENT_EQUALS expression OPERATOR_END_LINE
+    comparison  OPERATOR_END_LINE  |
+    valid_name OPERATOR_ASSIGNMENT_EQUALS expression  OPERATOR_END_LINE 
 ;
 
 comparison ::=
@@ -142,25 +145,21 @@ var_declarations ::=
 ;
 
 var_declaration ::=
-    var_expression OPERATOR_END_LINE |
+    var_expression  OPERATOR_END_LINE  |
     // Errors
     var_expression {: System.out.println("Missing ;"); :}
 ;
 
 var_expression ::=
-    typed_identifier OPERATOR_ASSIGNMENT_EQUALS expression |
     typed_identifier |
     CONST typed_identifier |
-    CONST typed_identifier OPERATOR_ASSIGNMENT_EQUALS expression |
     typed_identifier var_list_brackets |
-    // Errors
-        typed_identifier OPERATOR_ASSIGNMENT_EQUALS {: System.out.println("Missing expression after assignment"); :}
+    CONST typed_identifier var_list_brackets
 ;
 
 var_list_brackets ::=
-    OPERATOR_SQ_BRACKET_L LITERAL_DECIMAL OPERATOR_SQ_BRACKET_R OPERATOR_ASSIGNMENT_EQUALS list_expression |
     OPERATOR_SQ_BRACKET_L LITERAL_DECIMAL OPERATOR_SQ_BRACKET_R |
-    OPERATOR_SQ_BRACKET_L OPERATOR_SQ_BRACKET_R OPERATOR_ASSIGNMENT_EQUALS list_expression
+    OPERATOR_SQ_BRACKET_L OPERATOR_SQ_BRACKET_R
 ;
 
 
@@ -172,9 +171,9 @@ func_declarations ::=
 
 func_declaration ::=
     typed_identifier func_decl_parentheses brackets  |
-    typed_identifier func_decl_parentheses OPERATOR_END_LINE |
+    typed_identifier func_decl_parentheses  OPERATOR_END_LINE  |
     VOID valid_name func_decl_parentheses brackets |
-    VOID valid_name func_decl_parentheses OPERATOR_END_LINE
+    VOID valid_name func_decl_parentheses  OPERATOR_END_LINE 
 ;
 
 brackets ::=
@@ -193,20 +192,26 @@ statements ::=
     statement
 ;
 
-
 statement ::=
-    valid_name func_call_parentheses OPERATOR_END_LINE |
+    valid_statement OPERATOR_END_LINE |
     while_expression |
     for_expression |
     switch |
-    if_expression
+    if_expression |
+    valid_name assignments expression OPERATOR_END_LINE |
+    valid_name OPERATOR_ASSIGNMENT_EQUALS list_expression OPERATOR_END_LINE|
+    expression_body
+;
+
+valid_statement ::=
+    valid_name func_call_parentheses |
+    valid_name inc_dec
 ;
 
 func_call_parentheses ::=
     OPERATOR_PARENTHESIS_L expressions OPERATOR_PARENTHESIS_R |
     OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R
 ;
-
 
 func_decl_parentheses ::=
     OPERATOR_PARENTHESIS_L parameter OPERATOR_PARENTHESIS_R |
@@ -254,8 +259,8 @@ case_expressions ::=
 // Esto seria la expresion case del switch, la cual tiene como estructura minima el case, un dato entero o caracter y dos puntos.
 // tambien puede traer una expresion y/o break
 case_expression ::=
-    CASE switch_data_type OPERATOR_COLON expression BREAK OPERATOR_END_LINE |
-    CASE switch_data_type OPERATOR_COLON BREAK OPERATOR_END_LINE |
+    CASE switch_data_type OPERATOR_COLON expression BREAK  OPERATOR_END_LINE  |
+    CASE switch_data_type OPERATOR_COLON BREAK  OPERATOR_END_LINE  |
     CASE switch_data_type OPERATOR_COLON expression |
     CASE switch_data_type OPERATOR_COLON
 ;
@@ -300,6 +305,26 @@ else_expression ::=
 ;
 
 expression ::=
-    OPERATOR_DOT
+    OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R |
+    OPERATOR_NEGATIVE expression |
+    literals |
+    expression math expression |
+    valid_name |
+    valid_statement
 ;
 
+inc_dec ::=
+    OPERATOR_INC | OPERATOR_DEC
+;
+
+math ::=
+    OPERATOR_ADD | OPERATOR_NEGATIVE | OPERATOR_MULTIPLY | OPERATOR_DIVIDE | OPERATOR_REMAINDER
+;
+
+literals ::=
+    LITERAL_HEXA | LITERAL_OCTAL | LITERAL_STRING | LITERAL_DECIMAL | LITERAL_CHARACTER
+;
+
+loop_words ::=
+    BREAK | CONTINUE
+;
