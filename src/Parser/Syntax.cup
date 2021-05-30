@@ -96,7 +96,7 @@ non terminal func_declarations, func_declaration, func_decl_parentheses, stateme
 
 non terminal expression, expressions, list_expression;
 
-non terminal switch;
+non terminal switch, read_write;
 
 non terminal case_expressions, case_expression, comparison;
 
@@ -104,9 +104,11 @@ non terminal switch_data_type;
 
 non terminal while_expression, for_expression, if_expression, else_expression, expression_body;
 
-non terminal for_variable, for_condition, loop_words;
+non terminal for_variable, for_condition, loop_words, for_loop;
 
 non terminal List<Error> errors;
+
+precedence left OPERATOR_COMPARATIVE;
 
 precedence left OPERATOR_ADD, OPERATOR_NEGATIVE;
 precedence left OPERATOR_MULTIPLY, OPERATOR_DIVIDE, OPERATOR_REMAINDER;
@@ -118,24 +120,27 @@ initial ::=
     func_declarations
 ;
 
+for_loop ::=
+    for_expression expression_body |
+    for_expression OPERATOR_END_LINE
+;
+
 for_expression ::=
-    FOR OPERATOR_PARENTHESIS_L for_variable  OPERATOR_END_LINE  for_condition expression OPERATOR_PARENTHESIS_R expression_body
+    FOR OPERATOR_PARENTHESIS_L for_variable expression OPERATOR_END_LINE expression OPERATOR_PARENTHESIS_R |
+    FOR OPERATOR_PARENTHESIS_L for_variable valid_name assignments expression OPERATOR_END_LINE expression OPERATOR_PARENTHESIS_R |
+    FOR OPERATOR_PARENTHESIS_L for_variable OPERATOR_END_LINE expression OPERATOR_PARENTHESIS_R |
+    FOR OPERATOR_PARENTHESIS_L for_variable expression OPERATOR_END_LINE OPERATOR_PARENTHESIS_R |
+    FOR OPERATOR_PARENTHESIS_L for_variable valid_name assignments expression OPERATOR_END_LINE OPERATOR_PARENTHESIS_R |
+    FOR OPERATOR_PARENTHESIS_L for_variable OPERATOR_END_LINE OPERATOR_PARENTHESIS_R
+
+
 ;
 
 for_variable ::=
-    data_type valid_name OPERATOR_ASSIGNMENT_EQUALS expression |
-    valid_name OPERATOR_ASSIGNMENT_EQUALS expression |
-    valid_name
-;
-
-for_condition::=
-    comparison  OPERATOR_END_LINE  |
-    valid_name OPERATOR_ASSIGNMENT_EQUALS expression  OPERATOR_END_LINE 
-;
-
-comparison ::=
-    valid_name OPERATOR_COMPARATIVE valid_name |
-    valid_name OPERATOR_COMPARATIVE LITERAL_DECIMAL
+    data_type valid_name OPERATOR_ASSIGNMENT_EQUALS expression OPERATOR_END_LINE|
+    valid_name OPERATOR_ASSIGNMENT_EQUALS expression OPERATOR_END_LINE|
+    valid_name OPERATOR_END_LINE |
+    OPERATOR_END_LINE
 ;
 
 // VARIABLES
@@ -195,12 +200,22 @@ statements ::=
 statement ::=
     valid_statement OPERATOR_END_LINE |
     while_expression |
-    for_expression |
+    for_loop |
     switch |
     if_expression |
     valid_name assignments expression OPERATOR_END_LINE |
     valid_name OPERATOR_ASSIGNMENT_EQUALS list_expression OPERATOR_END_LINE|
-    expression_body
+    expression_body |
+    loop_words OPERATOR_END_LINE |
+
+    // Read | Write
+    read_write OPERATOR_END_LINE
+;
+
+read_write ::=
+   READ OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R |
+   READ OPERATOR_PARENTHESIS_L valid_name OPERATOR_PARENTHESIS_R |
+   WRITE OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R
 ;
 
 valid_statement ::=
@@ -305,10 +320,19 @@ else_expression ::=
 ;
 
 expression ::=
-    OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R |
+    // LOGICAL
+    OPERATOR_NOT expression |
+    expression OPERATOR_COMPARATIVE expression |
+
+    // MATH
     OPERATOR_NEGATIVE expression |
-    literals |
     expression math expression |
+
+
+    OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R |
+
+    // FINAL
+    literals |
     valid_name |
     valid_statement
 ;

@@ -153,6 +153,8 @@ Ignored_Elements = {Comments} | [ \f\t ] | {New_Line}
           return new Symbol(sym.RETURN, yycolumn, yyline, yytext());
     }
 
+
+
     // Conditional and jumps
     "auto"|
     "goto" { data.addData(yytext(), Types.RESERVED_CONDITION, yyline);
@@ -256,13 +258,13 @@ Ignored_Elements = {Comments} | [ \f\t ] | {New_Line}
     "<="|
     "<"|
     "||"|
+    "!="|
     "&&" { data.addData(yytext(), Types.OPERATOR_BOOLEAN, yyline);
                 return new Symbol(sym.OPERATOR_COMPARATIVE, yycolumn, yyline, yytext());}
     "!" { data.addData(yytext(), Types.OPERATOR_BOOLEAN, yyline);
                         return new Symbol(sym.OPERATOR_NOT, yycolumn, yyline, yytext());}
 
     // Not accepted by the pars
-    "!="|
     "?" { data.addData(yytext(), Types.OPERATOR_BOOLEAN, yyline);
                 return new Symbol(sym.OPERATOR_BOOLEAN, yycolumn, yyline, yytext());
          }
@@ -321,10 +323,18 @@ Ignored_Elements = {Comments} | [ \f\t ] | {New_Line}
         return new Symbol(sym.OPERATOR_DOT, yycolumn, yyline, yytext());
     }
 
+    // READ AND WRITE FUNCTIONS
+        "read" { data.addData(yytext(), Types.IDENTIFIER, yyline);
+                return new Symbol(sym.READ, yycolumn, yyline, yytext()); }
+        "write" {data.addData(yytext(), Types.IDENTIFIER, yyline);
+                return new Symbol(sym.WRITE, yycolumn, yyline, yytext());}
+
 // Identifiers
     {Identifier} {data.addData(yytext(), Types.IDENTIFIER, yyline);
         return new Symbol(sym.IDENTIFIER, yycolumn, yyline, yytext());
     }
+
+
 
 
 // Literals
