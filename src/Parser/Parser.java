@@ -8,6 +8,7 @@ package Parser;
 import java.util.*;
 import java_cup.runtime.*;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import Parser.Error.*;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -570,17 +571,13 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
 
-    /*
-    private Symbol s;
 
-    public void syntax_error(Symbol s){
-        this.s = s;
-    }
+    private Symbol s;
 
     public Symbol getS(){
         return this.s;
     }
-    */
+
      public void syntax_error(Symbol s){
         System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
@@ -588,6 +585,20 @@ public class Parser extends java_cup.runtime.lr_parser {
     public void unrecovered_syntax_error(Symbol s){
         System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
+
+    private ArrayList<SyntaxError> syntaxerrors = new ArrayList<SyntaxError>();
+
+    @Override
+    public String toString() {
+        String result = "";
+
+        for (int i = 0; i < syntaxerrors.size(); i++) {
+            result += syntaxerrors.get(i).toString();
+        }
+
+        return result;
+    }
+
 
 
 /** Cup generated class to encapsulate user supplied action code.*/
@@ -785,7 +796,7 @@ class CUP$Parser$actions {
           case 18: // var_declaration ::= var_expression 
             {
               Object RESULT =null;
-		 System.out.println("Missing ;"); 
+              syntaxerrors.add(new SyntaxError(ErrorTypes.MISSING_SEMICOLON, 1, 1));
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("var_declaration",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

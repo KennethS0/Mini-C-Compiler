@@ -3,19 +3,17 @@ import java.util.*;
 import java_cup.runtime.*;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 
+import Parser.Error.*;
+
 parser code
 {:
-    /*
-    private Symbol s;
 
-    public void syntax_error(Symbol s){
-        this.s = s;
-    }
+    private Symbol s;
 
     public Symbol getS(){
         return this.s;
     }
-    */
+
      public void syntax_error(Symbol s){
         System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
@@ -23,6 +21,20 @@ parser code
     public void unrecovered_syntax_error(Symbol s){
         System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
+
+    private ArrayList<SyntaxError> syntaxerrors = new ArrayList<SyntaxError>();
+
+    @Override
+    public String toString() {
+        String result = "";
+
+        for (int i = 0; i < syntaxerrors.size(); i++) {
+            result += syntaxerrors.get(i).toString();
+        }
+
+        return result;
+    }
+
 :};
 
 
@@ -132,8 +144,6 @@ for_expression ::=
     FOR OPERATOR_PARENTHESIS_L for_variable expression OPERATOR_END_LINE OPERATOR_PARENTHESIS_R |
     FOR OPERATOR_PARENTHESIS_L for_variable valid_name assignments expression OPERATOR_END_LINE OPERATOR_PARENTHESIS_R |
     FOR OPERATOR_PARENTHESIS_L for_variable OPERATOR_END_LINE OPERATOR_PARENTHESIS_R
-
-
 ;
 
 for_variable ::=
@@ -152,7 +162,7 @@ var_declarations ::=
 var_declaration ::=
     var_expression  OPERATOR_END_LINE  |
     // Errors
-    var_expression {: System.out.println("Missing ;"); :}
+    var_expression {: syntaxerrors.add(new SyntaxError(ErrorTypes.MISSING_PARENTHESES, s.right + 1, s.left + 1)); :}
 ;
 
 var_expression ::=

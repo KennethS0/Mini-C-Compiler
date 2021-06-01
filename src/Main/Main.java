@@ -3,6 +3,7 @@ package Main;
 import java.io.File;
 import java.io.StringReader;
 import java.nio.file.Files;
+import java.sql.SQLOutput;
 
 import Parser.Parser;
 import Scanner.Scanner;
@@ -20,7 +21,7 @@ public class Main {
         s.parse();
 
         System.out.println(scanner.toString());
-
+        System.out.println(s.toString());
         /*
         for(String argument: args){
             System.out.println("Analysis File: " + argument);
