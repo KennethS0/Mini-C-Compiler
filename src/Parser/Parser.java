@@ -575,6 +575,7 @@ public class Parser extends java_cup.runtime.lr_parser {
     throws java.lang.Exception
     {
 
+        if (currentSymbol != null) this.previousSymbol = currentSymbol;
         this.currentSymbol = this.getScanner().next_token();
         return currentSymbol;
 
@@ -583,6 +584,7 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
     private Symbol currentSymbol;
+    private Symbol previousSymbol;
 
     public Symbol getCurrentSymbol(){
         return this.currentSymbol;
@@ -610,7 +612,7 @@ public class Parser extends java_cup.runtime.lr_parser {
     }
 
     public void newSyntaxError(ErrorTypes pType) {
-        syntaxerrors.add(new SyntaxError(pType, currentSymbol.right + 1, currentSymbol.left + 1));
+        syntaxerrors.add(new SyntaxError(pType, previousSymbol.right + 1, previousSymbol.left + 1));
     }
 
 

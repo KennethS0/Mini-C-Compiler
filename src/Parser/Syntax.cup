@@ -9,6 +9,7 @@ parser code
 {:
 
     private Symbol currentSymbol;
+    private Symbol previousSymbol;
 
     public Symbol getCurrentSymbol(){
         return this.currentSymbol;
@@ -36,12 +37,13 @@ parser code
     }
 
     public void newSyntaxError(ErrorTypes pType) {
-        syntaxerrors.add(new SyntaxError(pType, currentSymbol.right + 1, currentSymbol.left + 1));
+        syntaxerrors.add(new SyntaxError(pType, previousSymbol.right + 1, previousSymbol.left + 1));
     }
 
 :};
 
 scan with {:
+        if (currentSymbol != null) this.previousSymbol = currentSymbol;
         this.currentSymbol = this.getScanner().next_token();
         return currentSymbol;
 :};
