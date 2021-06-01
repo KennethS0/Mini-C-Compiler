@@ -8,10 +8,10 @@ import Parser.Error.*;
 parser code
 {:
 
-    private Symbol s;
+    private Symbol currentSymbol;
 
-    public Symbol getS(){
-        return this.s;
+    public Symbol getCurrentSymbol(){
+        return this.currentSymbol;
     }
 
      public void syntax_error(Symbol s){
@@ -35,6 +35,15 @@ parser code
         return result;
     }
 
+    public void newSyntaxError(ErrorTypes pType) {
+        syntaxerrors.add(new SyntaxError(pType, currentSymbol.right + 1, currentSymbol.left + 1));
+    }
+
+:};
+
+scan with {:
+        this.currentSymbol = this.getScanner().next_token();
+        return currentSymbol;
 :};
 
 
@@ -162,7 +171,7 @@ var_declarations ::=
 var_declaration ::=
     var_expression  OPERATOR_END_LINE  |
     // Errors
-    var_expression {: syntaxerrors.add(new SyntaxError(ErrorTypes.MISSING_PARENTHESES, s.right + 1, s.left + 1)); :}
+    var_expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :}
 ;
 
 var_expression ::=

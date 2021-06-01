@@ -570,12 +570,22 @@ public class Parser extends java_cup.runtime.lr_parser {
   public int error_sym() {return 1;}
 
 
+  /** Scan to get the next Symbol. */
+  public java_cup.runtime.Symbol scan()
+    throws java.lang.Exception
+    {
+
+        this.currentSymbol = this.getScanner().next_token();
+        return currentSymbol;
+
+    }
 
 
-    private Symbol s;
 
-    public Symbol getS(){
-        return this.s;
+    private Symbol currentSymbol;
+
+    public Symbol getCurrentSymbol(){
+        return this.currentSymbol;
     }
 
      public void syntax_error(Symbol s){
@@ -597,6 +607,10 @@ public class Parser extends java_cup.runtime.lr_parser {
         }
 
         return result;
+    }
+
+    public void newSyntaxError(ErrorTypes pType) {
+        syntaxerrors.add(new SyntaxError(pType, currentSymbol.right + 1, currentSymbol.left + 1));
     }
 
 
@@ -796,7 +810,7 @@ class CUP$Parser$actions {
           case 18: // var_declaration ::= var_expression 
             {
               Object RESULT =null;
-              syntaxerrors.add(new SyntaxError(ErrorTypes.MISSING_SEMICOLON, 1, 1));
+		 newSyntaxError(ErrorTypes.MISSING_SEMICOLON); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("var_declaration",6, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
