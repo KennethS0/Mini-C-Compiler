@@ -1,13 +1,11 @@
-int liñsttest[12];
-int xd
+int liñsttest[1];
+int xd;
 
+void lamaooo(int xd, long oaksdoka12akmsd) {
+    xd++;
 
+    a = 13
 
-void lamaooo( const int xd, long oaksdoka12akmsd) {
+    b += 1931*(1281021839191398198398-(1%10));
 
-    char a;
-
-    // Cuerpo
-
-    a += 13;
 }

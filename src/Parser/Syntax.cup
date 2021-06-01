@@ -118,24 +118,23 @@ non terminal initial;
 non terminal valid_name, data_type, typed_identifier, assignments;
 non terminal var_declarations, var_declaration, var_expression, var_list_brackets, literals, valid_statement, inc_dec, math;
 
-non terminal func_declarations, func_declaration, func_decl_parentheses, statement, func_call_parentheses, brackets, parameter, statements;
+non terminal func_declarations, func_declaration, func_decl_parentheses, statement, func_call_parentheses, parameter, statements;
 
-non terminal expression, expressions, list_expression;
+non terminal expression, expressions, list_expression, x2;
 
-non terminal switch, read_write;
+non terminal switch, read_write, switch_error;
 
-non terminal case_expressions, case_expression, comparison;
+non terminal case_expressions, case_expression, comparison, assignment_expression, case_expression_error;
 
 non terminal switch_data_type;
 
-non terminal while_expression, for_expression, if_expression, else_expression, expression_body;
+non terminal while_expression, for_expression, if_expression, else_expression, brackets;
 
 non terminal for_variable, for_condition, loop_words, for_loop;
 
-non terminal List<Error> errors;
+non terminal error_detection_parentheses, var_list_errors, var_list_types, brackets_error;
 
 precedence left OPERATOR_COMPARATIVE;
-
 precedence left OPERATOR_ADD, OPERATOR_NEGATIVE;
 precedence left OPERATOR_MULTIPLY, OPERATOR_DIVIDE, OPERATOR_REMAINDER;
 
@@ -147,7 +146,7 @@ initial ::=
 ;
 
 for_loop ::=
-    for_expression expression_body |
+    for_expression brackets |
     for_expression OPERATOR_END_LINE
 ;
 
@@ -188,9 +187,23 @@ var_expression ::=
 
 var_list_brackets ::=
     OPERATOR_SQ_BRACKET_L LITERAL_DECIMAL OPERATOR_SQ_BRACKET_R |
-    OPERATOR_SQ_BRACKET_L OPERATOR_SQ_BRACKET_R
+    OPERATOR_SQ_BRACKET_L OPERATOR_SQ_BRACKET_R |
+    OPERATOR_SQ_BRACKET_L var_list_types OPERATOR_SQ_BRACKET_R {: newSyntaxError(ErrorTypes.INVALID_DATA_TYPE); :} |
+    var_list_errors {: newSyntaxError(ErrorTypes.MISSING_SQUARE_BRACKETS); :}
 ;
 
+var_list_errors ::=
+    OPERATOR_SQ_BRACKET_L LITERAL_DECIMAL |
+    OPERATOR_SQ_BRACKET_L |
+    OPERATOR_SQ_BRACKET_R |
+    LITERAL_DECIMAL OPERATOR_SQ_BRACKET_R |
+    OPERATOR_SQ_BRACKET_L var_list_types {: newSyntaxError(ErrorTypes.INVALID_DATA_TYPE); :} |
+    var_list_types OPERATOR_SQ_BRACKET_L {: newSyntaxError(ErrorTypes.INVALID_DATA_TYPE); :}
+;
+
+var_list_types ::=
+   LITERAL_FLOAT | LITERAL_STRING | LITERAL_CHARACTER | LITERAL_EXPONENTIAL_FLOAT
+;
 
 // FUNCTIONS
 func_declarations ::=
@@ -202,17 +215,13 @@ func_declaration ::=
     typed_identifier func_decl_parentheses brackets  |
     typed_identifier func_decl_parentheses  OPERATOR_END_LINE  |
     VOID valid_name func_decl_parentheses brackets |
-    VOID valid_name func_decl_parentheses  OPERATOR_END_LINE 
+    VOID valid_name func_decl_parentheses  OPERATOR_END_LINE
 ;
 
 brackets ::=
     OPERATOR_BRACKET_L var_declarations statements OPERATOR_BRACKET_R |
     OPERATOR_BRACKET_L statements OPERATOR_BRACKET_R |
-    OPERATOR_BRACKET_L OPERATOR_BRACKET_R
-;
-
-expression_body ::=
-    brackets |
+    OPERATOR_BRACKET_L OPERATOR_BRACKET_R |
     OPERATOR_BRACKET_L var_declarations OPERATOR_BRACKET_R
 ;
 
@@ -228,12 +237,16 @@ statement ::=
     switch |
     if_expression |
     valid_name assignments expression OPERATOR_END_LINE |
-    valid_name OPERATOR_ASSIGNMENT_EQUALS list_expression OPERATOR_END_LINE|
-    expression_body |
+    valid_name OPERATOR_ASSIGNMENT_EQUALS list_expression OPERATOR_END_LINE |
+    brackets |
     loop_words OPERATOR_END_LINE |
 
     // Read | Write
-    read_write OPERATOR_END_LINE
+    read_write OPERATOR_END_LINE |
+
+    // Errors
+    valid_statement {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :}  |
+    valid_name assignments expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :}
 ;
 
 read_write ::=
@@ -281,18 +294,26 @@ assignments ::=
 
 // El swith puede contener cero o mas cases, y cero o un default
 switch ::=
-
     SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
     SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
     SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions OPERATOR_BRACKET_R |
     SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L OPERATOR_BRACKET_R |
-    SWITCH {: System.out.println("switch incompleto"); :}
+    SWITCH switch_error
+;
+
+switch_error ::=
+    OPERATOR_PARENTHESIS_L switch_data_type {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
+    OPERATOR_PARENTHESIS_L {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
+    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
+    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R |
+    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R
 ;
 
 //Esto se utiliza para poder tener uno o mas cases dentro del swtich
 case_expressions ::=
     case_expressions case_expression |
     case_expression
+
 ;
 
 // Esto seria la expresion case del switch, la cual tiene como estructura minima el case, un dato entero o caracter y dos puntos.
@@ -301,21 +322,29 @@ case_expression ::=
     CASE switch_data_type OPERATOR_COLON expression BREAK  OPERATOR_END_LINE  |
     CASE switch_data_type OPERATOR_COLON BREAK  OPERATOR_END_LINE  |
     CASE switch_data_type OPERATOR_COLON expression |
-    CASE switch_data_type OPERATOR_COLON
+    CASE switch_data_type OPERATOR_COLON |
+    case_expression_error
+;
+
+case_expression_error ::=
+    CASE OPERATOR_COLON {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
+    CASE switch_data_type
 ;
 
 // Estos son los tipos de datos que maneja el switch, los cuales son numeros decimales y caracteres
 switch_data_type ::=
     LITERAL_DECIMAL |
-    LITERAL_CHARACTER
+    LITERAL_CHARACTER |
+    LITERAL_STRING {: newSyntaxError(ErrorTypes.INVALID_DATA_TYPE); :}
 ;
 
 
 // WHILE
 while_expression ::=
-    WHILE OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R expression_body
+    WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets |
+    WHILE OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R |
+    WHILE error_detection_parentheses {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :}
 ;
-
 
 // COMMON PRODUCTIONS
 data_type ::=
@@ -328,20 +357,46 @@ valid_name ::=
 
 typed_identifier ::=
     data_type valid_name |
-    valid_name {: System.out.println("Missing data type"); :}
+    valid_name {: newSyntaxError(ErrorTypes.MISSING_DATA_TYPE); :}
 ;
 
 // Construccion del if
 
 if_expression ::=
-    IF OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R expression_body else_expression |
-    IF OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R expression_body
+    IF OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets else_expression |
+    IF OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets |
+    IF error_detection_parentheses {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :}
+
 ;
 
 else_expression ::=
     ELSE if_expression |
-    ELSE expression_body
+    ELSE brackets
 ;
+
+assignment_expression ::=
+    valid_name assignments expression |
+    expression
+;
+
+//x2 ::=
+//    // LOGICAL
+//        OPERATOR_NOT x2 |
+//        x2 OPERATOR_COMPARATIVE x2 |
+//
+//        // MATH
+//        OPERATOR_NEGATIVE x2 |
+//
+//        OPERATOR_PARENTHESIS_L x2 OPERATOR_PARENTHESIS_R |
+//        x2 math x2 |
+//
+//       // valid_name |
+//        LITERAL_DECIMAL |
+//        LITERAL_HEXA |
+//        LITERAL_OCTAL
+//       // valid_statement
+//;
+
 
 expression ::=
     // LOGICAL
@@ -350,6 +405,7 @@ expression ::=
 
     // MATH
     OPERATOR_NEGATIVE expression |
+
     expression math expression |
 
 
@@ -375,4 +431,10 @@ literals ::=
 
 loop_words ::=
     BREAK | CONTINUE
+;
+
+
+error_detection_parentheses ::=
+    OPERATOR_PARENTHESIS_L assignment_expression |
+    OPERATOR_PARENTHESIS_R
 ;
