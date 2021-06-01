@@ -8,8 +8,6 @@ public class SyntaxError {
     private int line;
     private int column;
 
-    private ArrayList<Integer> xd = new ArrayList<>();
-
     public SyntaxError(ErrorTypes pType, int pLine, int pColumn) {
         type = pType;
         line = pLine;

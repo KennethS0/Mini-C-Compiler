@@ -48,7 +48,7 @@ import Parser.*;
     public String toString() {
         String result = "";
 
-        if (!data.isEmpty()) {result += "====== Tokens Found ======\n" + data.toString();}
+        if (!data.isEmpty()) {result += "====== Tokens Found ======\n" + data.toString() + "\n";}
         if (!errors.isEmpty()) {result += "====== Lexical Errors Found ======\n" + errors.toString();}
 
         return result;

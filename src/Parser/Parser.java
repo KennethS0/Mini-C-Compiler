@@ -604,10 +604,13 @@ public class Parser extends java_cup.runtime.lr_parser {
     public String toString() {
         String result = "";
 
-        for (int i = 0; i < syntaxerrors.size(); i++) {
-            result += syntaxerrors.get(i).toString();
-        }
+        if (!syntaxerrors.isEmpty()) {
+            result += "====== Syntax Errors ======\n";
 
+            for (int i = 0; i < syntaxerrors.size(); i++) {
+                result += syntaxerrors.get(i).toString();
+            }
+        }
         return result;
     }
 
