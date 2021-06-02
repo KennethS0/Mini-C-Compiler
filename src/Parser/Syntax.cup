@@ -180,9 +180,9 @@ var_declaration ::=
 
 var_expression ::=
     typed_identifier |
-    CONST typed_identifier |
+    CONST typed_identifier OPERATOR_ASSIGNMENT_EQUALS expression |
     typed_identifier var_list_brackets |
-    CONST typed_identifier var_list_brackets
+    CONST typed_identifier var_list_brackets  OPERATOR_ASSIGNMENT_EQUALS list_expression
 ;
 
 var_list_brackets ::=
@@ -294,20 +294,20 @@ assignments ::=
 
 // El swith puede contener cero o mas cases, y cero o un default
 switch ::=
-    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
-    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
-    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions OPERATOR_BRACKET_R |
-    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L OPERATOR_BRACKET_R |
+    SWITCH OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
+    SWITCH OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
+    SWITCH OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions OPERATOR_BRACKET_R |
+    SWITCH OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L OPERATOR_BRACKET_R |
     SWITCH switch_error
 ;
-
-switch_error ::=
-    OPERATOR_PARENTHESIS_L switch_data_type {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
-    OPERATOR_PARENTHESIS_L {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
-    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
-    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R |
-    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R
-;
+//
+//switch_error ::=
+//    OPERATOR_PARENTHESIS_L switch_data_type {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
+//    OPERATOR_PARENTHESIS_L {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
+//    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
+//    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R |
+//    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R
+//;
 
 //Esto se utiliza para poder tener uno o mas cases dentro del swtich
 case_expressions ::=
@@ -334,7 +334,7 @@ case_expression_error ::=
 // Estos son los tipos de datos que maneja el switch, los cuales son numeros decimales y caracteres
 switch_data_type ::=
     LITERAL_DECIMAL |
-    LITERAL_CHARACTER |
+    LITERAL_CHARACTER {: newSyntaxError(ErrorTypes.INVALID_DATA_TYPE); :} |
     LITERAL_STRING {: newSyntaxError(ErrorTypes.INVALID_DATA_TYPE); :}
 ;
 
@@ -378,24 +378,6 @@ assignment_expression ::=
     valid_name assignments expression |
     expression
 ;
-
-//x2 ::=
-//    // LOGICAL
-//        OPERATOR_NOT x2 |
-//        x2 OPERATOR_COMPARATIVE x2 |
-//
-//        // MATH
-//        OPERATOR_NEGATIVE x2 |
-//
-//        OPERATOR_PARENTHESIS_L x2 OPERATOR_PARENTHESIS_R |
-//        x2 math x2 |
-//
-//       // valid_name |
-//        LITERAL_DECIMAL |
-//        LITERAL_HEXA |
-//        LITERAL_OCTAL
-//       // valid_statement
-//;
 
 
 expression ::=
