@@ -16,6 +16,7 @@ parser code
     }
 
      public void syntax_error(Symbol s){
+        syntaxerrors.add(new SyntaxError(ErrorTypes.UNEXPECTED_ERROR, s.right + 1, s.left + 1));
         System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
 
@@ -40,7 +41,7 @@ parser code
     }
 
     public void newSyntaxError(ErrorTypes pType) {
-        syntaxerrors.add(new SyntaxError(pType, previousSymbol.right + 1, previousSymbol.left + 1));
+        syntaxerrors.add(new SyntaxError(pType, previousSymbol.right + 1, previousSymbol.left + previousSymbol.toString().length()));
     }
 
 :};
@@ -142,7 +143,8 @@ start with initial;
 
 initial ::=
     var_declarations func_declarations |
-    func_declarations
+    func_declarations |
+    OPERATOR_BRACKET_L error OPERATOR_BRACKET_R
 ;
 
 for_loop ::=
@@ -267,9 +269,7 @@ func_call_parentheses ::=
 
 func_decl_parentheses ::=
     OPERATOR_PARENTHESIS_L parameter OPERATOR_PARENTHESIS_R |
-    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R |
-    OPERATOR_PARENTHESIS_L {:  :} |
-    OPERATOR_PARENTHESIS_R {:  :}
+    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R
 ;
 
 expressions ::=
@@ -300,40 +300,43 @@ switch ::=
     SWITCH OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L OPERATOR_BRACKET_R |
     SWITCH switch_error
 ;
-//
-//switch_error ::=
-//    OPERATOR_PARENTHESIS_L switch_data_type {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
-//    OPERATOR_PARENTHESIS_L {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
-//    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
-//    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R |
-//    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R
-//;
+
+switch_error ::=
+    OPERATOR_PARENTHESIS_L switch_data_type {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
+    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
+    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R
+    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R
+;
 
 //Esto se utiliza para poder tener uno o mas cases dentro del swtich
 case_expressions ::=
     case_expressions case_expression |
     case_expression
-
 ;
 
 // Esto seria la expresion case del switch, la cual tiene como estructura minima el case, un dato entero o caracter y dos puntos.
 // tambien puede traer una expresion y/o break
 case_expression ::=
-    CASE switch_data_type OPERATOR_COLON expression BREAK  OPERATOR_END_LINE  |
+    CASE switch_data_type OPERATOR_COLON valid_name assignments expression BREAK  OPERATOR_END_LINE  |
     CASE switch_data_type OPERATOR_COLON BREAK  OPERATOR_END_LINE  |
-    CASE switch_data_type OPERATOR_COLON expression |
+    CASE switch_data_type OPERATOR_COLON valid_name assignments expression OPERATOR_END_LINE |
     CASE switch_data_type OPERATOR_COLON |
-    case_expression_error
+    case_expression_error |
+    error {: :}
 ;
 
 case_expression_error ::=
     CASE OPERATOR_COLON {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
-    CASE switch_data_type
+    CASE switch_data_type {: newSyntaxError(ErrorTypes.MISSING_COLON); :}
 ;
 
 // Estos son los tipos de datos que maneja el switch, los cuales son numeros decimales y caracteres
 switch_data_type ::=
     LITERAL_DECIMAL |
+    LITERAL_FLOAT {: newSyntaxError(ErrorTypes.INVALID_DATA_TYPE); :} |
+    LITERAL_HEXA |
+    LITERAL_OCTAL |
+    LITERAL_EXPONENTIAL_FLOAT {: newSyntaxError(ErrorTypes.INVALID_DATA_TYPE); :} |
     LITERAL_CHARACTER {: newSyntaxError(ErrorTypes.INVALID_DATA_TYPE); :} |
     LITERAL_STRING {: newSyntaxError(ErrorTypes.INVALID_DATA_TYPE); :}
 ;
@@ -414,7 +417,6 @@ literals ::=
 loop_words ::=
     BREAK | CONTINUE
 ;
-
 
 error_detection_parentheses ::=
     OPERATOR_PARENTHESIS_L assignment_expression |

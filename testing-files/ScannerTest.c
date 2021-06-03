@@ -1,7 +1,29 @@
-int liñsttest[1];
-int xd;
 
-void lamaooo(int xd, long oaksdoka12akmsd) {
-    const int reeee = 12;
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+lamao (int xd, long oa) {
+    switch(m){
+        case 5:
+            m = d;
+    }
+    for (i = 0; i < 10; i++) {
+        m = 4;
+        m=7
+    }
+    jaja(){
+        m = grh5;
+    }
 }
