@@ -42,7 +42,7 @@ int funcion1( int x
       if (y>=0) {
          x= a+b;
        }else {
-          x--;
+          ++x;
        }else {
           return 5 ;
         } //deberia dar error por doble uso de else

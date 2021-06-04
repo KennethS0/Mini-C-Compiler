@@ -17,11 +17,11 @@ parser code
 
      public void syntax_error(Symbol s){
         syntaxerrors.add(new SyntaxError(ErrorTypes.UNEXPECTED_ERROR, s.right + 1, s.left + 1));
-        System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
+        //System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
 
     public void unrecovered_syntax_error(Symbol s){
-        System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
+        //System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
 
     private ArrayList<SyntaxError> syntaxerrors = new ArrayList<SyntaxError>();
@@ -111,11 +111,13 @@ non terminal while_expression, for_expression, if_expression, else_expression, b
 
 non terminal for_variable, loop_words, for_loop;
 
-non terminal var_list_errors, var_list_types, xd;
+non terminal var_list_errors, var_list_types;
 
 precedence left OPERATOR_COMPARATIVE;
 precedence left OPERATOR_ADD, OPERATOR_NEGATIVE;
 precedence left OPERATOR_MULTIPLY, OPERATOR_DIVIDE, OPERATOR_REMAINDER;
+
+precedence left OPERATOR_INC, OPERATOR_DEC;
 
 precedence right IDENTIFIER, IDENTIFIER_ERROR;
 
@@ -124,7 +126,7 @@ start with initial;
 initial ::=
     var_declarations func_declarations |
     func_declarations |
-    error error_terminal_tokens {:System.out.println("ENCONTRÉ EL OPERADOR_END_LINE "+ currentSymbol.right);:}
+    error error_terminal_tokens
 ;
 
 for_loop ::=
@@ -244,7 +246,7 @@ statement  ::=
     loop_words  {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :} |
     RETURN expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :} |
     read_write {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :} |
-    error error_terminal_tokens {:System.out.println("ENCONTRÉ EL OPERADOR_END_LINE "+ currentSymbol.right);:}
+    error error_terminal_tokens
 ;
 
 error_terminal_tokens ::=
@@ -260,7 +262,8 @@ read_write ::=
 
 valid_statement ::=
     valid_name func_call_parentheses |
-    valid_name inc_dec
+    valid_name inc_dec |
+    inc_dec valid_name
 ;
 
 func_call_parentheses ::=
