@@ -99,30 +99,32 @@ non terminal var_declarations, var_declaration, var_expression, var_list_bracket
 
 non terminal func_declarations, func_declaration, func_decl_parentheses, statement, func_call_parentheses, parameter, statements;
 
-non terminal expression, expressions, list_expression;
+non terminal expression, expressions, list_expression, error_terminal_tokens;
 
-non terminal switch, read_write, switch_error;
+non terminal switch, read_write, switch_inside;
 
-non terminal case_expressions, case_expression, assignment_expression, case_expression_error;
+non terminal case_expressions, case_expression, assignment_expression;
 
-non terminal switch_data_type;
+non terminal switch_data_type, missing_expression, var_identifiers;
 
 non terminal while_expression, for_expression, if_expression, else_expression, brackets;
 
 non terminal for_variable, loop_words, for_loop;
 
-non terminal var_list_errors, var_list_types;
+non terminal var_list_errors, var_list_types, xd;
 
 precedence left OPERATOR_COMPARATIVE;
 precedence left OPERATOR_ADD, OPERATOR_NEGATIVE;
 precedence left OPERATOR_MULTIPLY, OPERATOR_DIVIDE, OPERATOR_REMAINDER;
+
+precedence right IDENTIFIER, IDENTIFIER_ERROR;
 
 start with initial;
 
 initial ::=
     var_declarations func_declarations |
     func_declarations |
-    error OPERATOR_END_LINE {:System.out.println("ENCONTRÉ EL OPERADOR_END_LINE");:}
+    error error_terminal_tokens {:System.out.println("ENCONTRÉ EL OPERADOR_END_LINE "+ currentSymbol.right);:}
 ;
 
 for_loop ::=
@@ -158,11 +160,19 @@ var_declaration ::=
     var_expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :}
 ;
 
+
+
 var_expression ::=
-    typed_identifier |
-    CONST typed_identifier OPERATOR_ASSIGNMENT_EQUALS expression |
+    data_type var_identifiers |
+    CONST data_type var_identifiers OPERATOR_ASSIGNMENT_EQUALS expression |
     typed_identifier var_list_brackets |
     CONST typed_identifier var_list_brackets  OPERATOR_ASSIGNMENT_EQUALS list_expression
+;
+
+var_identifiers ::=
+    var_identifiers OPERATOR_SEPARATE valid_name |
+    valid_name |
+    var_identifiers valid_name {: newSyntaxError(ErrorTypes.MISSING_SEPARATOR); :}
 ;
 
 var_list_brackets ::=
@@ -208,6 +218,7 @@ brackets ::=
 statements ::=
     statements statement |
     statement
+
 ;
 
 statement  ::=
@@ -220,14 +231,23 @@ statement  ::=
     valid_name OPERATOR_ASSIGNMENT_EQUALS list_expression OPERATOR_END_LINE |
     brackets |
     loop_words OPERATOR_END_LINE |
-    RETURN expression |
+    RETURN expression OPERATOR_END_LINE |
 
     // Read | Write
     read_write OPERATOR_END_LINE |
 
     // Errors
     valid_statement {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :}  |
-    valid_name assignments expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :}
+    valid_name assignments expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :} |
+    loop_words  {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :} |
+    RETURN expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :} |
+    read_write {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :} |
+    error error_terminal_tokens {:System.out.println("ENCONTRÉ EL OPERADOR_END_LINE "+ currentSymbol.right);:}
+;
+
+error_terminal_tokens ::=
+    OPERATOR_END_LINE |
+    OPERATOR_BRACKET_R
 ;
 
 read_write ::=
@@ -248,7 +268,11 @@ func_call_parentheses ::=
 
 func_decl_parentheses ::=
     OPERATOR_PARENTHESIS_L parameter OPERATOR_PARENTHESIS_R |
-    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R
+    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R |
+
+    // Errores
+    OPERATOR_PARENTHESIS_L parameter {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :}|
+    OPERATOR_PARENTHESIS_L {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :}
 ;
 
 expressions ::=
@@ -273,18 +297,19 @@ assignments ::=
 
 // El swith puede contener cero o mas cases, y cero o un default
 switch ::=
-    SWITCH OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
-    SWITCH OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
-    SWITCH OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions OPERATOR_BRACKET_R |
-    SWITCH OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L OPERATOR_BRACKET_R |
-    SWITCH switch_error
+    SWITCH OPERATOR_PARENTHESIS_L expression OPERATOR_PARENTHESIS_R switch_inside |
+    SWITCH missing_expression switch_inside
 ;
 
-switch_error ::=
-    OPERATOR_PARENTHESIS_L switch_data_type {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
-    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
-    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R |
-    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R
+switch_inside ::=
+    OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
+    OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON expression OPERATOR_BRACKET_R |
+    OPERATOR_BRACKET_L case_expressions OPERATOR_BRACKET_R |
+    OPERATOR_BRACKET_L OPERATOR_BRACKET_R
+;
+
+missing_expression ::=
+    OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :}
 ;
 
 //Esto se utiliza para poder tener uno o mas cases dentro del swtich
@@ -303,12 +328,12 @@ case_expression ::=
     CASE switch_data_type OPERATOR_COLON
 ;
 
-case_expression_error ::=
-    CASE OPERATOR_COLON {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
-    CASE switch_data_type {: newSyntaxError(ErrorTypes.MISSING_COLON); :}
-    //CASE switch_data_type OPERATOR_COLON var_declarations statements var_declaration {: newSyntaxError(ErrorTypes.VARIABLE_DECLARATION_ERROR); :} |
-    //CASE switch_data_type OPERATOR_COLON statements var_declaration {: newSyntaxError(ErrorTypes.VARIABLE_DECLARATION_ERROR); :}
-;
+//case_expression_error ::=
+//    CASE OPERATOR_COLON {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
+//    CASE switch_data_type {: newSyntaxError(ErrorTypes.MISSING_COLON); :}
+//    //CASE switch_data_type OPERATOR_COLON var_declarations statements var_declaration {: newSyntaxError(ErrorTypes.VARIABLE_DECLARATION_ERROR); :} |
+//    //CASE switch_data_type OPERATOR_COLON statements var_declaration {: newSyntaxError(ErrorTypes.VARIABLE_DECLARATION_ERROR); :}
+//;
 
 // Estos son los tipos de datos que maneja el switch, los cuales son numeros decimales y caracteres
 switch_data_type ::=
@@ -325,8 +350,11 @@ switch_data_type ::=
 // WHILE
 while_expression ::=
     DO brackets WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R OPERATOR_END_LINE |
+    WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R OPERATOR_END_LINE |
     WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets |
-    WHILE OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R |
+    // Error
+    WHILE missing_expression brackets |
+    DO brackets WHILE missing_expression OPERATOR_END_LINE
 ;
 
 // COMMON PRODUCTIONS
@@ -348,8 +376,11 @@ typed_identifier ::=
 if_expression ::=
     IF OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets else_expression |
     IF OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets |
-    IF error_detection_parentheses {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :}
 
+    // Error
+    IF missing_expression brackets else_expression |
+    IF missing_expression brackets |
+    IF {: newSyntaxError(ErrorTypes.INCOMPLETE_EXPRESSION); :}
 ;
 
 else_expression ::=
