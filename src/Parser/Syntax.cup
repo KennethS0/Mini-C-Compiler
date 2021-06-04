@@ -157,7 +157,9 @@ var_declarations ::=
 var_declaration ::=
     var_expression  OPERATOR_END_LINE  |
     // Errors
-    var_expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :}
+    var_expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :} |
+    error data_type |
+    error VOID
 ;
 
 

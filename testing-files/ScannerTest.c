@@ -5,7 +5,9 @@ long b, c, f;
 
 
 
-//a= 3;  // Error fuera de  lugar
+a= 3;  // Error fuera de  lugar
+
+if () {}
 
 void funcion3( x, y){
 	 // error porque no hay tipo de funciones
@@ -16,7 +18,7 @@ void funcion3( x, y){
 
 }
 
-/*
+
 int funcion1( int x
 {  // falta parentesis
 
@@ -25,7 +27,7 @@ int funcion1( int x
   }
 
 }
-*/
+
     int funcionBuena(int x, int y) {
 
       if if (X< 3) {
