@@ -20,7 +20,7 @@ public class Main {
         Parser s = new Parser(scanner);
         s.parse();
 
-        System.out.println(scanner.toString());
+        //System.out.println(scanner.toString());
         System.out.println(s.toString());
         /*
         for(String argument: args){

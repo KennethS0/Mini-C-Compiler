@@ -53,19 +53,9 @@ scan with {:
 :};
 
 
-terminal STRING_ERROR,
-         UNKNOWN_ERROR,
-         COMMENTS_ERROR,
-         CHARACTER_ERROR,
-         IDENTIFIER_ERROR,
-         FLOAT_MANY_DOTS_ERROR,
-
+terminal
+        IDENTIFIER_ERROR,
          // RESERVED WORDS
-         RESERVED_LOOP,
-         RESERVED_ENUM,
-         RESERVED_WORDS,
-         RESERVED_MODIFIER,
-         RESERVED_CONDITION,
          RESERVED_DATA_TYPE,
 
          // LITERALS
@@ -81,14 +71,9 @@ terminal STRING_ERROR,
          OPERATOR_INC,
          OPERATOR_DEC,
          OPERATOR_ADD,
-         OPERATOR_DOT,
-         OPERATOR_MATH,
-         OPERATOR_MEMORY,
          OPERATOR_DIVIDE,
-         OPERATOR_BINARY,
          OPERATOR_BRACKET_L,
          OPERATOR_BRACKET_R,
-         OPERATOR_BOOLEAN,
          OPERATOR_END_LINE,
          OPERATOR_NEGATIVE,
          OPERATOR_SEPARATE,
@@ -96,17 +81,10 @@ terminal STRING_ERROR,
          OPERATOR_REMAINDER,
          OPERATOR_ASSIGNMENT,
          OPERATOR_ASSIGNMENT_EQUALS,
-         OPERATOR_L_SHIFT_EQ,
-         OPERATOR_R_SHIFT_EQ,
-         OPERATOR_BITWISE_OR,
          OPERATOR_SQ_BRACKET_L,
          OPERATOR_SQ_BRACKET_R,
          OPERATOR_PARENTHESIS_L,
          OPERATOR_PARENTHESIS_R,
-         OPERATOR_MULTIPLY_EQ,
-         OPERATOR_CONTINUE_LINE,
-         OPERATOR_BITWISE_AND,
-         OPERATOR_BITWISE_EXCLUSIVE_OR,
          OPERATOR_COMPARATIVE,
          OPERATOR_NOT,
          OPERATOR_COLON,
@@ -121,19 +99,19 @@ non terminal var_declarations, var_declaration, var_expression, var_list_bracket
 
 non terminal func_declarations, func_declaration, func_decl_parentheses, statement, func_call_parentheses, parameter, statements;
 
-non terminal expression, expressions, list_expression, x2;
+non terminal expression, expressions, list_expression;
 
 non terminal switch, read_write, switch_error;
 
-non terminal case_expressions, case_expression, comparison, assignment_expression, case_expression_error;
+non terminal case_expressions, case_expression, assignment_expression, case_expression_error;
 
 non terminal switch_data_type;
 
 non terminal while_expression, for_expression, if_expression, else_expression, brackets;
 
-non terminal for_variable, for_condition, loop_words, for_loop;
+non terminal for_variable, loop_words, for_loop;
 
-non terminal error_detection_parentheses, var_list_errors, var_list_types, brackets_error;
+non terminal error_detection_parentheses, var_list_errors, var_list_types;
 
 precedence left OPERATOR_COMPARATIVE;
 precedence left OPERATOR_ADD, OPERATOR_NEGATIVE;
@@ -144,7 +122,7 @@ start with initial;
 initial ::=
     var_declarations func_declarations |
     func_declarations |
-    OPERATOR_BRACKET_L error OPERATOR_BRACKET_R
+    error OPERATOR_END_LINE {:System.out.println("ENCONTRÉ EL OPERADOR_END_LINE");:}
 ;
 
 for_loop ::=
@@ -232,7 +210,7 @@ statements ::=
     statement
 ;
 
-statement ::=
+statement  ::=
     valid_statement OPERATOR_END_LINE |
     while_expression |
     for_loop |
@@ -242,6 +220,7 @@ statement ::=
     valid_name OPERATOR_ASSIGNMENT_EQUALS list_expression OPERATOR_END_LINE |
     brackets |
     loop_words OPERATOR_END_LINE |
+    RETURN expression |
 
     // Read | Write
     read_write OPERATOR_END_LINE |
@@ -304,30 +283,31 @@ switch ::=
 switch_error ::=
     OPERATOR_PARENTHESIS_L switch_data_type {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :} |
     OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
-    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R
+    SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L case_expressions DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R |
     SWITCH OPERATOR_PARENTHESIS_L switch_data_type OPERATOR_PARENTHESIS_R OPERATOR_BRACKET_L DEFAULT OPERATOR_COLON OPERATOR_BRACKET_R
 ;
 
 //Esto se utiliza para poder tener uno o mas cases dentro del swtich
 case_expressions ::=
     case_expressions case_expression |
-    case_expression
+    case_expression |
+    error OPERATOR_END_LINE {: newSyntaxError(ErrorTypes.CASE_ERROR); :}
 ;
 
 // Esto seria la expresion case del switch, la cual tiene como estructura minima el case, un dato entero o caracter y dos puntos.
 // tambien puede traer una expresion y/o break
 case_expression ::=
-    CASE switch_data_type OPERATOR_COLON valid_name assignments expression BREAK  OPERATOR_END_LINE  |
-    CASE switch_data_type OPERATOR_COLON BREAK  OPERATOR_END_LINE  |
-    CASE switch_data_type OPERATOR_COLON valid_name assignments expression OPERATOR_END_LINE |
-    CASE switch_data_type OPERATOR_COLON |
-    case_expression_error |
-    error {: :}
+    CASE switch_data_type OPERATOR_COLON var_declarations statements |
+    CASE switch_data_type OPERATOR_COLON statements |
+    CASE switch_data_type OPERATOR_COLON var_declarations |
+    CASE switch_data_type OPERATOR_COLON
 ;
 
 case_expression_error ::=
     CASE OPERATOR_COLON {: newSyntaxError(ErrorTypes.MISSING_EXPRESSION); :} |
     CASE switch_data_type {: newSyntaxError(ErrorTypes.MISSING_COLON); :}
+    //CASE switch_data_type OPERATOR_COLON var_declarations statements var_declaration {: newSyntaxError(ErrorTypes.VARIABLE_DECLARATION_ERROR); :} |
+    //CASE switch_data_type OPERATOR_COLON statements var_declaration {: newSyntaxError(ErrorTypes.VARIABLE_DECLARATION_ERROR); :}
 ;
 
 // Estos son los tipos de datos que maneja el switch, los cuales son numeros decimales y caracteres
@@ -344,6 +324,7 @@ switch_data_type ::=
 
 // WHILE
 while_expression ::=
+    DO brackets WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R OPERATOR_END_LINE |
     WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets |
     WHILE OPERATOR_PARENTHESIS_L OPERATOR_PARENTHESIS_R |
     WHILE error_detection_parentheses {: newSyntaxError(ErrorTypes.MISSING_PARENTHESES); :}
@@ -351,7 +332,7 @@ while_expression ::=
 
 // COMMON PRODUCTIONS
 data_type ::=
-    LONG | INT | SHORT | CHAR
+    LONG | INT | SHORT | CHAR | RESERVED_DATA_TYPE {: newSyntaxError(ErrorTypes.NOT_SUPPORTED_DATA_TYPE); :}
 ;
 
 valid_name ::=
