@@ -34,7 +34,8 @@ parser code
             result += "====== Syntax Errors ======\n";
 
             for (int i = 0; i < syntaxerrors.size(); i++) {
-                result += syntaxerrors.get(i).toString();
+                SyntaxError error = syntaxerrors.get(i);
+                if (!(error.getLine() == 0)) result += error.toString();
             }
         }
         return result;
@@ -288,7 +289,8 @@ expressions ::=
 parameter ::=
     parameter OPERATOR_SEPARATE typed_identifier |
     typed_identifier |
-    CONST typed_identifier
+    CONST typed_identifier |
+    literals {: newSyntaxError(ErrorTypes.FUNCTION_DECLARATION_ERROR); :}
 ;
 
 list_expression ::=

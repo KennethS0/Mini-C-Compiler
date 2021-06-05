@@ -14,6 +14,14 @@ public class SyntaxError {
         column = pColumn;
     }
 
+    public int getColumn() {
+        return column;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
     @Override
     public String toString() {
         return type.toString() + " | Line: " + line + " | Col: " + column + "\n";
