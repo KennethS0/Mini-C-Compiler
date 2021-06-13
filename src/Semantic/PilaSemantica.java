@@ -4,12 +4,6 @@ import java.util.ArrayList;
 
 public class PilaSemantica extends ArrayList<RegistroSemantico> {
 
-    private enum tipos {
-        IDENTIFICADOR,
-        TIPO,
-        DATA_OBJECT
-    };
-
     public void push(RegistroSemantico pRegistro) {
         this.add(0, pRegistro);
     }
@@ -24,7 +18,14 @@ public class PilaSemantica extends ArrayList<RegistroSemantico> {
         }
     }
 
-    public RegistroSemantico buscarRegistro(tipos pRegistro) {
+    public RegistroSemantico peek() {
+        if (!this.isEmpty()) {
+            return this.get(0);
+        }
+        return null;
+    }
+
+    public RegistroSemantico buscarRegistro(Registros pRegistro) {
         for (RegistroSemantico registro : this) {
             switch (pRegistro) {
                 case IDENTIFICADOR:
@@ -37,5 +38,7 @@ public class PilaSemantica extends ArrayList<RegistroSemantico> {
             }
         return null;
     }
+
+
 
 }

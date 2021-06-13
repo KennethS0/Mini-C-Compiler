@@ -3,6 +3,7 @@ import java.util.*;
 import java_cup.runtime.*;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import Semantic.*;
+import java.util.HashMap;
 
 import Parser.Error.*;
 
@@ -12,6 +13,7 @@ parser code
     private Symbol currentSymbol;
     private Symbol previousSymbol;
     private PilaSemantica pila = new PilaSemantica();
+    public HashMap<String, String> tablaSimbolos = new HashMap<String, String>();
 
 
     public Symbol getCurrentSymbol(){
@@ -52,6 +54,9 @@ parser code
         return this.pila;
     }
 
+    public HashMap<String, String> getTabla() {
+        return this.tablaSimbolos;
+    }
 
 :};
 
@@ -166,7 +171,19 @@ var_declarations ::=
 ;
 
 var_declaration ::=
-    var_expression  OPERATOR_END_LINE  |
+    var_expression  OPERATOR_END_LINE
+
+    {:
+        System.out.println("Pila: " + this.parser.pila);
+        RegistroTipo registro = (RegistroTipo) this.parser.pila.buscarRegistro(Registros.TIPO);
+        while(this.parser.pila.peek() != registro) {
+            RegistroIdentificador registroActual = (RegistroIdentificador) this.parser.pila.pop();
+            this.parser.tablaSimbolos.put(registroActual.getToken(), registro.getToken());
+        }
+        this.parser.pila.pop();
+    :}
+
+    |
     // Errors
     var_expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :} |
     error data_type |
@@ -374,15 +391,16 @@ while_expression ::=
 
 // COMMON PRODUCTIONS
 data_type ::=
-    LONG:e {: RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); :}
-    | INT:e {: RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); :}
-    | SHORT:e {: RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); :}
-    | CHAR:e {: RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); :}
+    LONG:e {: RegistroTipo registro = new RegistroTipo(e.toString()); this.parser.pila.push(registro); :}
+    | INT:e {: RegistroTipo registro = new RegistroTipo(e.toString()); this.parser.pila.push(registro); :}
+    | SHORT:e {: RegistroTipo registro = new RegistroTipo(e.toString()); this.parser.pila.push(registro); :}
+    | CHAR:e {: RegistroTipo registro = new RegistroTipo(e.toString()); this.parser.pila.push(registro); :}
     | RESERVED_DATA_TYPE {: newSyntaxError(ErrorTypes.NOT_SUPPORTED_DATA_TYPE); :}
 ;
 
 valid_name ::=
-    IDENTIFIER | IDENTIFIER_ERROR // Recovers from lexical error
+    IDENTIFIER:e {: RegistroIdentificador registro = new RegistroIdentificador(e.toString()); this.parser.pila.push(registro); :}
+    | IDENTIFIER_ERROR // Recovers from lexical error
 ;
 
 typed_identifier ::=

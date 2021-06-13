@@ -1,5 +1,9 @@
-long xxd;
+long lo, lo1;
 
-char pvta;
+char ch, ch1;
 
-int alaverga;
+int mono, mono2, xd, akajsd, iasjd;
+
+void aaa(){
+
+}

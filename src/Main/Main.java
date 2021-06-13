@@ -23,6 +23,8 @@ public class Main {
             System.out.println(s.toString());
 
             System.out.println(s.getPila().toString());
+
+            System.out.println(s.getTabla().toString());
         }
         /*
         for(String argument: args){

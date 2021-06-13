@@ -10,6 +10,10 @@ public class RegistroIdentificador extends RegistroSemantico{
         super(pToken);
     }
 
+    private String tipo;
+
+
+
     @Override
     public String toString() {
         return "Registro de identificador: " + this.getToken();
