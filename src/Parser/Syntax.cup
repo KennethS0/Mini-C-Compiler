@@ -2,6 +2,7 @@ package Parser;
 import java.util.*;
 import java_cup.runtime.*;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import Semantic.*;
 
 import Parser.Error.*;
 
@@ -10,6 +11,8 @@ parser code
 
     private Symbol currentSymbol;
     private Symbol previousSymbol;
+    private PilaSemantica pila = new PilaSemantica();
+
 
     public Symbol getCurrentSymbol(){
         return this.currentSymbol;
@@ -44,6 +47,11 @@ parser code
     public void newSyntaxError(ErrorTypes pType) {
         syntaxerrors.add(new SyntaxError(pType, previousSymbol.right + 1, previousSymbol.left + previousSymbol.toString().length()));
     }
+
+    public PilaSemantica getPila() {
+        return this.pila;
+    }
+
 
 :};
 
@@ -366,7 +374,11 @@ while_expression ::=
 
 // COMMON PRODUCTIONS
 data_type ::=
-    LONG | INT | SHORT | CHAR | RESERVED_DATA_TYPE {: newSyntaxError(ErrorTypes.NOT_SUPPORTED_DATA_TYPE); :}
+    LONG:e {: RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); :}
+    | INT:e {: RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); :}
+    | SHORT:e {: RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); :}
+    | CHAR:e {: RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); :}
+    | RESERVED_DATA_TYPE {: newSyntaxError(ErrorTypes.NOT_SUPPORTED_DATA_TYPE); :}
 ;
 
 valid_name ::=

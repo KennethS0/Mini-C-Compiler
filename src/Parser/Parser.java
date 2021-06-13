@@ -8,6 +8,7 @@ package Parser;
 import java.util.*;
 import java_cup.runtime.*;
 import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import Semantic.*;
 import Parser.Error.*;
 import java_cup.runtime.XMLElement;
 
@@ -979,6 +980,8 @@ public class Parser extends java_cup.runtime.lr_parser {
 
     private Symbol currentSymbol;
     private Symbol previousSymbol;
+    private PilaSemantica pila = new PilaSemantica();
+
 
     public Symbol getCurrentSymbol(){
         return this.currentSymbol;
@@ -1013,6 +1016,11 @@ public class Parser extends java_cup.runtime.lr_parser {
     public void newSyntaxError(ErrorTypes pType) {
         syntaxerrors.add(new SyntaxError(pType, previousSymbol.right + 1, previousSymbol.left + previousSymbol.toString().length()));
     }
+
+    public PilaSemantica getPila() {
+        return this.pila;
+    }
+
 
 
 
@@ -2147,7 +2155,10 @@ class CUP$Parser$actions {
           case 122: // data_type ::= LONG 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("data_type",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2156,7 +2167,10 @@ class CUP$Parser$actions {
           case 123: // data_type ::= INT 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("data_type",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2165,7 +2179,10 @@ class CUP$Parser$actions {
           case 124: // data_type ::= SHORT 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("data_type",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2174,7 +2191,10 @@ class CUP$Parser$actions {
           case 125: // data_type ::= CHAR 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroTipo registro = new RegistroTipo(e.toString()); pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("data_type",2, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

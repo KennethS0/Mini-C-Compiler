@@ -21,6 +21,8 @@ public class Main {
 
             System.out.println(scanner.toString());
             System.out.println(s.toString());
+
+            System.out.println(s.getPila().toString());
         }
         /*
         for(String argument: args){
