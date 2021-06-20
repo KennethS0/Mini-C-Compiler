@@ -12,8 +12,10 @@ parser code
 
     private Symbol currentSymbol;
     private Symbol previousSymbol;
+    private Boolean generateASMFlag;
+    private ArrayList<String> listaErroresSemanticos = new ArrayList<String>();
     private PilaSemantica pila = new PilaSemantica();
-    public HashMap<String, String> tablaSimbolos = new HashMap<String, String>();
+    public HashMap<String, DataObject> tablaSimbolos = new HashMap<String, DataObject>();
 
 
     public Symbol getCurrentSymbol(){
@@ -24,7 +26,9 @@ parser code
         syntaxerrors.add(new SyntaxError(ErrorTypes.UNEXPECTED_ERROR, s.right + 1, s.left + 1));
         //System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
-
+    public void addError(String error){
+        this.listaErroresSemanticos.push(error+" Linea "+(s.right+1)+" columna "+(s.left+1)+"\n");
+    }
     public void unrecovered_syntax_error(Symbol s){
         //System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
@@ -54,7 +58,7 @@ parser code
         return this.pila;
     }
 
-    public HashMap<String, String> getTabla() {
+    public HashMap<String, DataObject> getTabla() {
         return this.tablaSimbolos;
     }
 
@@ -174,11 +178,17 @@ var_declaration ::=
     var_expression  OPERATOR_END_LINE
 
     {:
-        System.out.println("Pila: " + this.parser.pila);
+
         RegistroTipo registro = (RegistroTipo) this.parser.pila.buscarRegistro(Registros.TIPO);
         while(this.parser.pila.peek() != registro) {
             RegistroIdentificador registroActual = (RegistroIdentificador) this.parser.pila.pop();
-            this.parser.tablaSimbolos.put(registroActual.getToken(), registro.getToken());
+
+            if (this.parser.tablaSimbolos.get(registroActual.getToken()) != null) {
+                System.out.println("Variable ya ha sido declarada: " + registroActual.getToken());
+            } else {
+                this.parser.tablaSimbolos.put(registroActual.getToken(), new DataObject(registro.getToken(), registroActual.getToken()));
+            }
+
         }
         this.parser.pila.pop();
     :}
@@ -257,7 +267,19 @@ statement  ::=
     for_loop |
     switch |
     if_expression |
-    valid_name assignments expression OPERATOR_END_LINE |
+    valid_name assignments expression OPERATOR_END_LINE {:
+        RegistroConstante registro = (RegistroConstante) this.parser.pila.pop();
+        RegistroOperador registroOperador = (RegistroOperador) this.parser.pila.pop();
+        if (registroOperador.getToken() == "=") {
+            RegistroIdentificador registroIdentificador = (RegistroIdentificador) this.parser.pila.pop();
+            if (this.parser.tablaSimbolos.get(registroIdentificador.getToken()) == null) {
+                addError("Identificador no encontrado");
+            }
+        } else {
+
+        }
+    :}
+    |
     valid_name OPERATOR_ASSIGNMENT_EQUALS list_expression OPERATOR_END_LINE |
     brackets |
     loop_words OPERATOR_END_LINE |
@@ -324,7 +346,7 @@ list_expression ::=
 ;
 
 assignments ::=
-    OPERATOR_ASSIGNMENT | OPERATOR_ASSIGNMENT_EQUALS
+    OPERATOR_ASSIGNMENT | OPERATOR_ASSIGNMENT_EQUALS:e {: RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); :}
 ;
 
 // El swith puede contener cero o mas cases, y cero o un default
@@ -455,11 +477,19 @@ inc_dec ::=
 ;
 
 math ::=
-    OPERATOR_ADD | OPERATOR_NEGATIVE | OPERATOR_MULTIPLY | OPERATOR_DIVIDE | OPERATOR_REMAINDER
+    OPERATOR_ADD:e {: RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); :}
+    | OPERATOR_NEGATIVE:e {: RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); :}
+    | OPERATOR_MULTIPLY:e {: RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); :}
+    | OPERATOR_DIVIDE:e {: RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); :}
+    | OPERATOR_REMAINDER:e {: RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); :}
 ;
 
 literals ::=
-    LITERAL_HEXA | LITERAL_OCTAL | LITERAL_STRING | LITERAL_DECIMAL | LITERAL_CHARACTER
+    LITERAL_HEXA:e {: RegistroConstante registro = new RegistroConstante(e.toString(), "HEXA"); this.parser.pila.push(registro); :}
+    | LITERAL_OCTAL:e {: RegistroConstante registro = new RegistroConstante(e.toString(), "OCTAL"); this.parser.pila.push(registro); :}
+    | LITERAL_STRING:e {: RegistroConstante registro = new RegistroConstante(e.toString(), "STRING"); this.parser.pila.push(registro); :}
+    | LITERAL_DECIMAL:e {: RegistroConstante registro = new RegistroConstante(e.toString(), "DECIMAL"); this.parser.pila.push(registro); :}
+    | LITERAL_CHARACTER :e {: RegistroConstante registro = new RegistroConstante(e.toString(), "CHARACTER"); this.parser.pila.push(registro); :}
 ;
 
 loop_words ::=

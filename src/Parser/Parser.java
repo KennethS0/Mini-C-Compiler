@@ -981,8 +981,10 @@ public class Parser extends java_cup.runtime.lr_parser {
 
     private Symbol currentSymbol;
     private Symbol previousSymbol;
+    private Boolean generateASMFlag;
+    private ArrayList<String> listaErroresSemanticos = new ArrayList<String>();
     private PilaSemantica pila = new PilaSemantica();
-    public HashMap<String, String> tablaSimbolos = new HashMap<String, String>();
+    public HashMap<String, DataObject> tablaSimbolos = new HashMap<String, DataObject>();
 
 
     public Symbol getCurrentSymbol(){
@@ -993,7 +995,9 @@ public class Parser extends java_cup.runtime.lr_parser {
         syntaxerrors.add(new SyntaxError(ErrorTypes.UNEXPECTED_ERROR, s.right + 1, s.left + 1));
         //System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
-
+    public void addError(String error){
+        //this.listaErroresSemanticos.push(error+" Linea "+(s.right+1)+" columna "+(s.left+1)+"\n");
+    }
     public void unrecovered_syntax_error(Symbol s){
         //System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
@@ -1023,7 +1027,7 @@ public class Parser extends java_cup.runtime.lr_parser {
         return this.pila;
     }
 
-    public HashMap<String, String> getTabla() {
+    public HashMap<String, DataObject> getTabla() {
         return this.tablaSimbolos;
     }
 
@@ -1225,11 +1229,17 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		
-        System.out.println("Pila: " + this.parser.pila);
+
         RegistroTipo registro = (RegistroTipo) this.parser.pila.buscarRegistro(Registros.TIPO);
         while(this.parser.pila.peek() != registro) {
             RegistroIdentificador registroActual = (RegistroIdentificador) this.parser.pila.pop();
-            this.parser.tablaSimbolos.put(registroActual.getToken(), registro.getToken());
+
+            if (this.parser.tablaSimbolos.get(registroActual.getToken()) != null) {
+                System.out.println("Variable ya ha sido declarada: " + registroActual.getToken());
+            } else {
+                this.parser.tablaSimbolos.put(registroActual.getToken(), new DataObject(registro.getToken(), registroActual.getToken()));
+            }
+
         }
         this.parser.pila.pop();
     
@@ -1610,7 +1620,18 @@ class CUP$Parser$actions {
           case 60: // statement ::= valid_name assignments expression OPERATOR_END_LINE 
             {
               Object RESULT =null;
+		
+        RegistroConstante registro = (RegistroConstante) this.parser.pila.pop();
+        RegistroOperador registroOperador = (RegistroOperador) this.parser.pila.pop();
+        if (registroOperador.getToken() == "=") {
+            RegistroIdentificador registroIdentificador = (RegistroIdentificador) this.parser.pila.pop();
+            if (this.parser.tablaSimbolos.get(registroIdentificador.getToken()) == null) {
+                addError("");
+            }
+        } else {
 
+        }
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("statement",16, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1925,7 +1946,10 @@ class CUP$Parser$actions {
           case 95: // assignments ::= OPERATOR_ASSIGNMENT_EQUALS 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("assignments",4, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2435,7 +2459,10 @@ class CUP$Parser$actions {
           case 150: // math ::= OPERATOR_ADD 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("math",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2444,7 +2471,10 @@ class CUP$Parser$actions {
           case 151: // math ::= OPERATOR_NEGATIVE 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("math",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2453,7 +2483,10 @@ class CUP$Parser$actions {
           case 152: // math ::= OPERATOR_MULTIPLY 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("math",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2462,7 +2495,10 @@ class CUP$Parser$actions {
           case 153: // math ::= OPERATOR_DIVIDE 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("math",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2471,7 +2507,10 @@ class CUP$Parser$actions {
           case 154: // math ::= OPERATOR_REMAINDER 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroOperador registro = new RegistroOperador(e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("math",12, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2480,7 +2519,10 @@ class CUP$Parser$actions {
           case 155: // literals ::= LITERAL_HEXA 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroConstante registro = new RegistroConstante(e.toString(), "HEXA"); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literals",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2489,7 +2531,10 @@ class CUP$Parser$actions {
           case 156: // literals ::= LITERAL_OCTAL 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroConstante registro = new RegistroConstante(e.toString(), "OCTAL"); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literals",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2498,7 +2543,10 @@ class CUP$Parser$actions {
           case 157: // literals ::= LITERAL_STRING 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroConstante registro = new RegistroConstante(e.toString(), "STRING"); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literals",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2507,7 +2555,10 @@ class CUP$Parser$actions {
           case 158: // literals ::= LITERAL_DECIMAL 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroConstante registro = new RegistroConstante(e.toString(), "DECIMAL"); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literals",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2516,7 +2567,10 @@ class CUP$Parser$actions {
           case 159: // literals ::= LITERAL_CHARACTER 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		 RegistroConstante registro = new RegistroConstante(e.toString(), "CHARACTER"); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literals",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
