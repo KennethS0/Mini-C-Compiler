@@ -27,8 +27,13 @@ parser code
         //System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
     public void addError(String error){
-        this.listaErroresSemanticos.push(error+" Linea "+(s.right+1)+" columna "+(s.left+1)+"\n");
+            this.listaErroresSemanticos.add(error+" Linea "+(previousSymbol.right+1)+" columna "+(previousSymbol.left+1)+"\n");
     }
+
+    public ArrayList<String> getErroresSemanticos() {
+        return this.listaErroresSemanticos;
+    }
+
     public void unrecovered_syntax_error(Symbol s){
         //System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
@@ -186,7 +191,7 @@ var_declaration ::=
             if (this.parser.tablaSimbolos.get(registroActual.getToken()) != null) {
                 System.out.println("Variable ya ha sido declarada: " + registroActual.getToken());
             } else {
-                this.parser.tablaSimbolos.put(registroActual.getToken(), new DataObject(registro.getToken(), registroActual.getToken()));
+                this.parser.tablaSimbolos.put(registroActual.getToken(), new DataObject(registro.getToken(), registroActual.getToken(), ""));
             }
 
         }
@@ -268,16 +273,76 @@ statement  ::=
     switch |
     if_expression |
     valid_name assignments expression OPERATOR_END_LINE {:
-        RegistroConstante registro = (RegistroConstante) this.parser.pila.pop();
+        RegistroSemantico registro = this.parser.pila.pop();
         RegistroOperador registroOperador = (RegistroOperador) this.parser.pila.pop();
-        if (registroOperador.getToken() == "=") {
-            RegistroIdentificador registroIdentificador = (RegistroIdentificador) this.parser.pila.pop();
-            if (this.parser.tablaSimbolos.get(registroIdentificador.getToken()) == null) {
+
+        if (registro instanceof RegistroIdentificador) {
+            DataObject obj = this.parser.tablaSimbolos.get(registro.getToken());
+            if (obj == null) {
                 addError("Identificador no encontrado");
             }
-        } else {
-
         }
+
+        // ASIGNACION
+        if (registroOperador.getToken().equals("=")) {
+            RegistroIdentificador registroIdentificador = (RegistroIdentificador) this.parser.pila.pop();
+            DataObject obj = this.parser.tablaSimbolos.get(registroIdentificador.getToken());
+            if (obj == null) {
+                addError("Identificador no encontrado");
+
+            } else if (((DataObject)registro).getTipo() != obj.getTipo()) {
+                            addError("Tipo incorrecto");
+            } else {
+                obj.setValor(((DataObject)registro).getValor());
+            }
+        } /* else {  //EVALUACION BINARIA
+            RegistroSemantico registro2 = this.parser.pila.pop();
+
+            if (registro2 instanceof RegistroIdentificador) {
+                DataObject obj = this.parser.tablaSimbolos.get(registro2.getToken());
+                if (obj == null) {
+                    addError("Identificador no encontrado");
+                }
+
+            if (registro2.getTipo().equals(registro.getTipo())) {
+               // DataObject resultado = new DataObject();
+
+//
+//                string char
+//
+//                char string
+//
+//                string xd = 'a' + 'b';
+                switch(registroOperador.getToken()) {
+                    case "+":
+                        if (registro2.getTipo().equals("int")) {
+                            Integer resultado = Integer.parseInt(registro2.getValor()) + Integer.parseInt(registro.getValor());
+                        } else if (registro2.getTipo().equals("string")) {
+
+                        } else if (registro2.getTipo().equals("char")) {
+
+                        }
+
+                        break;
+                    case "-":
+
+                        break;
+                    case "/":
+
+                        break;
+                    case "%":
+
+                        break;
+                    case "*":
+
+                        break;
+                }
+
+            } else {
+                addError("Tipos diferentes siendo operados");
+            }
+
+        } */
     :}
     |
     valid_name OPERATOR_ASSIGNMENT_EQUALS list_expression OPERATOR_END_LINE |
@@ -485,11 +550,11 @@ math ::=
 ;
 
 literals ::=
-    LITERAL_HEXA:e {: RegistroConstante registro = new RegistroConstante(e.toString(), "HEXA"); this.parser.pila.push(registro); :}
-    | LITERAL_OCTAL:e {: RegistroConstante registro = new RegistroConstante(e.toString(), "OCTAL"); this.parser.pila.push(registro); :}
-    | LITERAL_STRING:e {: RegistroConstante registro = new RegistroConstante(e.toString(), "STRING"); this.parser.pila.push(registro); :}
-    | LITERAL_DECIMAL:e {: RegistroConstante registro = new RegistroConstante(e.toString(), "DECIMAL"); this.parser.pila.push(registro); :}
-    | LITERAL_CHARACTER :e {: RegistroConstante registro = new RegistroConstante(e.toString(), "CHARACTER"); this.parser.pila.push(registro); :}
+    LITERAL_HEXA:e {: DataObject registro = new DataObject("int", "",e.toString()); this.parser.pila.push(registro); :}
+    | LITERAL_OCTAL:e {: DataObject registro = new DataObject("int", "",e.toString()); this.parser.pila.push(registro); :}
+    | LITERAL_STRING:e {: DataObject registro = new DataObject("string", "",e.toString()); this.parser.pila.push(registro); :}
+    | LITERAL_CHARACTER :e {: DataObject registro = new DataObject("char", "",e.toString()); this.parser.pila.push(registro); :}
+    | LITERAL_DECIMAL:e {: DataObject registro = new DataObject("int", "",e.toString()); this.parser.pila.push(registro); :}
 ;
 
 loop_words ::=

@@ -341,24 +341,24 @@ public class Parser extends java_cup.runtime.lr_parser {
     "\056\uff70\057\uff70\060\uff70\061\uff70\062\uff70\063\uff70\064" +
     "\uff70\001\002\000\032\004\012\006\121\010\117\011\133" +
     "\012\126\013\132\015\106\016\064\024\120\034\125\037" +
-    "\130\062\011\001\002\000\110\003\uff63\004\uff63\005\uff63" +
-    "\015\uff63\016\uff63\017\uff63\020\uff63\021\uff63\022\uff63\023" +
-    "\uff63\024\uff63\025\uff63\026\uff63\027\uff63\035\uff63\036\uff63" +
-    "\041\uff63\042\uff63\043\uff63\044\uff63\045\uff63\046\uff63\047" +
-    "\uff63\051\uff63\052\uff63\053\uff63\054\uff63\055\uff63\056\uff63" +
-    "\057\uff63\060\uff63\061\uff63\062\uff63\063\uff63\064\uff63\001" +
+    "\130\062\011\001\002\000\110\003\uff62\004\uff62\005\uff62" +
+    "\015\uff62\016\uff62\017\uff62\020\uff62\021\uff62\022\uff62\023" +
+    "\uff62\024\uff62\025\uff62\026\uff62\027\uff62\035\uff62\036\uff62" +
+    "\041\uff62\042\uff62\043\uff62\044\uff62\045\uff62\046\uff62\047" +
+    "\uff62\051\uff62\052\uff62\053\uff62\054\uff62\055\uff62\056\uff62" +
+    "\057\uff62\060\uff62\061\uff62\062\uff62\063\uff62\064\uff62\001" +
     "\002\000\032\015\106\016\064\017\uff6f\020\uff6f\024\uff6f" +
     "\026\uff6f\027\uff6f\030\161\031\162\034\147\035\uff6f\036" +
     "\uff6f\001\002\000\032\004\012\006\121\010\117\011\133" +
     "\012\126\013\132\015\106\016\064\024\120\034\125\037" +
     "\130\062\011\001\002\000\020\017\140\020\134\024\135" +
     "\026\142\027\137\035\uff76\036\136\001\002\000\110\003" +
-    "\uff62\004\uff62\005\uff62\015\uff62\016\uff62\017\uff62\020\uff62" +
-    "\021\uff62\022\uff62\023\uff62\024\uff62\025\uff62\026\uff62\027" +
-    "\uff62\035\uff62\036\uff62\041\uff62\042\uff62\043\uff62\044\uff62" +
-    "\045\uff62\046\uff62\047\uff62\051\uff62\052\uff62\053\uff62\054" +
-    "\uff62\055\uff62\056\uff62\057\uff62\060\uff62\061\uff62\062\uff62" +
-    "\063\uff62\064\uff62\001\002\000\110\003\uff64\004\uff64\005" +
+    "\uff63\004\uff63\005\uff63\015\uff63\016\uff63\017\uff63\020\uff63" +
+    "\021\uff63\022\uff63\023\uff63\024\uff63\025\uff63\026\uff63\027" +
+    "\uff63\035\uff63\036\uff63\041\uff63\042\uff63\043\uff63\044\uff63" +
+    "\045\uff63\046\uff63\047\uff63\051\uff63\052\uff63\053\uff63\054" +
+    "\uff63\055\uff63\056\uff63\057\uff63\060\uff63\061\uff63\062\uff63" +
+    "\063\uff63\064\uff63\001\002\000\110\003\uff64\004\uff64\005" +
     "\uff64\015\uff64\016\uff64\017\uff64\020\uff64\021\uff64\022\uff64" +
     "\023\uff64\024\uff64\025\uff64\026\uff64\027\uff64\035\uff64\036" +
     "\uff64\041\uff64\042\uff64\043\uff64\044\uff64\045\uff64\046\uff64" +
@@ -996,8 +996,13 @@ public class Parser extends java_cup.runtime.lr_parser {
         //System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
     public void addError(String error){
-        //this.listaErroresSemanticos.push(error+" Linea "+(s.right+1)+" columna "+(s.left+1)+"\n");
+            this.listaErroresSemanticos.add(error+" Linea "+(previousSymbol.right+1)+" columna "+(previousSymbol.left+1)+"\n");
     }
+
+    public ArrayList<String> getErroresSemanticos() {
+        return this.listaErroresSemanticos;
+    }
+
     public void unrecovered_syntax_error(Symbol s){
         //System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
@@ -1237,7 +1242,7 @@ class CUP$Parser$actions {
             if (this.parser.tablaSimbolos.get(registroActual.getToken()) != null) {
                 System.out.println("Variable ya ha sido declarada: " + registroActual.getToken());
             } else {
-                this.parser.tablaSimbolos.put(registroActual.getToken(), new DataObject(registro.getToken(), registroActual.getToken()));
+                this.parser.tablaSimbolos.put(registroActual.getToken(), new DataObject(registro.getToken(), registroActual.getToken(), ""));
             }
 
         }
@@ -1621,16 +1626,75 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		
-        RegistroConstante registro = (RegistroConstante) this.parser.pila.pop();
+        RegistroSemantico registro = this.parser.pila.pop();
         RegistroOperador registroOperador = (RegistroOperador) this.parser.pila.pop();
-        if (registroOperador.getToken() == "=") {
-            RegistroIdentificador registroIdentificador = (RegistroIdentificador) this.parser.pila.pop();
-            if (this.parser.tablaSimbolos.get(registroIdentificador.getToken()) == null) {
-                addError("");
-            }
-        } else {
 
+        if (registro instanceof RegistroIdentificador) {
+            DataObject obj = this.parser.tablaSimbolos.get(registro.getToken());
+            if (obj == null) {
+                addError("Identificador no encontrado");
+            }
         }
+
+        // ASIGNACION
+        if (registroOperador.getToken().equals("=")) {
+            RegistroIdentificador registroIdentificador = (RegistroIdentificador) this.parser.pila.pop();
+            DataObject obj = this.parser.tablaSimbolos.get(registroIdentificador.getToken());
+            if (obj == null) {
+                addError("Identificador no encontrado");
+            } else if (((DataObject)registro).getTipo() != obj.getTipo()) {
+                addError("Tipo incorrecto");
+            } else {
+                obj.setValor(((DataObject)registro).getValor());
+            }
+        } /* else {  //EVALUACION BINARIA
+            RegistroSemantico registro2 = this.parser.pila.pop();
+
+            if (registro2 instanceof RegistroIdentificador) {
+                DataObject obj = this.parser.tablaSimbolos.get(registro2.getToken());
+                if (obj == null) {
+                    addError("Identificador no encontrado");
+                }
+
+            if (registro2.getTipo().equals(registro.getTipo())) {
+               // DataObject resultado = new DataObject();
+
+//
+//                string char
+//
+//                char string
+//
+//                string xd = 'a' + 'b';
+                switch(registroOperador.getToken()) {
+                    case "+":
+                        if (registro2.getTipo().equals("int")) {
+                            Integer resultado = Integer.parseInt(registro2.getValor()) + Integer.parseInt(registro.getValor());
+                        } else if (registro2.getTipo().equals("string")) {
+
+                        } else if (registro2.getTipo().equals("char")) {
+
+                        }
+
+                        break;
+                    case "-":
+
+                        break;
+                    case "/":
+
+                        break;
+                    case "%":
+
+                        break;
+                    case "*":
+
+                        break;
+                }
+
+            } else {
+                addError("Tipos diferentes siendo operados");
+            }
+
+        } */
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("statement",16, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2522,7 +2586,7 @@ class CUP$Parser$actions {
 		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RegistroConstante registro = new RegistroConstante(e.toString(), "HEXA"); this.parser.pila.push(registro); 
+		 DataObject registro = new DataObject("int", "",e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literals",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2534,7 +2598,7 @@ class CUP$Parser$actions {
 		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RegistroConstante registro = new RegistroConstante(e.toString(), "OCTAL"); this.parser.pila.push(registro); 
+		 DataObject registro = new DataObject("int", "",e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literals",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2546,31 +2610,31 @@ class CUP$Parser$actions {
 		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RegistroConstante registro = new RegistroConstante(e.toString(), "STRING"); this.parser.pila.push(registro); 
+		 DataObject registro = new DataObject("string", "",e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literals",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 158: // literals ::= LITERAL_DECIMAL 
+          case 158: // literals ::= LITERAL_CHARACTER 
             {
               Object RESULT =null;
 		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RegistroConstante registro = new RegistroConstante(e.toString(), "DECIMAL"); this.parser.pila.push(registro); 
+		 DataObject registro = new DataObject("char", "",e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literals",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 159: // literals ::= LITERAL_CHARACTER 
+          case 159: // literals ::= LITERAL_DECIMAL 
             {
               Object RESULT =null;
 		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
 		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
 		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
-		 RegistroConstante registro = new RegistroConstante(e.toString(), "CHARACTER"); this.parser.pila.push(registro); 
+		 DataObject registro = new DataObject("int", "",e.toString()); this.parser.pila.push(registro); 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("literals",9, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

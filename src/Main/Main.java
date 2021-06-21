@@ -25,6 +25,8 @@ public class Main {
             System.out.println(s.getPila().toString());
 
             System.out.println(s.getTabla().toString());
+
+            System.out.println(s.getErroresSemanticos());
         }
         /*
         for(String argument: args){

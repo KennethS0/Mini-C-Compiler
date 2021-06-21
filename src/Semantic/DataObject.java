@@ -1,37 +1,38 @@
 package Semantic;
 
-public class DataObject {
+public class DataObject extends RegistroSemantico {
 
     String tipo = "";
     String valor = "";
     String nombre = "";
 
-    public DataObject(String pTipo, String pNombre) {
+    public DataObject(String pTipo, String pNombre, String pValor) {
         this.tipo = pTipo;
         this.nombre = pNombre;
+        this.valor = pValor;
     }
     // SETTERS - GETTERS
-    String getTipo(){
+    public String getTipo(){
         return this.tipo;
     }
 
-    String getValor(){
+    public String getValor(){
         return this.valor;
     }
 
-    String getNombre(){
+    public String getNombre(){
         return this.nombre;
     }
 
-    void setTipo(String pTipo){
+    public void setTipo(String pTipo){
         this.tipo = pTipo;
     }
 
-    void setValor(String pValor){
+    public void setValor(String pValor){
         this.valor = pValor;
     }
 
-    void setNombre(String pNombre){
+    public void setNombre(String pNombre){
         this.nombre = pNombre;
     }
 
