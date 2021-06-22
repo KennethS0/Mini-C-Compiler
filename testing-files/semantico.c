@@ -8,5 +8,4 @@ void funcion1D(){
     lo = 5555555;
     lo = var;
     mono = "hola";
-
 }

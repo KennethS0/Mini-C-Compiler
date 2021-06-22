@@ -6,12 +6,22 @@ public class RegistroTipo extends RegistroSemantico {
         super();
     }
 
-    public RegistroTipo(String pToken) {
-        super(pToken);
+    private DataTypes tipo;
+
+    public RegistroTipo(DataTypes pTipo) {
+        this.tipo = pTipo;
+    }
+
+    public DataTypes getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(DataTypes tipo) {
+        this.tipo = tipo;
     }
 
     @Override
     public String toString() {
-        return "Registro de tipo: " + this.getToken();
+        return "RS_Type: " + this.getToken();
     }
 }

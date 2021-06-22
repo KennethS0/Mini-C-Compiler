@@ -1,18 +1,22 @@
 package Semantic;
 
+import javax.xml.crypto.Data;
+
 public class DataObject extends RegistroSemantico {
 
-    String tipo = "";
+    DataTypes tipo;
     String valor = "";
     String nombre = "";
 
-    public DataObject(String pTipo, String pNombre, String pValor) {
+    public DataObject(){};
+
+    public DataObject(DataTypes pTipo, String pNombre, String pValor) {
         this.tipo = pTipo;
         this.nombre = pNombre;
         this.valor = pValor;
     }
     // SETTERS - GETTERS
-    public String getTipo(){
+    public DataTypes  getTipo(){
         return this.tipo;
     }
 
@@ -24,7 +28,7 @@ public class DataObject extends RegistroSemantico {
         return this.nombre;
     }
 
-    public void setTipo(String pTipo){
+    public void setTipo(DataTypes pTipo){
         this.tipo = pTipo;
     }
 
@@ -38,6 +42,6 @@ public class DataObject extends RegistroSemantico {
 
     @Override
     public String toString(){
-        return "'" + this.nombre + ", " + this.tipo + ", " +  this.valor  + "'";
+        return "RS_DO: " + this.nombre + " TIPO: " + this.tipo + " VAL: " +  this.valor;
     }
 }

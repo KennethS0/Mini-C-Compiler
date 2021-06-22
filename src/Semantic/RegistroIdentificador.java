@@ -6,16 +6,23 @@ public class RegistroIdentificador extends RegistroSemantico{
         super();
     }
 
-    public RegistroIdentificador(String pToken) {
+    public RegistroIdentificador(DataTypes pTipo, String pToken) {
         super(pToken);
+        this.tipo = pTipo;
     }
 
-    private String tipo;
-
-
+    private DataTypes tipo;
 
     @Override
     public String toString() {
-        return "Registro de identificador: " + this.getToken();
+        return "RS_ID: " + this.getToken() + " TIPO: " + this.tipo;
+    }
+
+    public DataTypes getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(DataTypes tipo) {
+        this.tipo = tipo;
     }
 }

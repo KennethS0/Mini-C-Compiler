@@ -15,6 +15,6 @@ public class RegistroOperador extends RegistroSemantico {
 
     @Override
     public String toString() {
-        return "Registro de Operador: " + this.getToken();
+        return "RS_OP: " + this.getToken();
     }
 }
