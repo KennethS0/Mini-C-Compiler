@@ -11,14 +11,15 @@ public class Main {
 
         for (int i = 0; i < args.length; i++) {
             File archivo;
-
             archivo = new File(args[i]);
 
             String ST = new String(Files.readAllBytes(archivo.toPath()));
             Scanner scanner = new Scanner(new StringReader(ST));
             Parser s = new Parser(scanner);
-            s.parse();
 
+            s.assemblerGenerator.generateAssemblerFile(args[i]);
+            s.parse();
+            s.assemblerGenerator.closeFile();
             //System.out.println(scanner.toString());
             //System.out.println(s.toString());
 
@@ -27,6 +28,7 @@ public class Main {
             System.out.println(s.getTabla().toString());
 
             System.out.println(s.getErroresSemanticos());
+
         }
         /*
         for(String argument: args){

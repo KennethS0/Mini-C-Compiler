@@ -1,11 +1,13 @@
 package Parser; 
-import java.util.*;
-import java_cup.runtime.*;
-import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
 import Semantic.*;
-import java.util.HashMap;
-
+import java.util.*;
+import java.io.File;
 import Parser.Error.*;
+import java.util.HashMap;
+import java_cup.runtime.*;
+import java.io.IOException;
+import java_cup.runtime.ComplexSymbolFactory.ComplexSymbol;
+import Main.AssemblerGenerator;
 
 parser code
 {:
@@ -16,9 +18,9 @@ parser code
     private ArrayList<String> listaErroresSemanticos = new ArrayList<String>();
     private PilaSemantica pila = new PilaSemantica();
     public HashMap<String, RegistroSemantico> tablaSimbolos = new HashMap<String, RegistroSemantico>();
+    public AssemblerGenerator assemblerGenerator = new AssemblerGenerator();
 
-
-    public Symbol getCurrentSymbol(){
+    public Symbol currentSymbol(){
         return this.currentSymbol;
     }
 
@@ -27,7 +29,7 @@ parser code
         //System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
     public void addError(String error){
-            this.listaErroresSemanticos.add(error+" Linea "+(previousSymbol.right+1)+" columna "+(previousSymbol.left+1)+"\n");
+            this.listaErroresSemanticos.add(error+" Linea "+(previousSymbol.right+1)+" columna "+(previousSymbol.left+1));
     }
 
     public ArrayList<String> getErroresSemanticos() {
@@ -65,6 +67,9 @@ parser code
 
     public HashMap<String, RegistroSemantico> getTabla() {
         return this.tablaSimbolos;
+    }
+    public AssemblerGenerator getAssemblerGenerator(){
+        return this.assemblerGenerator;
     }
 
 :};
@@ -278,47 +283,134 @@ statement  ::=
         DataObject rs_do2;
 
         if (tempObject instanceof RegistroIdentificador) {
-            rs_do2 = new DataObject(DataTypes.VARIABLE,
-                                    tempObject.getToken(),
-                                    Integer.toHexString(System.identityHashCode(tempObject))
-                                    );
+            RegistroSemantico registroTemporal = this.parser.getTabla().get(tempObject.getToken());
+            if (registroTemporal != null) {
+                rs_do2 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
+                                        tempObject.getToken(),
+                                        Integer.toHexString(System.identityHashCode(tempObject)),
+                                        true);
+            } else {
+                rs_do2 = new DataObject(DataTypes.ERROR,
+                                        tempObject.getToken(),
+                                        Integer.toHexString(System.identityHashCode(tempObject)),
+                                        true);
+                addError("Variable no definida");
+            }
         } else { // Es constante
             rs_do2 = (DataObject) tempObject;
         }
-        System.out.println(rs_do2);
 
         if (rs_op.getToken().equals("=")) {
-            RegistroIdentificador temporal = (RegistroIdentificador) this.parser.pila.pop();
-            DataObject nombreVar = new DataObject(DataTypes.VARIABLE,
-                                    temporal.getNombre(),
-                                    Integer.toHexString(System.identityHashCode(temporal))
-                                    );
+            RegistroIdentificador temporal = (RegistroIdentificador) this.parser.getTabla().get(
+                            ((RegistroIdentificador) this.parser.pila.pop()).getToken());
 
-            if (rs_do2.getTipo() == DataTypes.VARIABLE) {
-                // jaja = xd;
+            if (temporal != null) {
 
-                // mov ax, [xd]
-                // mov [jaja], ax
+                DataObject nombreVar = new DataObject(temporal.getTipo(),
+                                        temporal.getToken(),
+                                        Integer.toHexString(System.identityHashCode(temporal)),
+                                        true);
+
+
+                if (this.parser.getTabla().get(nombreVar.getNombre()) != null) {
+
+                    if (rs_do2.getTipo() == nombreVar.getTipo()) {
+                        if (rs_do2.getVariable()) {
+                            //TODO - ESCRIBIR EN ASM
+
+                            this.parser.assemblerGenerator.writeAssemblerCode("mov ax, [" + rs_do2.getNombre() + "]");
+                            this.parser.assemblerGenerator.writeAssemblerCode("mov [" + nombreVar.getNombre() + "], ax");
+                        } else {
+                            //TODO - ESCRIBIR EN ASM
+                            this.parser.assemblerGenerator.writeAssemblerCode("mov ax, " + rs_do2.getValor());
+                            this.parser.assemblerGenerator.writeAssemblerCode("mov [" + nombreVar.getNombre() + "], ax");
+                        }
+
+                    } else {
+                        addError("Variables de diferente tipo");
+                    }
+                } else {
+                    addError("Variable no declarada");
+                }
             } else {
-                // jaja = 2;
-
-                // mov [jaja], 2
+                addError("Variable no declarada");
             }
 
         } else {
-
             // Esto es eval binary
-            DataObject rs_do1 = (DataObject) this.parser.pila.pop();
 
+            DataObject rs_do1;
+
+            tempObject = (RegistroSemantico) this.parser.pila.pop();
+
+            if (tempObject instanceof RegistroIdentificador) {
+                RegistroSemantico registroTemporal = this.parser.getTabla().get(tempObject.getToken());
+                if (registroTemporal != null) {
+                    rs_do1 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
+                                            tempObject.getToken(),
+                                            Integer.toHexString(System.identityHashCode(tempObject)),
+                                            true);
+                } else {
+                    rs_do1 = new DataObject(DataTypes.ERROR,
+                                            tempObject.getToken(),
+                                            Integer.toHexString(System.identityHashCode(tempObject)),
+                                            true);
+                    addError("Variable no definida");
+                }
+            } else { // Es constante
+                rs_do1 = (DataObject) tempObject;
+            }
+
+            this.parser.pila.pop(); // TODO guardar el operador
+
+            RegistroIdentificador temporal = (RegistroIdentificador) this.parser.getTabla().get(
+                                        ((RegistroIdentificador) this.parser.pila.pop()).getToken());
+
+            if (temporal != null) {
+
+                DataObject nombreVar = new DataObject(temporal.getTipo(),
+                                        temporal.getToken(),
+                                        Integer.toHexString(System.identityHashCode(temporal)),
+                                        true);
+
+
+                if (this.parser.getTabla().get(nombreVar.getNombre()) != null) {
+
+                    if (rs_do2.getTipo() == nombreVar.getTipo() && rs_do1.getTipo() == nombreVar.getTipo()) {
+
+                        // TODO copiar el codigo de kenneth
+                        if (rs_do2.getTipo() == DataTypes.INT || rs_do2.getTipo() == DataTypes.LONG) {
+                            // Constant folding
+                            long valor2 = Long.parseLong(rs_do2.getValor());
+                            long valor1 = Long.parseLong(rs_do1.getValor());
+                            long nuevoValor = 0;
+                            switch (rs_op.getToken()) {
+                                case "+" :
+                                    nuevoValor = valor1 + valor2;
+                                    break;
+                                case "-" :
+                                    nuevoValor = valor1 - valor2;
+                                    break;
+                            }
+                            System.out.println("Constant folding: " + nuevoValor);
+                        }
+                    } else {
+                        addError("Variables de diferente tipo");
+                    }
+                } else {
+                    addError("Variable no declarada");
+                }
+            } else {
+                addError("Variable no declarada");
+            }
         }
-
     :} |
     valid_name OPERATOR_ASSIGNMENT_EQUALS list_expression OPERATOR_END_LINE |
     brackets |
     loop_words OPERATOR_END_LINE |
     RETURN expression OPERATOR_END_LINE |
 
-    // Read | Write
+    // Read | W /if (rs_do1.)rite
     read_write OPERATOR_END_LINE |
 
     // Errors
@@ -454,7 +546,10 @@ data_type ::=
 ;
 
 valid_name ::=
-    IDENTIFIER:e {: RegistroIdentificador registro = new RegistroIdentificador(DataTypes.UNDETERMINED, e.toString()); this.parser.pila.push(registro); :}
+    IDENTIFIER:e {:
+        RegistroIdentificador registro = new RegistroIdentificador(DataTypes.UNDETERMINED, e.toString());
+        this.parser.pila.push(registro);
+    :}
     | IDENTIFIER_ERROR // Recovers from lexical error
 ;
 

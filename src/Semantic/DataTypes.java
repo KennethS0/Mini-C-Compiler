@@ -7,5 +7,6 @@ public enum DataTypes {
     SHORT,
     STRING,
     UNDETERMINED,
-    VARIABLE
+    VARIABLE,
+    ERROR
 }
