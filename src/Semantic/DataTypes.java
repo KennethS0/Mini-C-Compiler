@@ -8,5 +8,6 @@ public enum DataTypes {
     STRING,
     UNDETERMINED,
     VARIABLE,
-    ERROR
+    ERROR,
+    VOID
 }

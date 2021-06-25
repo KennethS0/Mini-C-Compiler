@@ -22,6 +22,6 @@ public class RegistroTipo extends RegistroSemantico {
 
     @Override
     public String toString() {
-        return "RS_Type: " + this.getToken();
+        return "RS_Type: " + this.tipo;
     }
 }

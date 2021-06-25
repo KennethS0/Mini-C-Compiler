@@ -982,6 +982,7 @@ public class Parser extends java_cup.runtime.lr_parser {
 
 
 
+    private int functionRUID;
     private Symbol currentSymbol;
     private Symbol previousSymbol;
     private Boolean generateASMFlag;
@@ -989,6 +990,8 @@ public class Parser extends java_cup.runtime.lr_parser {
     private PilaSemantica pila = new PilaSemantica();
     public HashMap<String, RegistroSemantico> tablaSimbolos = new HashMap<String, RegistroSemantico>();
     public AssemblerGenerator assemblerGenerator = new AssemblerGenerator();
+    public boolean startDeclarations = true;
+    public boolean startText = true;
 
     public Symbol currentSymbol(){
         return this.currentSymbol;
@@ -999,7 +1002,7 @@ public class Parser extends java_cup.runtime.lr_parser {
         //System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
     public void addError(String error){
-            this.listaErroresSemanticos.add(error+" Linea "+(previousSymbol.right+1)+" columna "+(previousSymbol.left+1));
+            this.listaErroresSemanticos.add(error+" en Linea: "+(previousSymbol.right+1)+" columna: "+(previousSymbol.left+1));
     }
 
     public ArrayList<String> getErroresSemanticos() {
@@ -1248,7 +1251,24 @@ class CUP$Parser$actions {
             if (this.parser.tablaSimbolos.get(registroActual.getToken()) != null) {
                 System.out.println("Variable ya ha sido declarada: " + registroActual.getToken());
             } else {
+                System.out.println(registroActual.getToken());
                 this.parser.tablaSimbolos.put(registroActual.getToken(), new RegistroIdentificador(registro.getTipo(), registroActual.getToken()));
+                    System.out.println(this.parser.tablaSimbolos.toString());
+                if (this.parser.startDeclarations) {
+                    this.parser.assemblerGenerator.writeAssemblerCode("section .bss");
+                    this.parser.startDeclarations = false;
+                }
+                switch(registro.getTipo()) {
+                    case INT:
+                        this.parser.assemblerGenerator.writeAssemblerCode("\t" + registroActual.getToken() + " resb 4");
+                        break;
+                    case LONG:
+                        this.parser.assemblerGenerator.writeAssemblerCode("\t" + registroActual.getToken() + " resb 8");
+                        break;
+                    case CHAR:
+                        this.parser.assemblerGenerator.writeAssemblerCode("\t" + registroActual.getToken() + " resb 1");
+                        break;
+                }
             }
 
         }
@@ -1496,7 +1516,7 @@ class CUP$Parser$actions {
           case 45: // func_declaration ::= typed_identifier func_decl_parentheses brackets 
             {
               Object RESULT =null;
-
+		  
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("func_declaration",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1505,7 +1525,7 @@ class CUP$Parser$actions {
           case 46: // func_declaration ::= typed_identifier func_decl_parentheses OPERATOR_END_LINE 
             {
               Object RESULT =null;
-
+		  
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("func_declaration",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-2)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1514,7 +1534,15 @@ class CUP$Parser$actions {
           case 47: // func_declaration ::= VOID valid_name func_decl_parentheses brackets 
             {
               Object RESULT =null;
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
+		
 
+    RegistroTipo registro = new RegistroTipo(DataTypes.VOID);;
+    this.parser.pila.push(registro);
+
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("func_declaration",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1523,7 +1551,10 @@ class CUP$Parser$actions {
           case 48: // func_declaration ::= VOID valid_name func_decl_parentheses OPERATOR_END_LINE 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.elementAt(CUP$Parser$top-3)).value;
+		 
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("func_declaration",14, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-3)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -1636,6 +1667,11 @@ class CUP$Parser$actions {
         RegistroOperador rs_op = (RegistroOperador) this.parser.pila.pop();
         DataObject rs_do2;
 
+        if (this.parser.startText) {
+            this.parser.assemblerGenerator.writeAssemblerCode("\nsection .text");
+            this.parser.startText = false;
+        }
+
         if (tempObject instanceof RegistroIdentificador) {
             RegistroSemantico registroTemporal = this.parser.getTabla().get(tempObject.getToken());
             if (registroTemporal != null) {
@@ -1655,6 +1691,10 @@ class CUP$Parser$actions {
         }
 
         if (rs_op.getToken().equals("=")) {
+
+            System.out.println(this.parser.pila);
+            System.out.println(this.parser.tablaSimbolos);
+
             RegistroIdentificador temporal = (RegistroIdentificador) this.parser.getTabla().get(
                             ((RegistroIdentificador) this.parser.pila.pop()).getToken());
 
@@ -1671,13 +1711,12 @@ class CUP$Parser$actions {
                     if (rs_do2.getTipo() == nombreVar.getTipo()) {
                         if (rs_do2.getVariable()) {
                             //TODO - ESCRIBIR EN ASM
-
-                            this.parser.assemblerGenerator.writeAssemblerCode("mov ax, [" + rs_do2.getNombre() + "]");
-                            this.parser.assemblerGenerator.writeAssemblerCode("mov [" + nombreVar.getNombre() + "], ax");
+                            this.parser.assemblerGenerator.writeAssemblerCode("\t" + "mov ax, [" + rs_do2.getNombre() + "]");
+                            this.parser.assemblerGenerator.writeAssemblerCode("\t" + "mov [" + nombreVar.getNombre() + "], ax\n");
                         } else {
                             //TODO - ESCRIBIR EN ASM
-                            this.parser.assemblerGenerator.writeAssemblerCode("mov ax, " + rs_do2.getValor());
-                            this.parser.assemblerGenerator.writeAssemblerCode("mov [" + nombreVar.getNombre() + "], ax");
+                            this.parser.assemblerGenerator.writeAssemblerCode("\t" + "mov ax, " + rs_do2.getValor());
+                            this.parser.assemblerGenerator.writeAssemblerCode("\t" + "mov [" + nombreVar.getNombre() + "], ax\n");
                         }
 
                     } else {
@@ -1715,7 +1754,7 @@ class CUP$Parser$actions {
                 rs_do1 = (DataObject) tempObject;
             }
 
-            this.parser.pila.pop(); // TODO guardar el operador
+            this.parser.pila.pop();
 
             RegistroIdentificador temporal = (RegistroIdentificador) this.parser.getTabla().get(
                                         ((RegistroIdentificador) this.parser.pila.pop()).getToken());
@@ -1730,27 +1769,105 @@ class CUP$Parser$actions {
 
                 if (this.parser.getTabla().get(nombreVar.getNombre()) != null) {
 
+
                     if (rs_do2.getTipo() == nombreVar.getTipo() && rs_do1.getTipo() == nombreVar.getTipo()) {
 
-                        // TODO copiar el codigo de kenneth
+
                         if (rs_do2.getTipo() == DataTypes.INT || rs_do2.getTipo() == DataTypes.LONG) {
-                            // Constant folding
-                            long valor2 = Long.parseLong(rs_do2.getValor());
-                            long valor1 = Long.parseLong(rs_do1.getValor());
-                            long nuevoValor = 0;
-                            switch (rs_op.getToken()) {
-                                case "+" :
-                                    nuevoValor = valor1 + valor2;
-                                    break;
-                                case "-" :
-                                    nuevoValor = valor1 - valor2;
-                                    break;
+
+                            if (rs_do1.getVariable() || rs_do2.getVariable()) {
+                                if (rs_do1.getVariable()) {
+                                    this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, [" + rs_do1.getNombre() + "]");
+                                } else {
+                                    this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, " + rs_do1.getValor());
+                                }
+                                Boolean remainder = false;
+                                if (rs_do2.getVariable()) {
+                                    switch (rs_op.getToken()) {
+                                        case "+" :
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tadd ax, [" + rs_do2.getNombre() + "]");
+                                            break;
+                                        case "-" :
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tsub ax, [" + rs_do2.getNombre() + "]");
+                                            break;
+                                        case "*" :
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tmov dx, [" + rs_do2.getNombre() + "]");
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tmul dx");
+                                            break;
+                                        case "/" :
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tmov bx, [" + rs_do2.getNombre() + "]");
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tdiv bx");
+                                            break;
+                                        case "%" :
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tmov bx, [" + rs_do2.getNombre() + "]");
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tdiv bx");
+                                            remainder = true;
+                                            break;
+                                    }
+                                } else {
+                                    switch (rs_op.getToken()) {
+                                        case "+" :
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tadd ax, " + rs_do2.getValor());
+                                            break;
+                                        case "-" :
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tsub ax, " + rs_do2.getValor());
+                                            break;
+                                        case "*" :
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tmov dx, " + rs_do2.getValor());
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tmul dx");
+                                            break;
+                                        case "/" :
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tmov bx, " + rs_do2.getValor() );
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tdiv bx");
+                                            break;
+                                        case "%" :
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tmov bx, " + rs_do2.getValor());
+                                            this.parser.assemblerGenerator.writeAssemblerCode("\tdiv bx");
+                                            remainder = true;
+                                            break;
+                                    }
+                                }
+                                if (!remainder) {
+                                    this.parser.assemblerGenerator.writeAssemblerCode("\tmov [" + nombreVar.getNombre() + "], ax");
+                                } else {
+                                    this.parser.assemblerGenerator.writeAssemblerCode("\tmov [" + nombreVar.getNombre() + "], dx");
+                                }
                             }
+
+                            else {
+                                // Constant folding
+                                long valor2 = Long.parseLong(rs_do2.getValor());
+                                long valor1 = Long.parseLong(rs_do1.getValor());
+                                long nuevoValor = 0;
+                                switch (rs_op.getToken()) {
+                                    case "+" :
+                                        nuevoValor = valor1 + valor2;
+                                        break;
+                                    case "-" :
+                                        nuevoValor = valor1 - valor2;
+                                        break;
+                                    case "*" :
+                                        nuevoValor = valor1 * valor2;
+                                        break;
+                                    case "/" :
+                                        nuevoValor = valor1 / valor2;
+                                        break;
+                                }
+                                nombreVar.setValor(Long.toString(nuevoValor));
+
+                                this.parser.assemblerGenerator.writeAssemblerCode("mov ax, " + nombreVar.getValor());
+                                this.parser.assemblerGenerator.writeAssemblerCode("mov [" + nombreVar.getNombre() + "], ax");
+                            }
+
+                            /*
+
                             System.out.println("Constant folding: " + nuevoValor);
+                            */
                         }
                     } else {
                         addError("Variables de diferente tipo");
                     }
+
                 } else {
                     addError("Variable no declarada");
                 }
