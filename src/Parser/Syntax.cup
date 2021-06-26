@@ -12,7 +12,7 @@ import Main.AssemblerGenerator;
 parser code
 {:
 
-    private int functionRUID;
+    private int GUID;
     private Symbol currentSymbol;
     private Symbol previousSymbol;
     private Boolean generateASMFlag;
@@ -54,7 +54,9 @@ parser code
         }
         return result;
     }
-
+    public void unrecovered_syntax_error(Symbol s){
+        //System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
+    }
     public void newSyntaxError(ErrorTypes pType) {
         syntaxerrors.add(new SyntaxError(pType, previousSymbol.right + 1, previousSymbol.left + previousSymbol.toString().length()));
     }
@@ -133,7 +135,7 @@ non terminal case_expressions, case_expression, assignment_expression;
 
 non terminal switch_data_type, missing_expression, var_identifiers;
 
-non terminal while_expression, for_expression, if_expression, else_expression, brackets;
+non terminal while_expression, while_init, for_expression, if_expression, else_expression, brackets;
 
 non terminal for_variable, loop_words, for_loop;
 
@@ -331,8 +333,7 @@ statement  ::=
 
                 DataObject nombreVar = new DataObject(temporal.getTipo(),
                                         temporal.getToken(),
-                                        Integer.toHexString(System.identityHashCode(temporal)),
-                                        true);
+                                        Integer.toHexString(System.identityHashCode(temporal)));
 
 
                 if (this.parser.getTabla().get(nombreVar.getNombre()) != null) {
@@ -410,7 +411,7 @@ statement  ::=
                                 } else {
                                     this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, " + rs_do1.getValor());
                                 }
-                                Boolean remainder = false;
+                                boolean remainder = false;
                                 if (rs_do2.getVariable()) {
                                     switch (rs_op.getToken()) {
                                         case "+" :
@@ -629,11 +630,23 @@ switch_data_type ::=
 // WHILE
 while_expression ::=
     DO brackets WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R OPERATOR_END_LINE |
-    WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R OPERATOR_END_LINE |
-    WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets |
+    WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R OPERATOR_END_LINE {:
+        // #startWhile
+        String etiquetaInicio = "While_Label" + Integer.toString(this.parser.GUID);
+        String etiquetaSalida = "Exit_Label" + Integer.toString(this.parser.GUID);
+        this.parser.GUID++;
+        RegistroWhile registro = new Registro(etiquetaInicio, etiquetaSalida);
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + etiquetaInicio + ":");
+        this.parser.pila.push(RegistroWhile);
+    :}
+    | WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets:e {: System.out.println(e); :} |
     // Error
     WHILE missing_expression brackets |
     DO brackets WHILE missing_expression OPERATOR_END_LINE
+;
+
+while_init ::=
+    WHILE
 ;
 
 // COMMON PRODUCTIONS
