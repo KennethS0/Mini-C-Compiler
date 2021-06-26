@@ -29,18 +29,13 @@ parser code
 
      public void syntax_error(Symbol s){
         syntaxerrors.add(new SyntaxError(ErrorTypes.UNEXPECTED_ERROR, s.right + 1, s.left + 1));
-        //System.out.println("Error R de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
     public void addError(String error){
-            this.listaErroresSemanticos.add(error+" en Linea: "+(previousSymbol.right+1)+" columna: "+(previousSymbol.left+1));
+            this.listaErroresSemanticos.add(error+" en Linea: "+(previousSymbol.right+1));
     }
 
     public ArrayList<String> getErroresSemanticos() {
         return this.listaErroresSemanticos;
-    }
-
-    public void unrecovered_syntax_error(Symbol s){
-        //System.out.println("Error NR de sintaxis: "+ s.value +" Linea "+(s.right+1)+" columna "+(s.left+1) );
     }
 
     private ArrayList<SyntaxError> syntaxerrors = new ArrayList<SyntaxError>();
@@ -197,15 +192,17 @@ var_declaration ::=
             RegistroIdentificador registroActual = (RegistroIdentificador) this.parser.pila.pop();
 
             if (this.parser.tablaSimbolos.get(registroActual.getToken()) != null) {
-                System.out.println("Variable ya ha sido declarada: " + registroActual.getToken());
+                addError("Variable ya definida");
+            } else if(registro.getTipo() == DataTypes.VOID) {
+                addError("Variable de tipo VOID");
             } else {
-                System.out.println(registroActual.getToken());
                 this.parser.tablaSimbolos.put(registroActual.getToken(), new RegistroIdentificador(registro.getTipo(), registroActual.getToken()));
-                    System.out.println(this.parser.tablaSimbolos.toString());
+
                 if (this.parser.startDeclarations) {
                     this.parser.assemblerGenerator.writeAssemblerCode("section .bss");
                     this.parser.startDeclarations = false;
                 }
+
                 switch(registro.getTipo()) {
                     case INT:
                         this.parser.assemblerGenerator.writeAssemblerCode("\t" + registroActual.getToken() + " resb 4");
@@ -226,8 +223,7 @@ var_declaration ::=
     |
     // Errors
     var_expression {: newSyntaxError(ErrorTypes.MISSING_SEMICOLON); :} |
-    error data_type |
-    error VOID
+    error data_type
 ;
 
 
@@ -273,14 +269,10 @@ func_declarations ::=
 
 func_declaration ::=
     typed_identifier func_decl_parentheses brackets {:  :}|
-    typed_identifier func_decl_parentheses  OPERATOR_END_LINE {:  :} |
-    VOID:e valid_name func_decl_parentheses brackets {:
+    typed_identifier func_decl_parentheses  OPERATOR_END_LINE {:
 
-    RegistroTipo registro = new RegistroTipo(DataTypes.VOID);;
-    this.parser.pila.push(registro);
 
-    :} |
-    VOID:e valid_name func_decl_parentheses  OPERATOR_END_LINE {: :}
+    :}
 ;
 
 brackets ::=
@@ -331,9 +323,6 @@ statement  ::=
         }
 
         if (rs_op.getToken().equals("=")) {
-
-            System.out.println(this.parser.pila);
-            System.out.println(this.parser.tablaSimbolos);
 
             RegistroIdentificador temporal = (RegistroIdentificador) this.parser.getTabla().get(
                             ((RegistroIdentificador) this.parser.pila.pop()).getToken());
@@ -495,8 +484,8 @@ statement  ::=
                                 }
                                 nombreVar.setValor(Long.toString(nuevoValor));
 
-                                this.parser.assemblerGenerator.writeAssemblerCode("mov ax, " + nombreVar.getValor());
-                                this.parser.assemblerGenerator.writeAssemblerCode("mov [" + nombreVar.getNombre() + "], ax");
+                                this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, " + nombreVar.getValor());
+                                this.parser.assemblerGenerator.writeAssemblerCode("\tmov [" + nombreVar.getNombre() + "], ax");
                             }
 
                             /*
@@ -653,6 +642,7 @@ data_type ::=
     | INT {: RegistroTipo registro = new RegistroTipo(DataTypes.INT); this.parser.pila.push(registro); :}
     | SHORT {: RegistroTipo registro = new RegistroTipo(DataTypes.SHORT); this.parser.pila.push(registro); :}
     | CHAR {: RegistroTipo registro = new RegistroTipo(DataTypes.CHAR); this.parser.pila.push(registro); :}
+    | VOID {: RegistroTipo registro = new RegistroTipo(DataTypes.VOID); this.parser.pila.push(registro); :}
     | RESERVED_DATA_TYPE {: newSyntaxError(ErrorTypes.NOT_SUPPORTED_DATA_TYPE); :}
 ;
 
