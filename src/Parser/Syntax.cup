@@ -129,13 +129,15 @@ non terminal func_declarations, func_declaration, func_decl_parentheses, stateme
 
 non terminal expression, expressions, list_expression, error_terminal_tokens;
 
-non terminal switch, read_write, switch_inside;
+non terminal switch, read_write, switch_inside, vars;
 
 non terminal case_expressions, case_expression, assignment_expression;
 
 non terminal switch_data_type, missing_expression, var_identifiers;
 
-non terminal while_expression, while_init, for_expression, if_expression, else_expression, brackets;
+non terminal while_expression, while_init, for_expression, if_expression, if_init, if_exit, else_label, else_expression, brackets;
+
+non terminal while_parenthesis_r, test_if;
 
 non terminal for_variable, loop_words, for_loop;
 
@@ -152,9 +154,18 @@ precedence right IDENTIFIER, IDENTIFIER_ERROR;
 start with initial;
 
 initial ::=
-    var_declarations func_declarations |
+    vars func_declarations |
     func_declarations |
     error error_terminal_tokens
+;
+
+vars ::=
+    var_declarations {:
+        if (this.parser.startText) {
+            this.parser.assemblerGenerator.writeAssemblerCode("\nsection .text");
+            this.parser.startText = false;
+        }
+    :}
 ;
 
 for_loop ::=
@@ -299,12 +310,7 @@ statement  ::=
     valid_name assignments expression OPERATOR_END_LINE {:
         RegistroSemantico tempObject = (RegistroSemantico) this.parser.pila.pop();
         RegistroOperador rs_op = (RegistroOperador) this.parser.pila.pop();
-        DataObject rs_do2;
-
-        if (this.parser.startText) {
-            this.parser.assemblerGenerator.writeAssemblerCode("\nsection .text");
-            this.parser.startText = false;
-        }
+            DataObject rs_do2;
 
         if (tempObject instanceof RegistroIdentificador) {
             RegistroSemantico registroTemporal = this.parser.getTabla().get(tempObject.getToken());
@@ -629,24 +635,136 @@ switch_data_type ::=
 
 // WHILE
 while_expression ::=
-    DO brackets WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R OPERATOR_END_LINE |
-    WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R OPERATOR_END_LINE {:
-        // #startWhile
-        String etiquetaInicio = "While_Label" + Integer.toString(this.parser.GUID);
-        String etiquetaSalida = "Exit_Label" + Integer.toString(this.parser.GUID);
-        this.parser.GUID++;
-        RegistroWhile registro = new Registro(etiquetaInicio, etiquetaSalida);
-        this.parser.assemblerGenerator.writeAssemblerCode("\t" + etiquetaInicio + ":");
-        this.parser.pila.push(RegistroWhile);
+    DO brackets while_init OPERATOR_PARENTHESIS_L assignment_expression while_parenthesis_r OPERATOR_END_LINE
+
+    // Solo estos dos casos importan
+    | while_init OPERATOR_PARENTHESIS_L assignment_expression while_parenthesis_r OPERATOR_END_LINE {:
+        // #endWhile
+
+        RegistroWhile registroWhile = (RegistroWhile) this.parser.pila.pop();
+        this.parser.assemblerGenerator.writeAssemblerCode("\t\tjmp " + registroWhile.getEtiquetaInicio());
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + registroWhile.getEtiquetaSalida() + ":");
+
     :}
-    | WHILE OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets:e {: System.out.println(e); :} |
+
+    | while_init OPERATOR_PARENTHESIS_L assignment_expression while_parenthesis_r brackets:e {:
+        // #endWhile
+
+        RegistroWhile registroWhile = (RegistroWhile) this.parser.pila.pop();
+        this.parser.assemblerGenerator.writeAssemblerCode("\t\tjmp " + registroWhile.getEtiquetaInicio());
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + registroWhile.getEtiquetaSalida() + ":");
+
+    :}
+
     // Error
-    WHILE missing_expression brackets |
-    DO brackets WHILE missing_expression OPERATOR_END_LINE
+    | while_init missing_expression brackets
+| DO brackets while_init missing_expression OPERATOR_END_LINE
 ;
 
 while_init ::=
-    WHILE
+    WHILE {:
+         // #startWhile
+         String etiquetaInicio = "While_Label" + Integer.toString(this.parser.GUID);
+         String etiquetaSalida = "Exit_Label" + Integer.toString(this.parser.GUID);
+         this.parser.GUID++;
+         RegistroWhile registro = new RegistroWhile(etiquetaInicio, etiquetaSalida);
+         this.parser.assemblerGenerator.writeAssemblerCode("\t" + etiquetaInicio + ":");
+         this.parser.pila.push(registro);
+
+     :}
+;
+
+while_parenthesis_r ::=
+    OPERATOR_PARENTHESIS_R {:
+        // #testWhile
+        RegistroSemantico tempObject2 = this.parser.pila.pop();
+        RegistroOperador rs_op = (RegistroOperador)this.parser.pila.pop();
+        RegistroSemantico tempObject1 = this.parser.pila.pop();
+        RegistroWhile registroWhile = (RegistroWhile) this.parser.pila.pop();
+        DataObject rs_do2;
+        DataObject rs_do1;
+        System.out.println(this.parser.pila);
+        if (tempObject2 instanceof RegistroIdentificador) {
+            RegistroSemantico registroTemporal = this.parser.getTabla().get(tempObject2.getToken());
+            if (registroTemporal != null) {
+                rs_do2 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
+                                        tempObject2.getToken(),
+                                        Integer.toHexString(System.identityHashCode(tempObject2)),
+                                        true);
+            } else {
+                rs_do2 = new DataObject(DataTypes.ERROR,
+                                        tempObject2.getToken(),
+                                        Integer.toHexString(System.identityHashCode(tempObject2)),
+                                        true);
+                addError("Variable no definida");
+            }
+        } else { // Es constante
+            rs_do2 = (DataObject) tempObject2;
+        }
+
+        if (tempObject1 instanceof RegistroIdentificador) {
+            RegistroSemantico registroTemporal = this.parser.getTabla().get(tempObject1.getToken());
+            if (registroTemporal != null) {
+                rs_do1 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
+                                        tempObject1.getToken(),
+                                        Integer.toHexString(System.identityHashCode(tempObject1)),
+                                        true);
+            } else {
+                rs_do1 = new DataObject(DataTypes.ERROR,
+                                        tempObject1.getToken(),
+                                        Integer.toHexString(System.identityHashCode(tempObject1)),
+                                        true);
+                addError("Variable no definida");
+            }
+        } else { // Es constante
+            rs_do1 = (DataObject) tempObject1;
+        }
+
+        if (rs_do1.getVariable()) {
+            this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov ax, [" + rs_do1.getNombre() + "]");
+        } else {
+            this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov ax, " + rs_do1.getValor());
+        }
+
+        if (rs_do2.getVariable()) {
+            this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov bx, [" + rs_do2.getNombre() + "]");
+        } else {
+            this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov bx, " + rs_do2.getValor());
+        }
+
+
+        this.parser.assemblerGenerator.writeAssemblerCode("\t\tcmp ax, bx");
+
+        if (rs_do1.getTipo() == rs_do2.getTipo()) {
+            switch (rs_op.getToken()) {
+                case "<":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjge " + registroWhile.getEtiquetaSalida());
+                    break;
+                case ">":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjle " + registroWhile.getEtiquetaSalida());
+                    break;
+                case "==":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjne " + registroWhile.getEtiquetaSalida());
+                    break;
+                case "&&":
+                    break;
+                case "||":
+                    break;
+                case "!=":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tje " + registroWhile.getEtiquetaSalida());
+                    break;
+                case "<=":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tjg " + registroWhile.getEtiquetaSalida());
+                    break;
+                case ">=":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjl " + registroWhile.getEtiquetaSalida());
+                    break;
+            }
+        } else {
+            addError("Comparacion invalida");
+        }
+        this.parser.pila.push(registroWhile);
+    :}
 ;
 
 // COMMON PRODUCTIONS
@@ -675,18 +793,145 @@ typed_identifier ::=
 // Construccion del if
 
 if_expression ::=
-    IF OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets else_expression |
-    IF OPERATOR_PARENTHESIS_L assignment_expression OPERATOR_PARENTHESIS_R brackets |
+    if_init OPERATOR_PARENTHESIS_L assignment_expression test_if if_exit else_expression  |
+    if_init OPERATOR_PARENTHESIS_L assignment_expression test_if if_exit {:
+        RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
+        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getExit_label() + ":");
+    :}|
 
     // Error
-    IF missing_expression brackets else_expression |
-    IF missing_expression brackets |
-    IF {: newSyntaxError(ErrorTypes.INCOMPLETE_EXPRESSION); :}
+    if_init missing_expression brackets else_expression {: newSyntaxError(ErrorTypes.INCOMPLETE_EXPRESSION); :} |
+    if_init missing_expression brackets {: newSyntaxError(ErrorTypes.INCOMPLETE_EXPRESSION); :}|
+    if_init {: newSyntaxError(ErrorTypes.INCOMPLETE_EXPRESSION); :}
+;
+
+test_if ::=
+    OPERATOR_PARENTHESIS_R {:
+        RegistroSemantico registro2 = this.parser.pila.pop();
+        RegistroOperador operador = (RegistroOperador) this.parser.pila.pop();
+        RegistroSemantico registro1 = this.parser.pila.pop();
+        RegistroIf registro_if = (RegistroIf) this.parser.pila.pop();
+
+        DataObject rs_do2, rs_do1;
+
+        if (registro2 instanceof RegistroIdentificador) {
+            RegistroSemantico registroTemporal = this.parser.getTabla().get(registro2.getToken());
+            if (registroTemporal != null) {
+                rs_do2 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
+                                          registro2.getToken(),
+                                          Integer.toHexString(System.identityHashCode(registro2)),
+                                          true);
+            } else {
+                rs_do2 = new DataObject(DataTypes.ERROR,
+                                        registro2.getToken(),
+                                        Integer.toHexString(System.identityHashCode(registro2)),
+                                        true);
+                addError("Variable no definida");
+            }
+        } else { // Es constante
+            rs_do2 = (DataObject) registro2;
+        }
+
+        if (registro1 instanceof RegistroIdentificador) {
+            RegistroSemantico registroTemporal = this.parser.getTabla().get(registro1.getToken());
+            if (registroTemporal != null) {
+                rs_do1 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
+                                         registro1.getToken(),
+                                         Integer.toHexString(System.identityHashCode(registro1)),
+                                         true);
+            } else {
+                rs_do1 = new DataObject(DataTypes.ERROR,
+                                       registro1.getToken(),
+                                       Integer.toHexString(System.identityHashCode(registro1)),
+                                       true);
+                addError("Variable no definida");
+            }
+        } else { // Es constante
+            rs_do1 = (DataObject) registro1;
+        }
+
+        if (rs_do1.getTipo() == rs_do2.getTipo()) {
+
+            this.parser.assemblerGenerator.writeAssemblerCode(";IF");
+            // AX para op2
+            if (rs_do2.getVariable()) {
+                this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, [" + rs_do2.getNombre() + "]");
+            } else {
+                this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, " + rs_do2.getValor());
+            }
+            // BX para op1
+            if (rs_do1.getVariable()) {
+                this.parser.assemblerGenerator.writeAssemblerCode("\tmov bx, [" + rs_do1.getNombre() + "]");
+            } else {
+                this.parser.assemblerGenerator.writeAssemblerCode("\tmov bx, " + rs_do1.getValor());
+            }
+
+            this.parser.assemblerGenerator.writeAssemblerCode("\tcmp ax, bx");
+            // Case de Operador
+            switch (operador.getToken()) {
+                case "<":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tjge " + registro_if.getElse_label());
+                    break;
+                case ">":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tjle " + registro_if.getElse_label());
+                    break;
+                case "==":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tjne " + registro_if.getElse_label());
+                    break;
+                case "&&":
+
+                    break;
+                case "||":
+
+                    break;
+                case "!=":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tje " + registro_if.getElse_label());
+                    break;
+                case "<=":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tjg " + registro_if.getElse_label());
+                    break;
+                case ">=":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tjle " + registro_if.getElse_label());
+                    break;
+            }
+
+            this.parser.pila.push(registro_if);
+        } else {
+            addError("Comparacion invalida");
+        }
+:}
+;
+
+if_init ::=
+    IF {:
+        RegistroIf if_register = new RegistroIf(Integer.toString(this.parser.GUID), Integer.toString(this.parser.GUID));
+        this.parser.GUID++;
+        this.parser.pila.push(if_register);
+     :}
 ;
 
 else_expression ::=
-    ELSE if_expression |
-    ELSE brackets
+    else_label if_expression |
+    else_label if_exit {:
+        RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
+        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getExit_label() + ":");
+    :}
+;
+
+if_exit ::=
+    brackets {:
+        RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
+        this.parser.assemblerGenerator.writeAssemblerCode("\tjmp " + if_reg.getExit_label());
+        this.parser.pila.push(if_reg);
+    :}
+;
+
+else_label ::=
+    ELSE {:
+        RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
+        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getElse_label() + ":");
+        this.parser.pila.push(if_reg);
+    :}
 ;
 
 assignment_expression ::=
@@ -698,7 +943,14 @@ assignment_expression ::=
 expression ::=
     // LOGICAL
     OPERATOR_NOT expression |
-    expression OPERATOR_COMPARATIVE expression |
+    expression OPERATOR_COMPARATIVE:e expression {:
+
+        // Revisar si expression son variables o numeros
+        RegistroSemantico registro2 = this.parser.pila.pop();
+        RegistroOperador registroOP = new RegistroOperador(e.toString());
+        this.parser.pila.push(registroOP);
+        this.parser.pila.push(registro2);
+    :}|
 
     // MATH
     OPERATOR_NEGATIVE expression |
