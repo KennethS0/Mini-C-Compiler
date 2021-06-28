@@ -21,7 +21,7 @@ public class Main {
             s.parse();
             s.assemblerGenerator.closeFile();
             //System.out.println(scanner.toString());
-            //System.out.println(s.toString());
+            System.out.println(s.toString());
 
             System.out.println(s.getPila().toString());
 

@@ -129,7 +129,7 @@ non terminal func_declarations, func_declaration, func_decl_parentheses, stateme
 
 non terminal expression, expressions, list_expression, error_terminal_tokens;
 
-non terminal switch, read_write, switch_inside, variables;
+non terminal switch, read_write, switch_inside, func_start;
 
 non terminal case_expressions, case_expression, assignment_expression;
 
@@ -272,11 +272,39 @@ func_declarations ::=
 ;
 
 func_declaration ::=
-    typed_identifier func_decl_parentheses brackets {:  :}|
-    typed_identifier func_decl_parentheses  OPERATOR_END_LINE {:
+     func_start brackets |
+     func_start OPERATOR_END_LINE
+;
 
+func_start ::=
+    typed_identifier func_decl_parentheses {:
 
-    :}
+        ArrayList<RegistroIdentificador> parametros = new ArrayList<RegistroIdentificador>();
+        RegistroIdentificador param;
+        RegistroTipo tipo;
+
+        while(this.parser.pila.size() > 2) {
+             param = (RegistroIdentificador) this.parser.pila.pop();
+             tipo = (RegistroTipo) this.parser.pila.pop();
+
+             if (this.parser.getTabla().get(param.getToken()) != null) {
+                addError("Variable ya definida");
+             } else {
+                this.parser.getTabla().put(param.getToken(), param);
+             }
+             param.setTipo(tipo.getTipo());
+             parametros.add(0, param);
+        }
+        param = (RegistroIdentificador) this.parser.pila.pop();
+        tipo = (RegistroTipo) this.parser.pila.pop();
+        DataObject funcion = new DataObject(tipo.getTipo(), param.getToken(), "", false, true);
+        funcion.setParametros(parametros);
+        this.parser.getTabla().put(funcion.getNombre() ,funcion);
+     :}
+;
+
+func_params ::=
+
 ;
 
 brackets ::=
@@ -309,12 +337,12 @@ statement  ::=
                 rs_do2 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
                                         tempObject.getToken(),
                                         Integer.toHexString(System.identityHashCode(tempObject)),
-                                        true);
+                                        true, false);
             } else {
                 rs_do2 = new DataObject(DataTypes.ERROR,
                                         tempObject.getToken(),
                                         Integer.toHexString(System.identityHashCode(tempObject)),
-                                        true);
+                                        true, false);
                 addError("Variable no definida");
             }
         } else { // Es constante
@@ -369,12 +397,12 @@ statement  ::=
                     rs_do1 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
                                             tempObject.getToken(),
                                             Integer.toHexString(System.identityHashCode(tempObject)),
-                                            true);
+                                            true, false);
                 } else {
                     rs_do1 = new DataObject(DataTypes.ERROR,
                                             tempObject.getToken(),
                                             Integer.toHexString(System.identityHashCode(tempObject)),
-                                            true);
+                                            true, false);
                     addError("Variable no definida");
                 }
             } else { // Es constante
@@ -391,7 +419,7 @@ statement  ::=
                 DataObject nombreVar = new DataObject(temporal.getTipo(),
                                         temporal.getToken(),
                                         Integer.toHexString(System.identityHashCode(temporal)),
-                                        true);
+                                        true, false);
 
 
                 if (this.parser.getTabla().get(nombreVar.getNombre()) != null) {
@@ -532,7 +560,11 @@ read_write ::=
 ;
 
 valid_statement ::=
-    valid_name func_call_parentheses |
+    valid_name func_call_parentheses {:
+
+
+
+     :} |
     valid_name inc_dec |
     inc_dec valid_name
 ;
@@ -681,12 +713,12 @@ while_parenthesis_r ::=
                 rs_do2 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
                                         tempObject2.getToken(),
                                         Integer.toHexString(System.identityHashCode(tempObject2)),
-                                        true);
+                                        true, false);
             } else {
                 rs_do2 = new DataObject(DataTypes.ERROR,
                                         tempObject2.getToken(),
                                         Integer.toHexString(System.identityHashCode(tempObject2)),
-                                        true);
+                                        true, false);
                 addError("Variable no definida");
             }
         } else { // Es constante
@@ -699,12 +731,12 @@ while_parenthesis_r ::=
                 rs_do1 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
                                         tempObject1.getToken(),
                                         Integer.toHexString(System.identityHashCode(tempObject1)),
-                                        true);
+                                        true, false);
             } else {
                 rs_do1 = new DataObject(DataTypes.ERROR,
                                         tempObject1.getToken(),
                                         Integer.toHexString(System.identityHashCode(tempObject1)),
-                                        true);
+                                        true, false);
                 addError("Variable no definida");
             }
         } else { // Es constante
@@ -811,12 +843,12 @@ test_if ::=
                 rs_do2 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
                                           registro2.getToken(),
                                           Integer.toHexString(System.identityHashCode(registro2)),
-                                          true);
+                                          true, false);
             } else {
                 rs_do2 = new DataObject(DataTypes.ERROR,
                                         registro2.getToken(),
                                         Integer.toHexString(System.identityHashCode(registro2)),
-                                        true);
+                                        true, false);
                 addError("Variable no definida");
             }
         } else { // Es constante
@@ -829,12 +861,12 @@ test_if ::=
                 rs_do1 = new DataObject(((RegistroIdentificador) registroTemporal).getTipo(),
                                          registro1.getToken(),
                                          Integer.toHexString(System.identityHashCode(registro1)),
-                                         true);
+                                         true, false);
             } else {
                 rs_do1 = new DataObject(DataTypes.ERROR,
                                        registro1.getToken(),
                                        Integer.toHexString(System.identityHashCode(registro1)),
-                                       true);
+                                       true, false);
                 addError("Variable no definida");
             }
         } else { // Es constante
