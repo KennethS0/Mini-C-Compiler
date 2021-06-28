@@ -129,7 +129,7 @@ non terminal func_declarations, func_declaration, func_decl_parentheses, stateme
 
 non terminal expression, expressions, list_expression, error_terminal_tokens;
 
-non terminal switch, read_write, switch_inside, vars;
+non terminal switch, read_write, switch_inside, variables;
 
 non terminal case_expressions, case_expression, assignment_expression;
 
@@ -154,18 +154,9 @@ precedence right IDENTIFIER, IDENTIFIER_ERROR;
 start with initial;
 
 initial ::=
-    vars func_declarations |
+    var_declarations  func_declarations |
     func_declarations |
     error error_terminal_tokens
-;
-
-vars ::=
-    var_declarations {:
-        if (this.parser.startText) {
-            this.parser.assemblerGenerator.writeAssemblerCode("\nsection .text");
-            this.parser.startText = false;
-        }
-    :}
 ;
 
 for_loop ::=
@@ -643,7 +634,7 @@ while_expression ::=
 
         RegistroWhile registroWhile = (RegistroWhile) this.parser.pila.pop();
         this.parser.assemblerGenerator.writeAssemblerCode("\t\tjmp " + registroWhile.getEtiquetaInicio());
-        this.parser.assemblerGenerator.writeAssemblerCode("\t" + registroWhile.getEtiquetaSalida() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + registroWhile.getEtiquetaSalida() + ":\n");
 
     :}
 
@@ -911,7 +902,10 @@ if_init ::=
 ;
 
 else_expression ::=
-    else_label if_expression |
+    else_label if_expression {:
+        RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
+        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getExit_label() + ":");
+     :} |
     else_label if_exit {:
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
         this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getExit_label() + ":");
