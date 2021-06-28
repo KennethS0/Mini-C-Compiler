@@ -1,11 +1,10 @@
-int ch2, ch1;
+void funcion1D(int jaja) {
 
-int mono, mono2;
+    while(1 == 1) {
+        continue;
+    }
 
-char aja;
+    break;
 
-void funcion1D(int xd, char kaka) {
-
-
-    kaka = 'a';
+    jaja = 1;
 }

@@ -3116,7 +3116,16 @@ class CUP$Parser$actions {
           case 165: // loop_words ::= BREAK 
             {
               Object RESULT =null;
+		
+        try {
+            RegistroWhile whileRS = (RegistroWhile) this.parser.pila.pop();
+            this.parser.assemblerGenerator.writeAssemblerCode("jmp " + whileRS.getEtiquetaSalida());
+            this.parser.pila.push(whileRS);
 
+        } catch (Exception e) {
+            addError("BREAK Fuera de lugar");
+        }
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("loop_words",46, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -3125,7 +3134,17 @@ class CUP$Parser$actions {
           case 166: // loop_words ::= CONTINUE 
             {
               Object RESULT =null;
+		
+        try {
+            RegistroWhile whileRS = (RegistroWhile) this.parser.pila.pop();
+            this.parser.assemblerGenerator.writeAssemblerCode("jmp " + whileRS.getEtiquetaInicio());
+            this.parser.pila.push(whileRS);
 
+        } catch (Exception e) {
+            addError("CONTINUE Fuera de lugar");
+        }
+
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("loop_words",46, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

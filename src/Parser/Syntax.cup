@@ -1013,6 +1013,27 @@ literals ::=
 ;
 
 loop_words ::=
-    BREAK | CONTINUE
+    BREAK {:
+        try {
+            RegistroWhile whileRS = (RegistroWhile) this.parser.pila.pop();
+            this.parser.assemblerGenerator.writeAssemblerCode("jmp " + whileRS.getEtiquetaSalida());
+            this.parser.pila.push(whileRS);
+
+        } catch (Exception e) {
+            addError("BREAK Fuera de lugar");
+        }
+    :}
+
+    | CONTINUE {:
+        try {
+            RegistroWhile whileRS = (RegistroWhile) this.parser.pila.pop();
+            this.parser.assemblerGenerator.writeAssemblerCode("jmp " + whileRS.getEtiquetaInicio());
+            this.parser.pila.push(whileRS);
+
+        } catch (Exception e) {
+            addError("CONTINUE Fuera de lugar");
+        }
+
+    :}
 ;
 

@@ -1,9 +1,11 @@
-section .bss
-	ch1 resb 4
-	ch2 resb 4
-	mono2 resb 4
-	mono resb 4
-	aja resb 1
-	mov ax, 'a'
-	mov [kaka], ax
+	While_Label0:
+		mov ax, 1
+		mov bx, 1
+		cmp ax, bx
+		jne Exit_Label0
+jmp While_Label0
+		jmp While_Label0
+	Exit_Label0:
+	mov ax, 1
+	mov [jaja], ax
 
