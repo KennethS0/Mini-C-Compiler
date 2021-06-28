@@ -568,8 +568,6 @@ read_write ::=
 valid_statement ::=
     valid_name func_call_parentheses {:
 
-
-
      :} |
     valid_name inc_dec {:
         RegistroOperador op = (RegistroOperador) this.parser.pila.pop();
@@ -825,8 +823,10 @@ while_parenthesis_r ::=
                     this.parser.assemblerGenerator.writeAssemblerCode("\t\tjne " + registroWhile.getEtiquetaSalida());
                     break;
                 case "&&":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjz " + registroWhile.getEtiquetaSalida());
                     break;
                 case "||":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjz " + registroWhile.getEtiquetaSalida());
                     break;
                 case "!=":
                     this.parser.assemblerGenerator.writeAssemblerCode("\t\tje " + registroWhile.getEtiquetaSalida());
@@ -957,10 +957,10 @@ test_if ::=
                     this.parser.assemblerGenerator.writeAssemblerCode("\tjne " + registro_if.getElse_label());
                     break;
                 case "&&":
-
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tjz " + registro_if.getElse_label());
                     break;
                 case "||":
-
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tjz " + registro_if.getElse_label());
                     break;
                 case "!=":
                     this.parser.assemblerGenerator.writeAssemblerCode("\tje " + registro_if.getElse_label());

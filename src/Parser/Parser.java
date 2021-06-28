@@ -2598,8 +2598,10 @@ class CUP$Parser$actions {
                     this.parser.assemblerGenerator.writeAssemblerCode("\t\tjne " + registroWhile.getEtiquetaSalida());
                     break;
                 case "&&":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjz " + registroWhile.getEtiquetaSalida());
                     break;
                 case "||":
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjz " + registroWhile.getEtiquetaSalida());
                     break;
                 case "!=":
                     this.parser.assemblerGenerator.writeAssemblerCode("\t\tje " + registroWhile.getEtiquetaSalida());
@@ -2841,10 +2843,10 @@ class CUP$Parser$actions {
                     this.parser.assemblerGenerator.writeAssemblerCode("\tjne " + registro_if.getElse_label());
                     break;
                 case "&&":
-
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tjz " + registro_if.getElse_label());
                     break;
                 case "||":
-
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tjz " + registro_if.getElse_label());
                     break;
                 case "!=":
                     this.parser.assemblerGenerator.writeAssemblerCode("\tje " + registro_if.getElse_label());
