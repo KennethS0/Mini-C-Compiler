@@ -1559,6 +1559,8 @@ class CUP$Parser$actions {
         DataObject funcion = new DataObject(tipo.getTipo(), param.getToken(), "", false, true);
         funcion.setParametros(parametros);
         this.parser.getTabla().put(funcion.getNombre() ,funcion);
+
+        this.parser.assemblerGenerator.writeAssemblerCode(param.getToken() + ":");
      
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("func_start",27, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2037,7 +2039,32 @@ class CUP$Parser$actions {
           case 76: // valid_statement ::= valid_name inc_dec 
             {
               Object RESULT =null;
+		
+        RegistroOperador op = (RegistroOperador) this.parser.pila.pop();
+        RegistroIdentificador id = (RegistroIdentificador) this.parser.pila.pop();
 
+
+        if (this.parser.getTabla().get(id.getToken()) != null) {
+
+            this.parser.assemblerGenerator.writeAssemblerCode("mov ax, [" + id.getToken() + "]");
+
+            switch(op.getToken()) {
+
+                case "++":
+                    this.parser.assemblerGenerator.writeAssemblerCode("inc ax");
+                    break;
+
+                case "--":
+                    this.parser.assemblerGenerator.writeAssemblerCode("dec ax");
+                    break;
+            }
+            this.parser.assemblerGenerator.writeAssemblerCode("mov [" + id.getToken() + "], ax");
+
+        } else {
+            addError("Variable no definida");
+        }
+
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("valid_statement",10, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2046,7 +2073,32 @@ class CUP$Parser$actions {
           case 77: // valid_statement ::= inc_dec valid_name 
             {
               Object RESULT =null;
+		
 
+        RegistroIdentificador id = (RegistroIdentificador) this.parser.pila.pop();
+        RegistroOperador op = (RegistroOperador) this.parser.pila.pop();
+
+        if (this.parser.getTabla().get(id.getToken()) != null) {
+
+            this.parser.assemblerGenerator.writeAssemblerCode("mov ax, [" + id.getToken() + "]");
+
+            switch(op.getToken()) {
+
+                case "++":
+                    this.parser.assemblerGenerator.writeAssemblerCode("inc ax");
+                    break;
+
+                case "--":
+                    this.parser.assemblerGenerator.writeAssemblerCode("dec ax");
+                    break;
+            }
+            this.parser.assemblerGenerator.writeAssemblerCode("mov [" + id.getToken() + "], ax");
+
+        } else {
+            addError("Variable no definida");
+        }
+
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("valid_statement",10, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2978,7 +3030,13 @@ class CUP$Parser$actions {
           case 153: // inc_dec ::= OPERATOR_INC 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		
+        RegistroOperador op = new RegistroOperador(e.toString());
+        this.parser.pila.push(op);
+    
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("inc_dec",11, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;
@@ -2987,7 +3045,13 @@ class CUP$Parser$actions {
           case 154: // inc_dec ::= OPERATOR_DEC 
             {
               Object RESULT =null;
-
+		int eleft = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).left;
+		int eright = ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()).right;
+		Object e = (Object)((java_cup.runtime.Symbol) CUP$Parser$stack.peek()).value;
+		
+        RegistroOperador op = new RegistroOperador(e.toString());
+        this.parser.pila.push(op);
+     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("inc_dec",11, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
           return CUP$Parser$result;

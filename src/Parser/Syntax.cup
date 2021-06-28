@@ -300,6 +300,8 @@ func_start ::=
         DataObject funcion = new DataObject(tipo.getTipo(), param.getToken(), "", false, true);
         funcion.setParametros(parametros);
         this.parser.getTabla().put(funcion.getNombre() ,funcion);
+
+        this.parser.assemblerGenerator.writeAssemblerCode(param.getToken() + ":");
      :}
 ;
 
@@ -565,8 +567,58 @@ valid_statement ::=
 
 
      :} |
-    valid_name inc_dec |
-    inc_dec valid_name
+    valid_name inc_dec {:
+        RegistroOperador op = (RegistroOperador) this.parser.pila.pop();
+        RegistroIdentificador id = (RegistroIdentificador) this.parser.pila.pop();
+
+
+        if (this.parser.getTabla().get(id.getToken()) != null) {
+
+            this.parser.assemblerGenerator.writeAssemblerCode("mov ax, [" + id.getToken() + "]");
+
+            switch(op.getToken()) {
+
+                case "++":
+                    this.parser.assemblerGenerator.writeAssemblerCode("inc ax");
+                    break;
+
+                case "--":
+                    this.parser.assemblerGenerator.writeAssemblerCode("dec ax");
+                    break;
+            }
+            this.parser.assemblerGenerator.writeAssemblerCode("mov [" + id.getToken() + "], ax");
+
+        } else {
+            addError("Variable no definida");
+        }
+
+    :}|
+    inc_dec valid_name {:
+
+        RegistroIdentificador id = (RegistroIdentificador) this.parser.pila.pop();
+        RegistroOperador op = (RegistroOperador) this.parser.pila.pop();
+
+        if (this.parser.getTabla().get(id.getToken()) != null) {
+
+            this.parser.assemblerGenerator.writeAssemblerCode("mov ax, [" + id.getToken() + "]");
+
+            switch(op.getToken()) {
+
+                case "++":
+                    this.parser.assemblerGenerator.writeAssemblerCode("inc ax");
+                    break;
+
+                case "--":
+                    this.parser.assemblerGenerator.writeAssemblerCode("dec ax");
+                    break;
+            }
+            this.parser.assemblerGenerator.writeAssemblerCode("mov [" + id.getToken() + "], ax");
+
+        } else {
+            addError("Variable no definida");
+        }
+
+    :}
 ;
 
 func_call_parentheses ::=
@@ -993,7 +1045,13 @@ expression ::=
 ;
 
 inc_dec ::=
-    OPERATOR_INC | OPERATOR_DEC
+    OPERATOR_INC:e {:
+        RegistroOperador op = new RegistroOperador(e.toString());
+        this.parser.pila.push(op);
+    :}| OPERATOR_DEC:e {:
+        RegistroOperador op = new RegistroOperador(e.toString());
+        this.parser.pila.push(op);
+     :}
 ;
 
 math ::=
