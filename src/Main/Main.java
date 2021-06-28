@@ -1,6 +1,8 @@
 package Main;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import Parser.Parser;
@@ -29,6 +31,9 @@ public class Main {
 
             System.out.println(s.getErroresSemanticos());
 
+            if (!s.getErroresSemanticos().isEmpty()) {
+                s.assemblerGenerator.archivo.delete();
+            }
         }
         /*
         for(String argument: args){

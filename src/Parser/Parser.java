@@ -1546,13 +1546,17 @@ class CUP$Parser$actions {
              param = (RegistroIdentificador) this.parser.pila.pop();
              tipo = (RegistroTipo) this.parser.pila.pop();
 
-             if (this.parser.getTabla().get(param.getToken()) != null) {
-                addError("Variable ya definida");
+             if(tipo.getTipo() != DataTypes.VOID) {
+                 if (this.parser.getTabla().get(param.getToken()) != null) {
+                    addError("Variable ya definida");
+                 } else {
+                    this.parser.getTabla().put(param.getToken(), param);
+                 }
+                 param.setTipo(tipo.getTipo());
+                 parametros.add(0, param);
              } else {
-                this.parser.getTabla().put(param.getToken(), param);
+                addError("Tipo de parametro invalido");
              }
-             param.setTipo(tipo.getTipo());
-             parametros.add(0, param);
         }
         param = (RegistroIdentificador) this.parser.pila.pop();
         tipo = (RegistroTipo) this.parser.pila.pop();
@@ -2046,19 +2050,19 @@ class CUP$Parser$actions {
 
         if (this.parser.getTabla().get(id.getToken()) != null) {
 
-            this.parser.assemblerGenerator.writeAssemblerCode("mov ax, [" + id.getToken() + "]");
+            this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, [" + id.getToken() + "]");
 
             switch(op.getToken()) {
 
                 case "++":
-                    this.parser.assemblerGenerator.writeAssemblerCode("inc ax");
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tinc ax");
                     break;
 
                 case "--":
-                    this.parser.assemblerGenerator.writeAssemblerCode("dec ax");
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tdec ax");
                     break;
             }
-            this.parser.assemblerGenerator.writeAssemblerCode("mov [" + id.getToken() + "], ax");
+            this.parser.assemblerGenerator.writeAssemblerCode("\tmov [" + id.getToken() + "], ax\n");
 
         } else {
             addError("Variable no definida");
@@ -2080,19 +2084,19 @@ class CUP$Parser$actions {
 
         if (this.parser.getTabla().get(id.getToken()) != null) {
 
-            this.parser.assemblerGenerator.writeAssemblerCode("mov ax, [" + id.getToken() + "]");
+            this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, [" + id.getToken() + "]");
 
             switch(op.getToken()) {
 
                 case "++":
-                    this.parser.assemblerGenerator.writeAssemblerCode("inc ax");
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tinc ax");
                     break;
 
                 case "--":
-                    this.parser.assemblerGenerator.writeAssemblerCode("dec ax");
+                    this.parser.assemblerGenerator.writeAssemblerCode("\tdec ax");
                     break;
             }
-            this.parser.assemblerGenerator.writeAssemblerCode("mov [" + id.getToken() + "], ax");
+            this.parser.assemblerGenerator.writeAssemblerCode("\tmov [" + id.getToken() + "], ax\n");
 
         } else {
             addError("Variable no definida");
@@ -2531,7 +2535,6 @@ class CUP$Parser$actions {
         RegistroWhile registroWhile = (RegistroWhile) this.parser.pila.pop();
         DataObject rs_do2;
         DataObject rs_do1;
-        System.out.println(this.parser.pila);
         if (tempObject2 instanceof RegistroIdentificador) {
             RegistroSemantico registroTemporal = this.parser.getTabla().get(tempObject2.getToken());
             if (registroTemporal != null) {
@@ -3182,10 +3185,10 @@ class CUP$Parser$actions {
               Object RESULT =null;
 		
         try {
-            RegistroWhile whileRS = (RegistroWhile) this.parser.pila.pop();
-            this.parser.assemblerGenerator.writeAssemblerCode("jmp " + whileRS.getEtiquetaSalida());
+            RegistroWhile whileRS = (RegistroWhile) this.parser.pila.get(0);
+            this.parser.assemblerGenerator.writeAssemblerCode("jmp " + whileRS.getEtiquetaSalida() + " ;BREAK");
             this.parser.pila.push(whileRS);
-
+            this.parser.pila.pop();
         } catch (Exception e) {
             addError("BREAK Fuera de lugar");
         }
@@ -3200,10 +3203,10 @@ class CUP$Parser$actions {
               Object RESULT =null;
 		
         try {
-            RegistroWhile whileRS = (RegistroWhile) this.parser.pila.pop();
-            this.parser.assemblerGenerator.writeAssemblerCode("jmp " + whileRS.getEtiquetaInicio());
+            RegistroWhile whileRS = (RegistroWhile) this.parser.pila.get(0);
+            this.parser.assemblerGenerator.writeAssemblerCode("jmp " + whileRS.getEtiquetaInicio() + " ;CONTINUE");
             this.parser.pila.push(whileRS);
-
+            this.parser.pila.pop();
         } catch (Exception e) {
             addError("CONTINUE Fuera de lugar");
         }

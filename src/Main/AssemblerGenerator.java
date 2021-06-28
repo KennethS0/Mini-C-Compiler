@@ -10,12 +10,15 @@ public class AssemblerGenerator {
 
     public FileWriter assemblerFileWriter;
 
+    public File archivo;
+
     public void generateAssemblerFile(String args){
         try {
             String nombreArchivo = args.substring(0, args.length()-2);;
 
             File assemblerFile = new File(nombreArchivo + ".asm");
             assemblerFile.createNewFile();
+            archivo = assemblerFile;
             this.assemblerFileWriter = new FileWriter(assemblerFile);
             //TODO Meter.code y todo eso
         } catch (IOException e) {
