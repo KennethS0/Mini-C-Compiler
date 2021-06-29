@@ -567,9 +567,52 @@ read_write ::=
 
 valid_statement ::=
     valid_name func_call_parentheses {:
+        RegistroIdentificador idFunction = (RegistroIdentificador) this.parser.pila.get(this.parser.pila.size()-1);
+                if(this.parser.getTabla().get(idFunction.getToken()) != null){
+                    DataObject function = (DataObject) this.parser.getTabla().get(idFunction.getToken());
+                    int cantParamCorrectos = function.getParametros().size();
+                    int cantParamPila = this.parser.pila.size()-1;
+                    if(cantParamCorrectos == cantParamPila){
+                        ArrayList param = function.getParametros();
+                        cantParamCorrectos--;
+                        while(cantParamCorrectos >= 0){
+                          RegistroIdentificador rID = (RegistroIdentificador) param.get(cantParamCorrectos);
+                          RegistroSemantico rIDAux =  this.parser.pila.pop();
+                          DataObject rs_do;
+
+                          if(rIDAux instanceof RegistroIdentificador) {
+                              rIDAux = (RegistroIdentificador) this.parser.getTabla().get(rIDAux.getToken());
+                              if(rIDAux==null){
+                                addError("Parametro no existe");
+                                break;
+                              }
+                              if(((RegistroIdentificador) rIDAux).getTipo() != rID.getTipo()){
+                                addError("Parametros con tipos diferentes");
+                                break;
+                              }
+                          }
+                          else{
+                            rs_do = (DataObject) rIDAux;
+                            if(rs_do!= null && rs_do.getTipo() != rID.getTipo()){
+                               addError("Parametros con tipos diferentes");
+                               break;
+                            }
+                          }
 
 
+                          //Revisamos si el tipo es el mismo
 
+                        cantParamCorrectos--;
+                        }
+                        this.parser.pila.pop();
+                    }
+                    else{
+                      addError("Cantidad incorrecta de parametros en función '"+function.getNombre()+ "'");
+                    }
+                }
+                else{
+                     addError("Variable no definida");
+                }
      :} |
     valid_name inc_dec {:
         RegistroOperador op = (RegistroOperador) this.parser.pila.pop();
