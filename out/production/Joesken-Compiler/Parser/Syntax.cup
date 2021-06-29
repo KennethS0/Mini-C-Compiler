@@ -49,9 +49,30 @@ parser code
 
             for (int i = 0; i < syntaxerrors.size(); i++) {
                 SyntaxError error = syntaxerrors.get(i);
-                if (!(error.getLine() == 0)) result += error.toString();
+                if (!(error.getLine() == 0)) result += error.toString() +"\n";
             }
         }
+
+        if (!tablaSimbolos.isEmpty()) {
+            result += "====== Symbols Table ======\n";
+
+            for(Map.Entry<String, RegistroSemantico> entry : tablaSimbolos.entrySet()) {
+                String key = entry.getKey();
+                RegistroSemantico value = entry.getValue();
+
+                result += key + " | " + value.toString() + "\n";
+            }
+        }
+
+        if (!listaErroresSemanticos.isEmpty()) {
+            result += "====== Semantic Errors ======\n";
+
+            for(int i = 0; i < listaErroresSemanticos.size(); i++) {
+                result += listaErroresSemanticos.get(i) + "\n";
+            }
+        }
+
+
         return result;
     }
     public void unrecovered_syntax_error(Symbol s){
@@ -618,7 +639,8 @@ valid_statement ::=
             }
         }
         else{
-             addError("Variable no definida");
+             this.parser.pila.pop();
+             addError("Funcion no definida");
         }
      :} |
     valid_name inc_dec {:

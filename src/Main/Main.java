@@ -22,14 +22,8 @@ public class Main {
             s.assemblerGenerator.generateAssemblerFile(args[i]);
             s.parse();
             s.assemblerGenerator.closeFile();
-            //System.out.println(scanner.toString());
+            System.out.println(scanner.toString());
             System.out.println(s.toString());
-
-            System.out.println(s.getPila().toString());
-
-            System.out.println(s.getTabla().toString());
-
-            System.out.println(s.getErroresSemanticos());
 
             if (!s.getErroresSemanticos().isEmpty()) {
                 s.assemblerGenerator.archivo.delete();
