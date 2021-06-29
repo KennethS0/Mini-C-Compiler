@@ -1538,6 +1538,11 @@ class CUP$Parser$actions {
               Object RESULT =null;
 		
 
+        if(this.parser.startText) {
+            this.parser.assemblerGenerator.writeAssemblerCode("\nsection .text");
+            this.parser.startText = false;
+        }
+
         ArrayList<RegistroIdentificador> parametros = new ArrayList<RegistroIdentificador>();
         RegistroIdentificador param;
         RegistroTipo tipo;
@@ -1564,7 +1569,7 @@ class CUP$Parser$actions {
         funcion.setParametros(parametros);
         this.parser.getTabla().put(funcion.getNombre() ,funcion);
 
-        this.parser.assemblerGenerator.writeAssemblerCode(param.getToken() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\n" + param.getToken() + ":");
      
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("func_start",27, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -1674,6 +1679,11 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		
+        if(this.parser.startText) {
+          this.parser.assemblerGenerator.writeAssemblerCode("section .text");
+          this.parser.startText = false;
+        }
+
         RegistroSemantico tempObject = (RegistroSemantico) this.parser.pila.pop();
         RegistroOperador rs_op = (RegistroOperador) this.parser.pila.pop();
             DataObject rs_do2;
@@ -2031,6 +2041,10 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		
+        if(this.parser.startText) {
+                  this.parser.assemblerGenerator.writeAssemblerCode("section .text");
+                  this.parser.startText = false;
+                }
         RegistroIdentificador idFunction = (RegistroIdentificador) this.parser.pila.get(this.parser.pila.size()-1);
                 if(this.parser.getTabla().get(idFunction.getToken()) != null){
                     DataObject function = (DataObject) this.parser.getTabla().get(idFunction.getToken());
@@ -2062,10 +2076,7 @@ class CUP$Parser$actions {
                                break;
                             }
                           }
-
-
                           //Revisamos si el tipo es el mismo
-
                         cantParamCorrectos--;
                         }
                         this.parser.pila.pop();
@@ -2087,6 +2098,10 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		
+        if(this.parser.startText) {
+                  this.parser.assemblerGenerator.writeAssemblerCode("section .text");
+                  this.parser.startText = false;
+                }
         RegistroOperador op = (RegistroOperador) this.parser.pila.pop();
         RegistroIdentificador id = (RegistroIdentificador) this.parser.pila.pop();
 
@@ -2121,6 +2136,10 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		
+        if(this.parser.startText) {
+                  this.parser.assemblerGenerator.writeAssemblerCode("section .text");
+                  this.parser.startText = false;
+                }
 
         RegistroIdentificador id = (RegistroIdentificador) this.parser.pila.pop();
         RegistroOperador op = (RegistroOperador) this.parser.pila.pop();
@@ -2553,6 +2572,10 @@ class CUP$Parser$actions {
             {
               Object RESULT =null;
 		
+        if(this.parser.startText) {
+                  this.parser.assemblerGenerator.writeAssemblerCode("section .text");
+                  this.parser.startText = false;
+                }
          // #startWhile
          String etiquetaInicio = "While_Label" + Integer.toString(this.parser.GUID);
          String etiquetaSalida = "Exit_Label" + Integer.toString(this.parser.GUID);
@@ -2776,7 +2799,7 @@ class CUP$Parser$actions {
               Object RESULT =null;
 		
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
-        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getExit_label() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + if_reg.getExit_label() + ":");
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("if_expression",37, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-4)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2859,46 +2882,46 @@ class CUP$Parser$actions {
 
         if (rs_do1.getTipo() == rs_do2.getTipo()) {
 
-            this.parser.assemblerGenerator.writeAssemblerCode(";IF");
+            this.parser.assemblerGenerator.writeAssemblerCode("\t;IF  " + Integer.toString(this.parser.GUID - 1));
             // AX para op2
             if (rs_do2.getVariable()) {
-                this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, [" + rs_do2.getNombre() + "]");
+                this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov ax, [" + rs_do2.getNombre() + "]");
             } else {
-                this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, " + rs_do2.getValor());
+                this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov ax, " + rs_do2.getValor());
             }
             // BX para op1
             if (rs_do1.getVariable()) {
-                this.parser.assemblerGenerator.writeAssemblerCode("\tmov bx, [" + rs_do1.getNombre() + "]");
+                this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov bx, [" + rs_do1.getNombre() + "]");
             } else {
-                this.parser.assemblerGenerator.writeAssemblerCode("\tmov bx, " + rs_do1.getValor());
+                this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov bx, " + rs_do1.getValor());
             }
 
-            this.parser.assemblerGenerator.writeAssemblerCode("\tcmp ax, bx");
+            this.parser.assemblerGenerator.writeAssemblerCode("\t\tcmp ax, bx");
             // Case de Operador
             switch (operador.getToken()) {
                 case "<":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjge " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjge " + registro_if.getElse_label());
                     break;
                 case ">":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjle " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjle " + registro_if.getElse_label());
                     break;
                 case "==":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjne " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjne " + registro_if.getElse_label());
                     break;
                 case "&&":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjz " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjz " + registro_if.getElse_label());
                     break;
                 case "||":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjz " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjz " + registro_if.getElse_label());
                     break;
                 case "!=":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tje " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tje " + registro_if.getElse_label());
                     break;
                 case "<=":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjg " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjg " + registro_if.getElse_label());
                     break;
                 case ">=":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjle " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjle " + registro_if.getElse_label());
                     break;
             }
 
@@ -2930,7 +2953,7 @@ class CUP$Parser$actions {
               Object RESULT =null;
 		
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
-        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getExit_label() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + if_reg.getExit_label() + ":");
      
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("else_expression",41, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2942,7 +2965,7 @@ class CUP$Parser$actions {
               Object RESULT =null;
 		
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
-        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getExit_label() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + if_reg.getExit_label() + ":");
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("else_expression",41, ((java_cup.runtime.Symbol)CUP$Parser$stack.elementAt(CUP$Parser$top-1)), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
             }
@@ -2954,7 +2977,7 @@ class CUP$Parser$actions {
               Object RESULT =null;
 		
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
-        this.parser.assemblerGenerator.writeAssemblerCode("\tjmp " + if_reg.getExit_label());
+        this.parser.assemblerGenerator.writeAssemblerCode("\t\tjmp " + if_reg.getExit_label());
         this.parser.pila.push(if_reg);
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("if_exit",39, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);
@@ -2967,7 +2990,7 @@ class CUP$Parser$actions {
               Object RESULT =null;
 		
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
-        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getElse_label() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + if_reg.getElse_label() + ":");
         this.parser.pila.push(if_reg);
     
               CUP$Parser$result = parser.getSymbolFactory().newSymbol("else_label",40, ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), ((java_cup.runtime.Symbol)CUP$Parser$stack.peek()), RESULT);

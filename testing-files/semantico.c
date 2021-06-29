@@ -1,5 +1,18 @@
 
+int xd;
+
 void funcion1D(int jajaINT, char jCHAR, int mINT) {
- funcion1D(29, jCHAR, 45);
-    jajaINT++;
-    }
+
+     while(mINT <= 1) {
+        jCHAR++;
+     }
+
+     if (jajaINT == 2) {
+     }
+
+     funcion4();
+ }
+
+ int funcion3() {
+
+ }

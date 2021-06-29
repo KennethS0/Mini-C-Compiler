@@ -279,6 +279,11 @@ func_declaration ::=
 func_start ::=
     typed_identifier func_decl_parentheses {:
 
+        if(this.parser.startText) {
+            this.parser.assemblerGenerator.writeAssemblerCode("\nsection .text");
+            this.parser.startText = false;
+        }
+
         ArrayList<RegistroIdentificador> parametros = new ArrayList<RegistroIdentificador>();
         RegistroIdentificador param;
         RegistroTipo tipo;
@@ -305,7 +310,7 @@ func_start ::=
         funcion.setParametros(parametros);
         this.parser.getTabla().put(funcion.getNombre() ,funcion);
 
-        this.parser.assemblerGenerator.writeAssemblerCode(param.getToken() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\n" + param.getToken() + ":");
      :}
 ;
 
@@ -333,6 +338,11 @@ statement  ::=
     switch |
     if_expression |
     valid_name assignments expression OPERATOR_END_LINE {:
+        if(this.parser.startText) {
+          this.parser.assemblerGenerator.writeAssemblerCode("section .text");
+          this.parser.startText = false;
+        }
+
         RegistroSemantico tempObject = (RegistroSemantico) this.parser.pila.pop();
         RegistroOperador rs_op = (RegistroOperador) this.parser.pila.pop();
             DataObject rs_do2;
@@ -568,50 +578,54 @@ read_write ::=
 valid_statement ::=
     valid_name func_call_parentheses {:
         RegistroIdentificador idFunction = (RegistroIdentificador) this.parser.pila.get(this.parser.pila.size()-1);
-                if(this.parser.getTabla().get(idFunction.getToken()) != null){
-                    DataObject function = (DataObject) this.parser.getTabla().get(idFunction.getToken());
-                    int cantParamCorrectos = function.getParametros().size();
-                    int cantParamPila = this.parser.pila.size()-1;
-                    if(cantParamCorrectos == cantParamPila){
-                        ArrayList param = function.getParametros();
-                        cantParamCorrectos--;
-                        while(cantParamCorrectos >= 0){
-                          RegistroIdentificador rID = (RegistroIdentificador) param.get(cantParamCorrectos);
-                          RegistroSemantico rIDAux =  this.parser.pila.pop();
-                          DataObject rs_do;
+        if(this.parser.getTabla().get(idFunction.getToken()) != null){
+            DataObject function = (DataObject) this.parser.getTabla().get(idFunction.getToken());
+            int cantParamCorrectos = function.getParametros().size();
+            int cantParamPila = this.parser.pila.size()-1;
+            if(cantParamCorrectos == cantParamPila){
+                ArrayList param = function.getParametros();
+                cantParamCorrectos--;
+                while(cantParamCorrectos >= 0){
+                  RegistroIdentificador rID = (RegistroIdentificador) param.get(cantParamCorrectos);
+                  RegistroSemantico rIDAux =  this.parser.pila.pop();
+                  DataObject rs_do;
 
-                          if(rIDAux instanceof RegistroIdentificador) {
-                              rIDAux = (RegistroIdentificador) this.parser.getTabla().get(rIDAux.getToken());
-                              if(rIDAux==null){
-                                addError("Parametro no existe");
-                                break;
-                              }
-                              if(((RegistroIdentificador) rIDAux).getTipo() != rID.getTipo()){
-                                addError("Parametros con tipos diferentes");
-                                break;
-                              }
-                          }
-                          else{
-                            rs_do = (DataObject) rIDAux;
-                            if(rs_do!= null && rs_do.getTipo() != rID.getTipo()){
-                               addError("Parametros con tipos diferentes");
-                               break;
-                            }
-                          }
-                          //Revisamos si el tipo es el mismo
-                        cantParamCorrectos--;
-                        }
-                        this.parser.pila.pop();
+                  if(rIDAux instanceof RegistroIdentificador) {
+                      rIDAux = (RegistroIdentificador) this.parser.getTabla().get(rIDAux.getToken());
+                      if(rIDAux==null){
+                        addError("Parametro no existe");
+                        break;
+                      }
+                      if(((RegistroIdentificador) rIDAux).getTipo() != rID.getTipo()){
+                        addError("Parametros con tipos diferentes");
+                        break;
+                      }
+                  }
+                  else{
+                    rs_do = (DataObject) rIDAux;
+                    if(rs_do!= null && rs_do.getTipo() != rID.getTipo()){
+                       addError("Parametros con tipos diferentes");
+                       break;
                     }
-                    else{
-                      addError("Cantidad incorrecta de parametros en función '"+function.getNombre()+ "'");
-                    }
+                  }
+                  //Revisamos si el tipo es el mismo
+                cantParamCorrectos--;
                 }
-                else{
-                     addError("Variable no definida");
-                }
+                this.parser.pila.pop();
+            }
+            else{
+              addError("Cantidad incorrecta de parametros en función '"+function.getNombre()+ "'");
+            }
+        }
+        else{
+             addError("Variable no definida");
+        }
      :} |
     valid_name inc_dec {:
+        if(this.parser.startText) {
+                  this.parser.assemblerGenerator.writeAssemblerCode("section .text");
+                  this.parser.startText = false;
+                }
         RegistroOperador op = (RegistroOperador) this.parser.pila.pop();
         RegistroIdentificador id = (RegistroIdentificador) this.parser.pila.pop();
 
@@ -638,6 +652,10 @@ valid_statement ::=
 
     :}|
     inc_dec valid_name {:
+        if(this.parser.startText) {
+                  this.parser.assemblerGenerator.writeAssemblerCode("section .text");
+                  this.parser.startText = false;
+                }
 
         RegistroIdentificador id = (RegistroIdentificador) this.parser.pila.pop();
         RegistroOperador op = (RegistroOperador) this.parser.pila.pop();
@@ -782,6 +800,10 @@ while_expression ::=
 
 while_init ::=
     WHILE {:
+        if(this.parser.startText) {
+                  this.parser.assemblerGenerator.writeAssemblerCode("section .text");
+                  this.parser.startText = false;
+                }
          // #startWhile
          String etiquetaInicio = "While_Label" + Integer.toString(this.parser.GUID);
          String etiquetaSalida = "Exit_Label" + Integer.toString(this.parser.GUID);
@@ -916,7 +938,7 @@ if_expression ::=
     if_init OPERATOR_PARENTHESIS_L assignment_expression test_if if_exit else_expression  |
     if_init OPERATOR_PARENTHESIS_L assignment_expression test_if if_exit {:
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
-        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getExit_label() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + if_reg.getExit_label() + ":");
     :}|
 
     // Error
@@ -972,46 +994,46 @@ test_if ::=
 
         if (rs_do1.getTipo() == rs_do2.getTipo()) {
 
-            this.parser.assemblerGenerator.writeAssemblerCode(";IF");
+            this.parser.assemblerGenerator.writeAssemblerCode("\t;IF  " + Integer.toString(this.parser.GUID - 1));
             // AX para op2
             if (rs_do2.getVariable()) {
-                this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, [" + rs_do2.getNombre() + "]");
+                this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov ax, [" + rs_do2.getNombre() + "]");
             } else {
-                this.parser.assemblerGenerator.writeAssemblerCode("\tmov ax, " + rs_do2.getValor());
+                this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov ax, " + rs_do2.getValor());
             }
             // BX para op1
             if (rs_do1.getVariable()) {
-                this.parser.assemblerGenerator.writeAssemblerCode("\tmov bx, [" + rs_do1.getNombre() + "]");
+                this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov bx, [" + rs_do1.getNombre() + "]");
             } else {
-                this.parser.assemblerGenerator.writeAssemblerCode("\tmov bx, " + rs_do1.getValor());
+                this.parser.assemblerGenerator.writeAssemblerCode("\t\tmov bx, " + rs_do1.getValor());
             }
 
-            this.parser.assemblerGenerator.writeAssemblerCode("\tcmp ax, bx");
+            this.parser.assemblerGenerator.writeAssemblerCode("\t\tcmp ax, bx");
             // Case de Operador
             switch (operador.getToken()) {
                 case "<":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjge " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjge " + registro_if.getElse_label());
                     break;
                 case ">":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjle " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjle " + registro_if.getElse_label());
                     break;
                 case "==":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjne " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjne " + registro_if.getElse_label());
                     break;
                 case "&&":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjz " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjz " + registro_if.getElse_label());
                     break;
                 case "||":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjz " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjz " + registro_if.getElse_label());
                     break;
                 case "!=":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tje " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tje " + registro_if.getElse_label());
                     break;
                 case "<=":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjg " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjg " + registro_if.getElse_label());
                     break;
                 case ">=":
-                    this.parser.assemblerGenerator.writeAssemblerCode("\tjle " + registro_if.getElse_label());
+                    this.parser.assemblerGenerator.writeAssemblerCode("\t\tjle " + registro_if.getElse_label());
                     break;
             }
 
@@ -1033,18 +1055,18 @@ if_init ::=
 else_expression ::=
     else_label if_expression {:
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
-        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getExit_label() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + if_reg.getExit_label() + ":");
      :} |
     else_label if_exit {:
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
-        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getExit_label() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + if_reg.getExit_label() + ":");
     :}
 ;
 
 if_exit ::=
     brackets {:
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
-        this.parser.assemblerGenerator.writeAssemblerCode("\tjmp " + if_reg.getExit_label());
+        this.parser.assemblerGenerator.writeAssemblerCode("\t\tjmp " + if_reg.getExit_label());
         this.parser.pila.push(if_reg);
     :}
 ;
@@ -1052,7 +1074,7 @@ if_exit ::=
 else_label ::=
     ELSE {:
         RegistroIf if_reg = (RegistroIf) this.parser.pila.pop();
-        this.parser.assemblerGenerator.writeAssemblerCode(if_reg.getElse_label() + ":");
+        this.parser.assemblerGenerator.writeAssemblerCode("\t" + if_reg.getElse_label() + ":");
         this.parser.pila.push(if_reg);
     :}
 ;
