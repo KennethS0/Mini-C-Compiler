@@ -24,6 +24,6 @@ public class SyntaxError {
 
     @Override
     public String toString() {
-        return type.toString() + " | Line: " + line + " | Col: " + column + "\n";
+        return type.toString() + " | Line: " + line + " | Col: " + column;
     }
 }
